@@ -1,0 +1,900 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1">
+<title>Coinblast 2.0</title>
+<meta name="theme-color" content="#5b21b6">
+<link rel="icon" href="https://i.ibb.co/TDwxSYHN/723092251a0eba4759463e33a42468df6317f369de976a8200a44b16c74205d8.png">
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<script src='//libtl.com/sdk.js' data-zone='11569445' data-sdk='show_11569445'></script>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<style>
+  html{font-size:15px;-webkit-text-size-adjust:100%}
+  html,body{background:#f3f1fb;-webkit-tap-highlight-color:transparent}
+  body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;color:#1e1b3a;line-height:1.45;overscroll-behavior-y:none}
+  .screen{display:none}.screen.on{display:block;animation:fade .25s ease both}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  .hero{background:linear-gradient(135deg,#6d28d9,#4f46e5 55%,#2563eb);color:#fff}
+  .greenhero{background:linear-gradient(135deg,#059669,#047857);color:#fff}
+  .card{background:#fff;border-radius:16px;box-shadow:0 4px 16px rgba(79,70,229,.08)}
+  .tap{transition:transform .12s}.tap:active{transform:scale(.97)}
+  .btn{width:100%;padding:13px;border-radius:14px;font-weight:700;font-size:15px;color:#fff;background:linear-gradient(135deg,#7c3aed,#4f46e5);box-shadow:0 6px 16px rgba(124,58,237,.28)}
+  .btn:disabled{opacity:.45}
+  .ghost{padding:8px 14px;border-radius:11px;font-weight:700;font-size:13px;color:#5b21b6;border:1.5px solid #8b5cf6;background:#fff}
+  .ghost:disabled{opacity:.4}
+  .field{display:flex;align-items:center;gap:10px;background:#fff;border:1px solid #ddd6fe;border-radius:13px;padding:0 12px}
+  .field i{color:#8b5cf6;width:16px;text-align:center}
+  .field input,.field select{flex:1;padding:12px 0;outline:none;background:transparent;font-size:14px;border:0;min-width:0}
+  .bar{height:7px;border-radius:99px;background:#e9e5ff;overflow:hidden}.bar>i{display:block;height:100%;width:0;background:linear-gradient(90deg,#8b5cf6,#60a5fa);transition:width .25s linear}
+  .qa{border-radius:16px;background:#fff;padding:12px;display:flex;align-items:center;gap:10px;box-shadow:0 3px 12px rgba(79,70,229,.07);text-align:left;width:100%}
+  .ico{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;font-size:17px;flex:none}
+  .mrow{display:flex;align-items:center;gap:12px;padding:13px 4px;border-bottom:1px solid #efeafe;font-weight:600;font-size:14.5px;width:100%;text-align:left}
+  .mrow:last-child{border-bottom:0}
+  .mrow i{width:20px;text-align:center;color:#7c3aed;font-size:16px}
+  .chip{padding:6px 14px;border-radius:999px;border:1px solid #ddd6fe;background:#fff;font-weight:600;font-size:13px}
+  .chip.on{background:#6d28d9;color:#fff;border-color:#6d28d9}
+  .nav-btn{color:#9ca3af;font-size:11px;font-weight:600}.nav-btn.on{color:#6d28d9}
+  .nav-btn i{font-size:17px}
+  .cell{border-radius:12px;height:58px;display:grid;place-items:center;font-size:22px;font-weight:800;user-select:none}
+  .hidden{display:none!important}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .spin{animation:spin .9s linear infinite}
+  @keyframes shake{25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+  .shake{animation:shake .3s}
+  .coin{position:absolute;width:14px;height:14px;border-radius:50%;background:radial-gradient(circle at 30% 30%,#fde68a,#f59e0b);opacity:.6;animation:drift 6s linear infinite}
+  @keyframes drift{from{transform:translateY(-10vh)}to{transform:translateY(110vh) rotate(360deg)}}
+  @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+
+<!-- SPLASH (logo embedded so it always shows) -->
+<section id="splash" class="fixed inset-0 z-50 flex flex-col items-center justify-center text-white overflow-hidden" style="background:radial-gradient(circle at 50% 30%,#4338ca,#1e1b4b 75%)">
+  <div id="coins"></div>
+  <img src="data:image/webp;base64,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" alt="Coinblast 2.0" class="w-44 h-44 rounded-[2rem] shadow-2xl" style="object-fit:cover">
+  <p class="mt-5 text-sm tracking-[0.3em] text-indigo-200">PLAY · EARN · WIN</p>
+  <p class="mt-8 text-xs text-indigo-100">Loading...</p>
+  <div class="mt-2 w-56"><div class="bar"><i id="pbar"></i></div><p id="pct" class="text-right text-xs text-indigo-200 mt-1">0%</p></div>
+</section>
+
+<!-- LOGIN -->
+<section id="s-login" class="screen">
+  <div class="min-h-screen max-w-md mx-auto px-6 pt-12 pb-8 flex flex-col">
+    <div class="text-center"><img src="https://i.ibb.co/TDwxSYHN/723092251a0eba4759463e33a42468df6317f369de976a8200a44b16c74205d8.png" class="w-20 h-20 mx-auto rounded-2xl shadow" alt="">
+      <h1 class="mt-4 text-xl font-extrabold">Welcome Back</h1><p class="text-slate-500 text-sm">Login to continue and earn coins</p></div>
+    <form id="loginForm" class="mt-7 space-y-3">
+      <div class="field"><i class="fa-solid fa-mobile-screen-button"></i><input id="lPhone" inputmode="numeric" maxlength="10" placeholder="Phone Number"></div>
+      <div class="field"><i class="fa-solid fa-lock"></i><input id="lPass" type="password" placeholder="Password"><button type="button" id="eyeBtn" class="text-slate-400"><i class="fa-regular fa-eye"></i></button></div>
+      <button class="btn tap" type="submit" id="lBtn">Login</button>
+    </form>
+    <div class="flex items-center gap-3 my-5 text-xs text-slate-400"><span class="flex-1 h-px bg-slate-200"></span>or<span class="flex-1 h-px bg-slate-200"></span></div>
+    <button id="gBtn" class="card tap w-full py-3 font-semibold text-sm flex items-center justify-center gap-2"><i class="fa-brands fa-google text-red-500"></i>Continue with Google</button>
+    <p class="text-center text-sm mt-auto pt-8 text-slate-500">Don't have an account? <button id="toReg" class="font-bold text-violet-700">Register</button></p>
+  </div>
+</section>
+
+<!-- REGISTER -->
+<section id="s-reg" class="screen">
+  <div class="min-h-screen max-w-md mx-auto px-6 pt-10 pb-8 flex flex-col">
+    <div class="text-center"><img src="https://i.ibb.co/TDwxSYHN/723092251a0eba4759463e33a42468df6317f369de976a8200a44b16c74205d8.png" class="w-16 h-16 mx-auto rounded-2xl shadow" alt="">
+      <h1 class="mt-3 text-xl font-extrabold" id="regTitle">Create Account</h1><p class="text-slate-500 text-sm">Join Coinblast 2.0 and start earning</p></div>
+    <form id="regForm" class="mt-6 space-y-3">
+      <div class="field"><i class="fa-regular fa-user"></i><input id="rName" maxlength="40" placeholder="Full Name"></div>
+      <div class="field"><i class="fa-solid fa-mobile-screen-button"></i><input id="rPhone" inputmode="numeric" maxlength="10" placeholder="Phone Number (10 digit)"></div>
+      <div id="rPassBox" class="space-y-3">
+        <div class="field"><i class="fa-solid fa-lock"></i><input id="rPass" type="password" placeholder="Password (min 6)"></div>
+        <div class="field"><i class="fa-solid fa-lock"></i><input id="rPass2" type="password" placeholder="Confirm Password"></div>
+      </div>
+      <div class="field"><i class="fa-solid fa-gift"></i><input id="rRef" maxlength="12" placeholder="Referral Code (Optional)" style="text-transform:uppercase"></div>
+      <button class="btn tap" type="submit" id="rBtn">Register</button>
+    </form>
+    <p class="text-center text-sm mt-auto pt-8 text-slate-500">Already have an account? <button id="toLogin" class="font-bold text-violet-700">Login</button></p>
+  </div>
+</section>
+
+<!-- BLOCKED -->
+<section id="s-blocked" class="screen"><div class="px-6 pt-32 text-center max-w-md mx-auto">
+  <h1 class="text-xl font-extrabold">Account Restricted</h1><p class="mt-2 text-slate-600 text-sm">Aapka account band hai. Support se contact karein.</p>
+  <button class="btn mt-8 tap" data-logout>Logout</button></div></section>
+
+<!-- HOME -->
+<section id="s-home" class="screen pb-24 max-w-md mx-auto">
+  <header class="px-4 pt-6 pb-2 flex items-center justify-between">
+    <button id="menuBtn" class="w-9 h-9 grid place-items-center text-slate-800 text-base"><i class="fa-solid fa-bars"></i></button>
+    <b class="text-lg font-black text-violet-700">Coinblast <span class="text-violet-500 text-xs align-top">2.0</span></b>
+    <button id="bellBtn" class="relative w-9 h-9 grid place-items-center text-slate-800 text-base"><i class="fa-regular fa-bell"></i><span id="bellDot" class="hidden absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-red-500"></span></button>
+  </header>
+  <div class="px-4 space-y-4">
+    <div class="hero rounded-[20px] p-4 relative overflow-hidden shadow-lg">
+      <i class="fa-solid fa-wallet absolute right-3 top-3 text-5xl opacity-20"></i>
+      <p class="text-xs opacity-90">Total Balance</p>
+      <p class="text-3xl font-black mt-1"><i class="fa-solid fa-coins text-yellow-300 text-xl mr-1"></i><span id="hBal">0</span></p>
+      <p id="hInr" class="text-xs opacity-90 mt-0.5">= ₹0.00</p>
+      <div class="mt-4 grid grid-cols-2 gap-2"><button data-go="wallet" class="bg-white text-violet-700 font-bold py-2.5 rounded-xl text-sm tap">Wallet</button><button data-go="history" class="border border-white/60 font-bold py-2.5 rounded-xl text-sm tap">History</button></div>
+    </div>
+    <div>
+      <p class="font-extrabold text-sm mb-2">Quick Actions</p>
+      <div class="grid grid-cols-2 gap-2.5">
+        <button class="qa tap" data-go="puzzle"><span class="ico bg-amber-100 text-amber-600"><i class="fa-solid fa-puzzle-piece"></i></span><span><b class="block text-sm">Puzzle</b><small class="text-slate-500 text-xs">Solve &amp; Earn</small></span></button>
+        <button class="qa tap" data-go="referral"><span class="ico bg-blue-100 text-blue-600"><i class="fa-solid fa-user-group"></i></span><span><b class="block text-sm">Referral</b><small class="text-slate-500 text-xs">Invite &amp; Earn</small></span></button>
+        <button class="qa tap" data-go="ads"><span class="ico bg-violet-100 text-violet-600"><i class="fa-solid fa-tv"></i></span><span><b class="block text-sm">Watch Ads</b><small class="text-slate-500 text-xs">Watch &amp; Earn</small></span></button>
+        <button class="qa tap" data-go="games"><span class="ico bg-green-100 text-green-600"><i class="fa-solid fa-gamepad"></i></span><span><b class="block text-sm">Game Play</b><small class="text-slate-500 text-xs">Play &amp; Earn</small></span></button>
+      </div>
+    </div>
+    <div class="card p-3.5 flex items-center gap-3"><span class="ico bg-pink-100 text-pink-600"><i class="fa-solid fa-calendar-check"></i></span>
+      <div class="flex-1"><b class="text-sm">Daily Check-in</b><p class="text-xs text-slate-500">Check-in daily &amp; earn coins</p></div>
+      <button data-go="checkin" class="ghost">Check-in</button></div>
+    <div>
+      <div class="flex items-center justify-between mb-2"><p class="font-extrabold text-sm">Top Offer</p><button data-go="offers" class="text-xs font-bold text-violet-700">View All</button></div>
+      <div id="offerList" class="space-y-2.5"></div>
+    </div>
+    <div class="grad-refer rounded-[18px] p-4 text-white flex items-center justify-between shadow-lg" style="background:linear-gradient(135deg,#7c3aed,#4f46e5)">
+      <div><p class="font-extrabold">Refer &amp; Earn</p><p class="text-xs opacity-90">Invite friends and earn unlimited coins</p><button data-go="referral" class="mt-2 bg-white text-violet-700 font-bold text-xs px-3 py-1.5 rounded-lg">Invite Now</button></div>
+      <i class="fa-solid fa-gift text-4xl opacity-80"></i></div>
+  </div>
+  <div id="slotStrip" class="flex justify-center mt-4"></div>
+</section>
+
+<!-- OFFERS -->
+<section id="s-offers" class="screen pb-24 max-w-md mx-auto">
+  <header class="hero px-4 pt-7 pb-6 rounded-b-[24px]"><h1 class="text-lg font-black">Offers</h1><p class="text-xs opacity-90">Join karo, timer poora karo, coins pao</p></header>
+  <div class="px-4 -mt-3 space-y-2.5" id="offerAll"></div>
+</section>
+
+<!-- PUZZLE -->
+<section id="s-puzzle" class="screen pb-24 max-w-md mx-auto">
+  <header class="hero px-4 pt-6 pb-6 rounded-b-[24px]"><button data-back class="w-8 h-8 rounded-lg bg-white/15 grid place-items-center mb-2"><i class="fa-solid fa-arrow-left text-sm"></i></button><h1 class="text-xl font-black">Solve Puzzle</h1><p class="text-xs opacity-90">Earn Coins</p></header>
+  <div class="px-4 -mt-3 space-y-2.5" id="puzList"></div>
+  <div class="px-4 mt-4 card p-3 text-xs text-slate-600"><i class="fa-solid fa-trophy text-amber-500 mr-1"></i>Har level roz ek baar khel sakte ho. Jodi milne par coins.</div>
+  <div id="slotNativePuzzle" class="px-4 mt-4"></div>
+</section>
+
+<!-- GAMES -->
+<section id="s-games" class="screen pb-24 max-w-md mx-auto">
+  <header class="greenhero px-4 pt-6 pb-6 rounded-b-[24px]"><button data-back class="w-8 h-8 rounded-lg bg-white/15 grid place-items-center mb-2"><i class="fa-solid fa-arrow-left text-sm"></i></button><h1 class="text-xl font-black">Play Games</h1><p class="text-xs opacity-90">Earn Coins</p></header>
+  <div class="px-4 -mt-3 space-y-2.5" id="gameList"></div>
+  <div class="px-4 mt-4 card p-3 text-xs text-slate-600"><i class="fa-solid fa-treasure-chest text-amber-500 mr-1"></i>Game khelo, time poora karo, phir coins claim karo.</div>
+</section>
+
+<!-- PLAY (puzzle / game / offer) -->
+<section id="s-play" class="screen pb-10 max-w-md mx-auto">
+  <div class="px-4 pt-6">
+    <div class="flex items-center gap-3"><button id="playBack" class="w-8 h-8 rounded-full bg-white shadow grid place-items-center tap"><i class="fa-solid fa-arrow-left text-sm"></i></button><h1 id="playTitle" class="text-lg font-extrabold">Play</h1></div>
+    <div id="playHud" class="mt-3 card p-2.5 flex justify-between text-xs font-bold"></div>
+    <div id="playBoard" class="mt-3 card p-3 relative overflow-hidden" style="min-height:260px"></div>
+    <div id="slotPlayBanner" class="mt-3 flex justify-center hidden"></div>
+    <p id="playMsg" class="mt-3 text-center text-sm font-semibold text-slate-700"></p>
+    <div id="playResult" class="hidden mt-3"></div>
+  </div>
+</section>
+
+<!-- WATCH ADS -->
+<section id="s-ads" class="screen pb-24 max-w-md mx-auto">
+  <header class="hero px-4 pt-6 pb-6 rounded-b-[24px]"><button data-back class="w-8 h-8 rounded-lg bg-white/15 grid place-items-center mb-2"><i class="fa-solid fa-arrow-left text-sm"></i></button><h1 class="text-xl font-black">Watch Ads</h1><p class="text-xs opacity-90">Earn Coins</p></header>
+  <div class="px-4 -mt-3 space-y-2.5">
+    <div id="adList" class="space-y-2.5"></div>
+    <div class="grad rounded-[16px] p-4 text-white" style="background:linear-gradient(135deg,#7c3aed,#4f46e5)"><p class="font-bold text-sm">Daily Ad Limit</p><p class="text-xs opacity-90" id="adCount">0 / 20 Ads Watched</p><div class="bar mt-2" style="background:rgba(255,255,255,.3)"><i id="adBar" style="background:#fff"></i></div></div>
+    <p class="text-xs text-slate-500 text-center">Coins tabhi milenge jab ad poora chale. Ad na aaye to coins nahi milenge.</p>
+  </div>
+</section>
+
+<!-- CHECK-IN -->
+<section id="s-checkin" class="screen pb-24 max-w-md mx-auto">
+  <header class="hero px-4 pt-6 pb-6 rounded-b-[24px]"><button data-back class="w-8 h-8 rounded-lg bg-white/15 grid place-items-center mb-2"><i class="fa-solid fa-arrow-left text-sm"></i></button><h1 class="text-xl font-black">Daily Check-in</h1><p class="text-xs opacity-90">Check-in roz karo, bonus pao</p></header>
+  <div class="px-4 -mt-3 space-y-3">
+    <div class="card p-4"><p class="font-bold text-sm mb-2">Check-in Calendar</p><div id="ckDays" class="grid grid-cols-5 gap-1.5"></div></div>
+    <button id="ckBtn" class="btn tap">Check-in Now</button>
+    <p id="ckMsg" class="text-center text-xs text-slate-500"></p>
+  </div>
+</section>
+
+<!-- REFERRAL -->
+<section id="s-referral" class="screen pb-24 max-w-md mx-auto">
+  <header class="hero px-4 pt-6 pb-6 rounded-b-[24px]"><button data-back class="w-8 h-8 rounded-lg bg-white/15 grid place-items-center mb-2"><i class="fa-solid fa-arrow-left text-sm"></i></button><h1 class="text-xl font-black">Invite Friends</h1><p class="text-xs opacity-90">Earn Unlimited Coins</p></header>
+  <div class="px-4 -mt-3 space-y-3">
+    <div class="card p-4">
+      <p class="text-xs font-semibold text-slate-500">Your Referral Code</p>
+      <div class="flex items-center justify-between mt-1.5"><span id="rCode" class="text-xl font-black tracking-widest">--</span><button id="rCopy" class="ghost">Copy</button></div>
+      <div class="grid grid-cols-2 gap-2 mt-3 text-center text-xs"><div class="bg-violet-50 rounded-xl p-2.5"><p class="text-slate-500">You'll Earn</p><b id="rEarn">--</b></div><div class="bg-violet-50 rounded-xl p-2.5"><p class="text-slate-500">Friend Gets</p><b id="rFriend">--</b></div></div>
+      <div class="mt-3 bg-slate-50 rounded-lg p-2.5 text-[11px] break-all" id="rLink">--</div>
+      <div class="grid grid-cols-4 gap-2 mt-3 text-center text-[11px] font-semibold">
+        <a id="shWa" target="_blank" class="tap"><div class="w-10 h-10 mx-auto rounded-full bg-green-500 text-white grid place-items-center"><i class="fa-brands fa-whatsapp"></i></div><p class="mt-1">WhatsApp</p></a>
+        <a id="shTg" target="_blank" class="tap"><div class="w-10 h-10 mx-auto rounded-full bg-sky-500 text-white grid place-items-center"><i class="fa-brands fa-telegram"></i></div><p class="mt-1">Telegram</p></a>
+        <a id="shIg" target="_blank" class="tap"><div class="w-10 h-10 mx-auto rounded-full bg-pink-500 text-white grid place-items-center"><i class="fa-brands fa-instagram"></i></div><p class="mt-1">Instagram</p></a>
+        <button id="shMore" class="tap"><div class="w-10 h-10 mx-auto rounded-full bg-slate-200 grid place-items-center"><i class="fa-solid fa-ellipsis"></i></div><p class="mt-1">More</p></button>
+      </div></div>
+    <div class="card p-4"><p class="font-extrabold text-sm mb-2">Your Referrals</p><div id="rList" class="space-y-2 text-xs"></div></div>
+  </div>
+</section>
+
+<!-- WALLET -->
+<section id="s-wallet" class="screen pb-24 max-w-md mx-auto">
+  <header class="hero px-4 pt-6 pb-16 rounded-b-[24px]"><h1 class="text-xl font-black">My Wallet</h1></header>
+  <div class="px-4 -mt-12 space-y-3">
+    <div class="card p-4"><p class="text-xs text-slate-500">Available Balance</p><p class="text-2xl font-black mt-1"><i class="fa-solid fa-coins text-amber-500 mr-1"></i><span id="wBal">0</span></p><p id="wInr" class="text-xs text-violet-700 font-bold">= ₹0.00</p></div>
+    <div class="card p-4"><p class="font-extrabold text-sm mb-2">Coins Summary</p>
+      <div class="space-y-2 text-xs"><div class="flex justify-between"><span>Total Earned</span><b id="wEarned">0</b></div><div class="flex justify-between"><span>Total Redeemed</span><b id="wRedeemed">0</b></div><div class="flex justify-between"><span>Pending</span><b id="wPending">0</b></div></div></div>
+    <button data-go="redeem" class="btn tap">Redeem Coins</button>
+    <p class="text-center text-xs text-slate-500" id="rateNote">100 Coins = ₹1</p>
+  </div>
+</section>
+
+<!-- REDEEM -->
+<section id="s-redeem" class="screen pb-24 max-w-md mx-auto">
+  <header class="hero px-4 pt-6 pb-14 rounded-b-[24px]"><h1 class="text-xl font-black">Redeem</h1></header>
+  <div class="px-4 -mt-10">
+    <form id="redForm" class="card p-4 space-y-3">
+      <p class="font-extrabold text-sm">Redeem Coins</p>
+      <div class="grid grid-cols-3 gap-2" id="redOpts">
+        <button type="button" class="redopt tap rounded-xl border-2 p-2 text-center text-xs font-bold" data-redopt="upi"><i class="fa-solid fa-indian-rupee-sign text-base block mb-1"></i>UPI</button>
+        <button type="button" class="redopt tap rounded-xl border-2 p-2 text-center text-xs font-bold" data-redopt="gplay"><i class="fa-brands fa-google-play text-base block mb-1"></i>Google Play</button>
+        <button type="button" class="redopt tap rounded-xl border-2 p-2 text-center text-xs font-bold" data-redopt="amazon"><i class="fa-brands fa-amazon text-base block mb-1"></i>Amazon</button>
+      </div>
+      <div class="field"><i class="fa-solid fa-at"></i><input id="redAcc" placeholder="UPI ID"></div>
+      <div class="field"><i class="fa-solid fa-coins"></i><input id="redCoins" type="number" inputmode="numeric" placeholder="Coins (1200 se 24000)"></div>
+      <p class="text-xs text-slate-600" id="redInfo">= ₹0.00</p>
+      <p class="text-xs text-slate-500" id="redBal">Balance: 0 coins</p>
+      <button class="btn tap" type="submit" id="redBtn">Request Redeem</button>
+      <p class="text-[11px] text-slate-500 text-center">Minimum ₹10 (1200 coins) · Maximum ₹200 (24000 coins) · 120 coins = ₹1<br>Redemption usually 24 ghante mein.</p>
+    </form>
+  </div>
+</section>
+
+<!-- HISTORY -->
+<section id="s-history" class="screen pb-24 max-w-md mx-auto">
+  <header class="hero px-4 pt-6 pb-6 rounded-b-[24px]"><button data-back class="w-8 h-8 rounded-lg bg-white/15 grid place-items-center mb-2"><i class="fa-solid fa-arrow-left text-sm"></i></button><h1 class="text-xl font-black">Transaction History</h1></header>
+  <div class="px-4 -mt-3">
+    <div class="flex gap-2 mb-3"><button class="chip on" data-hf="all">All</button><button class="chip" data-hf="credit">Earned</button><button class="chip" data-hf="debit">Redeemed</button></div>
+    <div id="txList" class="card p-3 text-xs"></div>
+  </div>
+</section>
+
+<!-- LEADERBOARD -->
+<section id="s-leader" class="screen pb-24 max-w-md mx-auto">
+  <header class="hero px-4 pt-6 pb-6 rounded-b-[24px]"><button data-back class="w-8 h-8 rounded-lg bg-white/15 grid place-items-center mb-2"><i class="fa-solid fa-arrow-left text-sm"></i></button><h1 class="text-xl font-black">Leaderboard</h1><p class="text-xs opacity-90">Top Earners</p></header>
+  <div class="px-4 -mt-3"><div class="flex gap-2 mb-3"><button class="chip on" data-lf="week">This Week</button><button class="chip" data-lf="month">This Month</button><button class="chip" data-lf="total">All Time</button></div>
+    <div id="lbList" class="card p-3 text-xs"></div></div>
+</section>
+
+<!-- PROFILE (as in the design: name + menu) -->
+<section id="s-profile" class="screen pb-24 max-w-md mx-auto">
+  <header class="hero px-4 pt-8 pb-14 rounded-b-[28px] text-center"><div class="w-16 h-16 mx-auto rounded-full bg-white/20 grid place-items-center text-2xl font-black" id="pAvatar">?</div>
+    <h1 class="mt-2 text-lg font-extrabold" id="pName">--</h1><p class="text-indigo-100 text-xs" id="pPhone">--</p></header>
+  <div class="px-4 -mt-8"><div class="card px-4 py-1">
+    <button class="mrow" data-go="history"><i class="fa-solid fa-clock-rotate-left"></i>Transaction History</button>
+    <button class="mrow" data-go="leader"><i class="fa-solid fa-trophy"></i>Leaderboard</button>
+    <button class="mrow" data-go="support"><i class="fa-solid fa-headset"></i>Support &amp; Settings</button>
+    <button class="mrow" data-go="referral"><i class="fa-solid fa-user-group"></i>Referral</button>
+    <button class="mrow text-red-600" data-logout><i class="fa-solid fa-right-from-bracket text-red-600"></i>Logout</button>
+  </div></div>
+</section>
+
+<!-- SUPPORT & SETTINGS -->
+<section id="s-support" class="screen pb-24 max-w-md mx-auto">
+  <header class="hero px-4 pt-6 pb-6 rounded-b-[24px]"><button data-back class="w-8 h-8 rounded-lg bg-white/15 grid place-items-center mb-2"><i class="fa-solid fa-arrow-left text-sm"></i></button><h1 class="text-xl font-black">Support &amp; Settings</h1></header>
+  <div class="px-4 -mt-3 space-y-3">
+    <div class="card p-4"><p class="font-extrabold text-sm">Need Help?</p><p class="text-xs text-slate-500 mb-3" id="supHelp">We are here to help you</p><div id="supLinks" class="space-y-2.5 text-sm"></div></div>
+    <div class="card px-4 py-1">
+      <button class="mrow" data-page="terms"><i class="fa-solid fa-file-lines"></i>Terms &amp; Conditions</button>
+      <button class="mrow" data-page="privacy"><i class="fa-solid fa-shield-halved"></i>Privacy Policy</button>
+      <button class="mrow" data-page="about"><i class="fa-solid fa-circle-info"></i>About Us</button>
+    </div>
+  </div>
+</section>
+
+<!-- TEXT PAGE -->
+<section id="s-text" class="screen pb-24 max-w-md mx-auto">
+  <header class="hero px-4 pt-6 pb-6 rounded-b-[24px]"><button data-back class="w-8 h-8 rounded-lg bg-white/15 grid place-items-center mb-2"><i class="fa-solid fa-arrow-left text-sm"></i></button><h1 id="textTitle" class="text-xl font-black">--</h1></header>
+  <div class="px-4 -mt-3"><div id="textBody" class="card p-4 text-sm text-slate-700 space-y-2"></div></div>
+</section>
+
+<!-- BOTTOM NAV (same five tabs as the design) -->
+<nav id="nav" class="fixed bottom-0 inset-x-0 z-40 bg-white border-t border-slate-100 hidden" style="padding-bottom:env(safe-area-inset-bottom)">
+  <div class="max-w-md mx-auto grid grid-cols-5">
+    <button data-go="home" class="nav-btn py-2 flex flex-col items-center gap-0.5"><i class="fa-solid fa-house"></i>Home</button>
+    <button data-go="offers" class="nav-btn py-2 flex flex-col items-center gap-0.5"><i class="fa-solid fa-tags"></i>Offers</button>
+    <button data-go="wallet" class="nav-btn py-2 flex flex-col items-center gap-0.5"><i class="fa-solid fa-wallet"></i>Wallet</button>
+    <button data-go="redeem" class="nav-btn py-2 flex flex-col items-center gap-0.5"><i class="fa-solid fa-money-bill-transfer"></i>Redeem</button>
+    <button data-go="profile" class="nav-btn py-2 flex flex-col items-center gap-0.5"><i class="fa-regular fa-user"></i>Profile</button>
+  </div>
+</nav>
+
+<!-- SIDE MENU -->
+<div id="sideMenu" class="fixed inset-0 z-[60] hidden"><div class="absolute inset-0 bg-black/40" data-close></div>
+  <div class="absolute left-0 top-0 bottom-0 w-64 bg-white p-5 shadow-2xl">
+    <p class="font-black text-base mb-3">Menu</p>
+    <button class="mrow" data-go="leader"><i class="fa-solid fa-trophy"></i>Leaderboard</button>
+    <button class="mrow" data-go="history"><i class="fa-solid fa-clock-rotate-left"></i>History</button>
+    <button class="mrow" data-go="support"><i class="fa-solid fa-headset"></i>Support</button>
+    <button class="mrow text-red-600" data-logout><i class="fa-solid fa-right-from-bracket text-red-600"></i>Logout</button>
+  </div></div>
+
+<!-- NOTIFICATIONS -->
+<div id="notifPanel" class="fixed inset-0 z-[60] hidden"><div class="absolute inset-0 bg-black/40" data-close></div>
+  <div class="absolute bottom-0 inset-x-0 max-h-[70vh] overflow-y-auto rounded-t-3xl bg-white p-4 max-w-md mx-auto">
+    <div class="flex items-center justify-between mb-3"><p class="font-extrabold">Notifications</p><button data-close class="px-3 py-1 rounded-lg bg-slate-100 text-sm">Close</button></div>
+    <div id="notifList" class="space-y-2"></div></div></div>
+
+<!-- AD LOADING (shows while the ad loads / plays) -->
+<div id="adOverlay" class="fixed inset-0 z-[70] hidden bg-black/85 text-white items-center justify-center flex-col">
+  <i class="fa-solid fa-circle-notch spin text-4xl text-violet-300"></i>
+  <p id="adMsg" class="mt-4 text-base font-bold">Ad load ho raha hai…</p>
+  <p class="mt-1 text-xs text-white/60">Ad poora dekhne par hi coins milenge</p>
+</div>
+<div id="toast" class="fixed top-4 left-1/2 -translate-x-1/2 z-[80] px-4 py-2.5 rounded-xl bg-slate-900 text-white text-sm font-semibold shadow-xl opacity-0 pointer-events-none max-w-[90vw] text-center transition-opacity"></div>
+
+<script type="module">
+window.__modOK = true;
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithPopup, signInWithRedirect, GoogleAuthProvider, signOut, onAuthStateChanged, deleteUser } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getDatabase, ref, get, set, update, push, remove, onValue, runTransaction } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBq4-kzZdDFpNcCE1teZG-eUDlkkmOUhvY",
+  authDomain: "nexora-earn-2-0.firebaseapp.com",
+  databaseURL: "https://nexora-earn-2-0-default-rtdb.firebaseio.com",
+  projectId: "nexora-earn-2-0",
+  storageBucket: "nexora-earn-2-0.firebasestorage.app",
+  messagingSenderId: "414527713652",
+  appId: "1:414527713652:web:c2ba78c7f68ab043517c21"
+};
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app), db = getDatabase(app);
+const R = p => ref(db, p);
+const PHONE_DOMAIN = "coinblast.app";
+const $ = id => document.getElementById(id);
+const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
+const toast = msg => { const t = $("toast"); t.textContent = msg; t.style.opacity = 1; clearTimeout(toast._t); toast._t = setTimeout(() => t.style.opacity = 0, 2600); };
+const istDay = (off = 0) => new Date(Date.now() + 5.5 * 3600e3 - off * 864e5).toISOString().slice(0, 10);
+const istMonth = () => istDay().slice(0, 7);
+const istWeek = () => { const d = new Date(Date.now() + 5.5 * 3600e3); const t = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate())); const day = t.getUTCDay() || 7; t.setUTCDate(t.getUTCDate() + 4 - day); const y0 = new Date(Date.UTC(t.getUTCFullYear(), 0, 1)); return t.getUTCFullYear() + "-W" + Math.ceil(((t - y0) / 864e5 + 1) / 7); };
+const fmtErr = e => {
+  const c = e.code || "";
+  if (c.includes("invalid-credential") || c.includes("wrong-password") || c.includes("user-not-found")) return "Mobile ya password galat hai";
+  if (c.includes("email-already-in-use")) return "Ye mobile pehle se login ban chuka hai. Login karein.";
+  if (c.includes("weak-password")) return "Password kam se kam 6 character ka ho";
+  if (c.includes("unauthorized-domain")) return "Ye website Firebase mein allowed nahi hai. Authorized domains mein domain add karein.";
+  if (c.includes("popup-closed")) return "Google login beech mein band ho gaya";
+  if (c.includes("network")) return "Internet check karein";
+  return e.message || "Kuch gadbad hui, dobara try karein";
+};
+const DEF = { coinsPerRupee: 120, minRedeemCoins: 1200, maxRedeemCoins: 24000, referralReferrer: 500, referralReferee: 200, adDailyLimit: 20,
+  adReward: { sec: 15, coins: 7 }, banners: { big: "c6270abacc2ed228deca10f82f7babd4", strip: "c18a36997f2f204e63b53f019fb4f19c", native: "198d30c9fbecee26360432020aba1bb2" },
+  checkin: [10, 15, 20, 40, 50],
+  puzzle: [{ name: "Easy", pairs: 4, coins: 8 }, { name: "Medium", pairs: 6, coins: 8 }, { name: "Hard", pairs: 8, coins: 8 }, { name: "Expert", pairs: 10, coins: 8 }],
+  ad: { zone: "11569445", claimAd: true, watchAd: true, timeout: 20, inApp: { frequency: 1, capping: 0.034, interval: 120, timeout: 5, everyPage: false } },
+  support: { help: "We are here to help you", email: "", whatsapp: "", telegram: "", instagram: "", youtube: "" },
+  texts: { terms: "Coinblast 2.0 ek rewards app hai. Coins sirf valid tasks, ads, puzzles aur games ke complete hone par milte hain.", privacy: "Hum aapka naam, mobile number aur coins ka record sirf app chalane ke liye rakhte hain.", about: "Coinblast 2.0 mein aap puzzles solve karke, ads dekh kar aur games khel kar coins kama sakte ho." } };
+let SET = JSON.parse(JSON.stringify(DEF));
+let ME = null, UID = null, OFFERS = [], GAMES = [], DONE = {}, REFS = {}, LB = {}, TXS = {}, WDS = {}, unsubUser = null, REGISTERING = false, bonusBusy = false, PLAY = null, TIMERS = [], RED = null, HF = "all", LF = "week";
+
+// ---------- splash ----------
+let splashP = 0;
+const splashT = setInterval(() => { splashP = Math.min(100, splashP + (splashP < 80 ? 2 : 1)); $("pct").textContent = splashP + "%"; $("pbar").style.width = splashP + "%"; if (splashP >= 100) clearInterval(splashT); }, 25);
+for (let i = 0; i < 10; i++) { const c = document.createElement("span"); c.className = "coin"; c.style.left = Math.random() * 100 + "%"; c.style.animationDelay = (-Math.random() * 6) + "s"; $("coins").appendChild(c); }
+const splashMin = new Promise(r => setTimeout(r, 2200));
+let booted = false;
+function bootDone() { if (booted) return; booted = true; clearInterval(splashT); const s = $("splash"); if (s) { s.style.transition = "opacity .4s"; s.style.opacity = 0; setTimeout(() => s.remove(), 450); } }
+setTimeout(() => { if (booted) return; if (!auth.currentUser) { show("login"); toast("Firebase se connect nahi ho paa raha. Internet check karein."); } bootDone(); }, 4000);
+// logo everywhere (the splash one is embedded)
+document.querySelectorAll("img[src='https://i.ibb.co/TDwxSYHN/723092251a0eba4759463e33a42468df6317f369de976a8200a44b16c74205d8.png']").forEach(i => i.src = "https://i.ibb.co/TDwxSYHN/723092251a0eba4759463e33a42468df6317f369de976a8200a44b16c74205d8.png");
+(function(){ const l = document.createElement("link"); l.rel = "icon"; l.href = document.querySelector("#splash img").src; document.head.appendChild(l); })();
+if (window.Telegram && Telegram.WebApp) { try { Telegram.WebApp.ready(); Telegram.WebApp.expand(); } catch (_) {} }
+
+// ---------- screens + navigation ----------
+const TAB_SCREENS = ["home", "offers", "wallet", "redeem", "profile"];
+function show(name) {
+  document.querySelectorAll(".screen").forEach(s => s.classList.toggle("on", s.id === "s-" + name));
+  if (name !== "play") { const sb = $("slotPlayBanner"); if (sb) { sb.classList.add("hidden"); sb.innerHTML = ""; sb.dataset.key = ""; } }
+  if (name === "home") mountBanner("slotStrip", SET.banners.strip, 320, 50);
+  if (name === "puzzle") mountNative("slotNativePuzzle");
+  $("nav").classList.toggle("hidden", !TAB_SCREENS.includes(name) && !["history", "leader", "support", "referral", "puzzle", "games", "ads", "checkin", "text"].includes(name));
+  document.querySelectorAll(".nav-btn").forEach(b => b.classList.toggle("on", b.dataset.go === name));
+  window.scrollTo(0, 0);
+}
+function clearTimers() { TIMERS.forEach(t => { clearTimeout(t); clearInterval(t); }); TIMERS = []; }
+function every(fn, ms) { const t = setInterval(fn, ms); TIMERS.push(t); return t; }
+function go(p) {
+  if (p === "home") { renderHome(); return show("home"); }
+  if (p === "offers") { renderOffers(); return show("offers"); }
+  if (p === "wallet") { renderWallet(); return show("wallet"); }
+  if (p === "redeem") { renderRedeem(); return show("redeem"); }
+  if (p === "profile") { renderProfile(); return show("profile"); }
+  if (p === "puzzle") { renderPuzzles(); return show("puzzle"); }
+  if (p === "games") { renderGames(); return show("games"); }
+  if (p === "ads") { renderAds(); return show("ads"); }
+  if (p === "checkin") { renderCheckin(); return show("checkin"); }
+  if (p === "referral") { renderReferral(); return show("referral"); }
+  if (p === "history") { renderHistory(); return show("history"); }
+  if (p === "leader") { renderLeader(); return show("leader"); }
+  if (p === "support") { renderSupport(); return show("support"); }
+}
+document.addEventListener("click", e => {
+  const g = e.target.closest("[data-go]"); if (g) { $("sideMenu").classList.add("hidden"); go(g.dataset.go); return; }
+  const b = e.target.closest("[data-back]"); if (b) { clearTimers(); go("home"); return; }
+  const p = e.target.closest("[data-page]"); if (p) { textPage(p.dataset.page); return; }
+  if (e.target.closest("[data-logout]")) { signOut(auth); return; }
+  if (e.target.closest("[data-close]") && e.target.closest("[data-close]").tagName !== "BUTTON") { $("sideMenu").classList.add("hidden"); $("notifPanel").classList.add("hidden"); return; }
+  if (e.target.closest("[data-close]")) { $("sideMenu").classList.add("hidden"); $("notifPanel").classList.add("hidden"); }
+});
+$("menuBtn").onclick = () => $("sideMenu").classList.remove("hidden");
+$("bellBtn").onclick = () => { $("notifPanel").classList.remove("hidden"); localStorage.setItem("cb_seen", Date.now()); $("bellDot").classList.add("hidden"); };
+function textPage(k) { $("textTitle").textContent = { terms: "Terms & Conditions", privacy: "Privacy Policy", about: "About Us" }[k]; $("textBody").innerHTML = `<p>${esc(SET.texts[k] || "")}</p>`; show("text"); }
+
+// ---------- Adsterra banners + native (mounted per screen, once per key) ----------
+function mountBanner(slotId, key, w, h) {
+  const slot = $(slotId); if (!slot || !key) return;
+  if (slot.dataset.key === key) return;
+  slot.dataset.key = key; slot.innerHTML = "";
+  const o = document.createElement("script");
+  o.textContent = "atOptions = { 'key': '" + key + "', 'format': 'iframe', 'height': " + h + ", 'width': " + w + ", 'params': {} };";
+  slot.appendChild(o);
+  const s = document.createElement("script"); s.src = "https://bicea.org/22/" + key; slot.appendChild(s);
+}
+function mountNative(slotId) {
+  const slot = $(slotId); const id = SET.banners.native; if (!slot || !id || slot.dataset.key === id) return;
+  slot.dataset.key = id; slot.innerHTML = "";
+  const c = document.createElement("div"); c.id = "container-" + id; slot.appendChild(c);
+  const s = document.createElement("script"); s.async = true; s.setAttribute("data-cfasync", "false"); s.src = "https://bicea.org/21/" + id; slot.appendChild(s);
+}
+
+// ---------- ads (Monetag) ----------
+const AD_FN = () => window["show_" + (SET.ad && SET.ad.zone || DEF.ad.zone)];
+function waitSdk(ms) { return new Promise((res, rej) => { const t0 = Date.now(); const tick = () => { if (typeof AD_FN() === "function") return res(AD_FN()); if (Date.now() - t0 > ms) return rej(new Error("ad sdk")); setTimeout(tick, 300); }; tick(); }); }
+function overlay(on, msg) { const o = $("adOverlay"); o.classList.toggle("hidden", !on); o.classList.toggle("flex", on); if (msg) $("adMsg").textContent = msg; }
+// Runs a Monetag ad. Resolves only when the ad was actually watched. Anything else = no reward.
+async function playAd(kind) {
+  overlay(true, "Ad load ho raha hai…");
+  try {
+    const fn = await waitSdk(8000);
+    const timeout = new Promise((_, rej) => setTimeout(() => rej(new Error("ad timeout")), (SET.ad.timeout || 20) * 1000));
+    await Promise.race([kind === "pop" ? fn("pop") : fn(), timeout]);
+    return true;
+  } catch (e) {
+    toast("Ad nahi aaya. Coins nahi mile, dobara try karo.");
+    return false;
+  } finally { overlay(false); }
+}
+// In-app interstitial (automatic, controlled by Monetag). Errors are ignored.
+function startInApp() { waitSdk(8000).then(fn => { try { fn({ type: "inApp", inAppSettings: SET.ad.inApp || DEF.ad.inApp }); } catch (_) {} }).catch(() => {}); }
+
+// ---------- login / register ----------
+const refFromUrl = new URLSearchParams(location.search).get("ref");
+if (refFromUrl) $("rRef").value = refFromUrl.toUpperCase().slice(0, 12);
+$("toReg").onclick = () => { $("regTitle").textContent = "Create Account"; $("rPassBox").style.display = "block"; show("reg"); };
+$("toLogin").onclick = () => show("login");
+$("eyeBtn").onclick = () => { const p = $("lPass"); p.type = p.type === "password" ? "text" : "password"; };
+$("loginForm").onsubmit = async e => {
+  e.preventDefault();
+  const phone = $("lPhone").value.trim();
+  if (!/^[6-9]\d{9}$/.test(phone)) return toast("Valid 10-digit mobile number daalo");
+  $("lBtn").disabled = true; $("lBtn").textContent = "Login ho raha hai…";
+  try { await signInWithEmailAndPassword(auth, phone + "@" + PHONE_DOMAIN, $("lPass").value); }
+  catch (err) { toast(fmtErr(err)); }
+  finally { $("lBtn").disabled = false; $("lBtn").textContent = "Login"; }
+};
+$("gBtn").onclick = async () => {
+  const prov = new GoogleAuthProvider();
+  try { await signInWithPopup(auth, prov); }
+  catch (err) { if (err.code === "auth/popup-blocked" || err.code === "auth/operation-not-supported-in-this-environment") { try { await signInWithRedirect(auth, prov); } catch (e2) { toast(fmtErr(e2)); } } else toast(fmtErr(err)); }
+};
+$("regForm").onsubmit = async e => {
+  e.preventDefault();
+  const name = $("rName").value.trim(), phone = $("rPhone").value.trim(), code = $("rRef").value.trim().toUpperCase();
+  if (name.length < 2) return toast("Naam daalo");
+  if (!/^[6-9]\d{9}$/.test(phone)) return toast("Valid 10-digit mobile number daalo");
+  let created = false; REGISTERING = true; $("rBtn").disabled = true; $("rBtn").textContent = "Ruko…";
+  try {
+    if (!auth.currentUser) {
+      const p1 = $("rPass").value;
+      if (p1.length < 6) throw new Error("Password kam se kam 6 character ka ho");
+      if (p1 !== $("rPass2").value) throw new Error("Password match nahi hua");
+      await createUserWithEmailAndPassword(auth, phone + "@" + PHONE_DOMAIN, p1); created = true;
+    }
+    const uid = auth.currentUser.uid;
+    const ph = await get(R("phones/" + phone));
+    if (ph.exists() && ph.val() !== uid) throw new Error("Ye mobile pehle se register hai");
+    let referrer = null;
+    if (code) {
+      const rc = await get(R("referralCodes/" + code));
+      if (!rc.exists()) throw new Error("Referral code galat hai");
+      if (rc.val() === uid) throw new Error("Apna referral code use nahi kar sakte");
+      referrer = rc.val();
+    }
+    let myCode = makeCode();
+    for (let i = 0; i < 5; i++) { const t = await get(R("referralCodes/" + myCode)); if (!t.exists()) break; myCode = makeCode(); }
+    await set(R("referralCodes/" + myCode), uid);
+    await set(R("phones/" + phone), uid);
+    const bonus = referrer ? SET.referralReferee : 0;
+    await set(R("users/" + uid), { name, phone, balance: bonus, totalEarned: bonus, referCode: myCode, referredBy: referrer || null, createdAt: Date.now(), blocked: false });
+    if (bonus) await push(R("transactions/" + uid), { type: "credit", coins: bonus, reason: "Referral signup bonus", ts: Date.now() });
+    if (referrer) { await push(R("bonusQueue/" + referrer), { amount: SET.referralReferrer, reason: "Referral bonus", ts: Date.now() }); await set(R("referrals/" + referrer + "/" + uid), { name, ts: Date.now() }); }
+    REGISTERING = false; await enterApp();
+  } catch (err) {
+    if (created && auth.currentUser) await deleteUser(auth.currentUser).catch(() => {});
+    toast(err.message || fmtErr(err));
+  } finally { REGISTERING = false; $("rBtn").disabled = false; $("rBtn").textContent = "Register"; }
+};
+function makeCode() { const c = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; let s = ""; for (let i = 0; i < 8; i++) s += c[Math.floor(Math.random() * c.length)]; return s; }
+function showRegister() {
+  const u = auth.currentUser; const google = u && u.providerData[0] && u.providerData[0].providerId === "google.com";
+  $("regTitle").textContent = google ? "Mobile number dalo" : "Create Account";
+  $("rPassBox").style.display = google ? "none" : "block";
+  if (u && u.displayName && !$("rName").value) $("rName").value = u.displayName;
+  show("reg");
+}
+async function enterApp() {
+  UID = auth.currentUser.uid;
+  if (unsubUser) unsubUser();
+  unsubUser = onValue(R("users/" + UID), snap => {
+    if (!snap.exists()) { if (!REGISTERING) showRegister(); return; }
+    ME = snap.val();
+    if (ME.blocked) return show("blocked");
+    const on = (document.querySelector(".screen.on") || {}).id;
+    if (!on || on === "s-login" || on === "s-reg" || on === "s-blocked") { renderHome(); show("home"); startInApp(); }
+    else refreshVisible();
+    processBonus();
+  });
+  attachLists(); startNotifs();
+}
+function refreshVisible() { const on = (document.querySelector(".screen.on") || {}).id; if (on === "s-home") renderHome(); if (on === "s-wallet") renderWallet(); if (on === "s-redeem") renderRedeem(); if (on === "s-profile") renderProfile(); if (on === "s-puzzle") renderPuzzles(); if (on === "s-games") renderGames(); if (on === "s-ads") renderAds(); if (on === "s-checkin") renderCheckin(); if (on === "s-referral") renderReferral(); if (on === "s-support") renderSupport(); }
+async function route() { if (REGISTERING) return; if (!auth.currentUser) { show("login"); return; } await enterApp(); }
+onAuthStateChanged(auth, async () => {
+  try { await route(); } catch (e) { show("login"); toast(e.message || "Kuch gadbad hui"); }
+  await splashMin; bootDone();
+});
+
+// ---------- shared data ----------
+onValue(R("settings/app"), snap => {
+  const v = snap.exists() ? snap.val() : {};
+  SET = { ...DEF, ...v, ad: { ...DEF.ad, ...(v.ad || {}) }, banners: { ...DEF.banners, ...(v.banners || {}) }, adReward: v.adReward || DEF.adReward, support: { ...DEF.support, ...(v.support || {}) }, texts: { ...DEF.texts, ...(v.texts || {}) }, checkin: v.checkin || DEF.checkin, puzzle: v.puzzle || DEF.puzzle };
+  document.querySelectorAll(".minr").forEach(e => e.textContent = Math.round(SET.minRedeemCoins / SET.coinsPerRupee));
+  refreshVisible();
+});
+onValue(R("tasks"), snap => { OFFERS = snap.exists() ? Object.entries(snap.val()).map(([id, t]) => ({ id, ...t })).filter(t => t.enabled !== false).sort((a, b) => (a.order || 0) - (b.order || 0)) : []; renderHome(); renderOffers(); });
+onValue(R("games"), snap => { GAMES = snap.exists() ? Object.entries(snap.val()).map(([id, g]) => ({ id, ...g })).filter(g => g.enabled !== false).sort((a, b) => (a.order || 0) - (b.order || 0)) : []; refreshVisible(); });
+onValue(R("notifications"), snap => {
+  const items = snap.exists() ? Object.values(snap.val()).sort((a, b) => b.ts - a.ts).slice(0, 20) : [];
+  const seen = Number(localStorage.getItem("cb_seen") || 0);
+  $("bellDot").classList.toggle("hidden", !items.some(x => x.ts > seen));
+  $("notifList").innerHTML = items.length ? items.map(x => `<div class="rounded-xl bg-violet-50 p-3"><p class="font-bold text-sm">${esc(x.title)}</p><p class="text-xs text-slate-600 mt-1">${esc(x.body)}</p></div>`).join("") : '<p class="text-slate-500 text-sm">Abhi koi notification nahi.</p>';
+});
+onValue(R("lb"), snap => { LB = snap.exists() ? snap.val() : {}; if ((document.querySelector(".screen.on") || {}).id === "s-leader") renderLeader(); });
+function attachLists() {
+  onValue(R("tasksDone/" + UID), s => { DONE = s.exists() ? s.val() : {}; renderOffers(); renderHome(); });
+  onValue(R("referrals/" + UID), s => { REFS = s.exists() ? s.val() : {}; renderReferral(); });
+  onValue(R("transactions/" + UID), s => { TXS = s.exists() ? s.val() : {}; renderHistory(); renderWallet(); });
+  onValue(R("withdrawals/" + UID), s => { WDS = s.exists() ? s.val() : {}; renderWallet(); renderRedeem(); });
+}
+function startNotifs() {}
+async function processBonus() {
+  if (bonusBusy || !UID) return; bonusBusy = true;
+  try {
+    const snap = await get(R("bonusQueue/" + UID)); if (!snap.exists()) return;
+    for (const [id, b] of Object.entries(snap.val())) {
+      const amt = Math.floor(Number(b.amount) || 0); if (amt <= 0) continue;
+      await credit(amt, b.reason || "Referral bonus"); await remove(R("bonusQueue/" + UID + "/" + id)); toast("Referral se +" + amt + " coins mile!");
+    }
+  } catch (_) {} finally { bonusBusy = false; }
+}
+async function credit(amount, reason) {
+  await runTransaction(R(`users/${UID}/balance`), v => (v || 0) + amount);
+  if (amount > 0) await runTransaction(R(`users/${UID}/totalEarned`), v => (v || 0) + amount);
+  await push(R(`transactions/${UID}`), { type: amount >= 0 ? "credit" : "debit", coins: Math.abs(amount), reason, ts: Date.now() });
+  if (amount > 0) {
+    const w = istWeek(), m = istMonth(), cur = LB[UID] || {};
+    const week = cur.week && cur.week.k === w ? cur.week.c : 0, month = cur.month && cur.month.k === m ? cur.month.c : 0;
+    await set(R("lb/" + UID), { name: ME ? ME.name : "User", total: (ME && ME.totalEarned || 0) + amount, week: { k: w, c: week + amount }, month: { k: m, c: month + amount } });
+  }
+}
+const dayOf = k => (ME && ME.daily && ME.daily.date === istDay() ? (ME.daily[k] || 0) : 0);
+const doneToday = (key, id) => !!(ME && ME.daily && ME.daily.date === istDay() && ME.daily[key] && ME.daily[key][id]);
+async function markDaily(key, id, value) {
+  const d = ME && ME.daily && ME.daily.date === istDay() ? ME.daily : { date: istDay() };
+  const payload = { date: istDay(), ads: d.ads || 0, puzzle: d.puzzle || {}, game: d.game || {}, offer: d.offer || {} };
+  if (key === "ads") payload.ads = value; else { payload[key] = { ...(payload[key] || {}), [id]: value }; }
+  await update(R(`users/${UID}/daily`), payload);
+}
+
+// ---------- home ----------
+function renderHome() {
+  if (!ME) return;
+  $("hBal").textContent = ME.balance || 0; $("hInr").textContent = "= ₹" + ((ME.balance || 0) / SET.coinsPerRupee).toFixed(2);
+  $("offerList").innerHTML = OFFERS.slice(0, 3).map(offerCard).join("") || '<p class="text-xs text-slate-500">Abhi koi offer nahi.</p>';
+}
+function offerCard(t) {
+  const done = !!DONE[t.id];
+  return `<div class="card p-3 flex items-center gap-3"><span class="ico ${t.type === "telegram" ? "bg-sky-100 text-sky-600" : "bg-violet-100 text-violet-600"}"><i class="fa-brands ${t.type === "telegram" ? "fa-telegram" : "fa-link"}"></i></span>
+    <div class="flex-1 min-w-0"><b class="block truncate text-sm">${esc(t.title)}</b><small class="text-slate-500 truncate block text-xs">${esc(t.subtitle || t.description || "")}</small><small class="font-bold text-amber-600 text-xs">+${t.reward || 0} coins</small></div>
+    <button data-offer="${esc(t.id)}" class="${done ? "bg-slate-200 text-slate-500" : "bg-violet-600 text-white"} px-3 py-1.5 rounded-lg text-xs font-bold" ${done ? "disabled" : ""}>${done ? "Done" : "Join"}</button></div>`;
+}
+function renderOffers() { $("offerAll").innerHTML = OFFERS.map(offerCard).join("") || '<p class="text-sm text-slate-500">Abhi koi offer nahi.</p>'; }
+document.addEventListener("click", e => { const b = e.target.closest("[data-offer]"); if (b) { const t = OFFERS.find(x => x.id === b.dataset.offer); if (t) openOffer(t); } });
+function openOffer(t) {
+  if (DONE[t.id]) return toast("Ye offer complete ho chuka hai");
+  if (t.link) window.open(t.link, "_blank");
+  startTimedPlay(t.title, `<p class="text-center text-xs text-slate-600">${esc(t.description || "Join karo aur timer poora hone tak raho.")}</p>`, t.seconds || 20, async () => {
+    await credit(t.reward || 0, "Offer: " + t.title); await set(R(`tasksDone/${UID}/${t.id}`), true); toast("+" + (t.reward || 0) + " coins!");
+  });
+}
+
+// ---------- claim gate: coins only after the ad ----------
+// returns true only when the ad was watched (or claim-ads are switched off in admin)
+async function gateAd() { if (SET.ad.claimAd === false) return true; return await playAd("reward"); }
+
+// ---------- generic timed play (offers, games) ----------
+function startTimedPlay(title, body, seconds, onDone) {
+  clearTimers();
+  PLAY = { done: false };
+  $("playTitle").textContent = title; $("playMsg").textContent = ""; $("playResult").classList.add("hidden");
+  $("playHud").innerHTML = `<span>${esc(title)}</span><span id="pHud">0 / ${seconds}s</span>`;
+  $("playBoard").innerHTML = body || "";
+  show("play");
+  let spent = 0;
+  const btn = document.createElement("button"); btn.className = "btn mt-3"; btn.disabled = true; btn.textContent = `Claim in ${seconds}s`;
+  const res = $("playResult"); res.innerHTML = ""; res.appendChild(btn); res.classList.remove("hidden");
+  every(() => {
+    if (PLAY.done) return;
+    if (document.visibilityState === "visible" && $("s-play").classList.contains("on")) spent++;
+    $("pHud").textContent = Math.min(spent, seconds) + " / " + seconds + "s";
+    if (spent >= seconds) { btn.disabled = false; btn.textContent = "Claim coins"; }
+    else btn.textContent = `Claim in ${seconds - spent}s`;
+  }, 1000);
+  btn.onclick = async () => {
+    btn.disabled = true;
+    const ok = await gateAd().catch(() => false);
+    // the amount is added inside onDone so it runs only after the ad
+    if (!ok) { btn.disabled = false; return; }
+    PLAY.done = true; clearTimers(); await onDone(); go("home");
+  };
+}
+
+// ---------- puzzle ----------
+function renderPuzzles() {
+  $("puzList").innerHTML = SET.puzzle.map((p, i) => {
+    const done = doneToday("puzzle", "l" + i);
+    return `<div class="card p-3 flex items-center gap-3"><span class="ico bg-amber-100 text-amber-600"><i class="fa-solid fa-puzzle-piece"></i></span>
+      <div class="flex-1"><b class="text-sm">${esc(p.name)} Puzzle</b><p class="text-xs text-slate-500">${p.pairs} jodi · Earn ${p.coins} coins</p></div>
+      <button data-puz="${i}" class="${done ? "bg-slate-200 text-slate-500" : "ghost"} px-3 py-1.5 rounded-lg text-xs" ${done ? "disabled" : ""}>${done ? "Done" : "Play"}</button></div>`;
+  }).join("");
+}
+document.addEventListener("click", e => { const b = e.target.closest("[data-puz]"); if (b) playPuzzle(+b.dataset.puz); });
+function playPuzzle(i) {
+  const p = SET.puzzle[i];
+  if (doneToday("puzzle", "l" + i)) return toast("Ye level aaj complete ho chuka hai");
+  clearTimers(); PLAY = { done: false };
+  $("playTitle").textContent = `${p.name} Puzzle`; $("playMsg").textContent = ""; $("playResult").classList.add("hidden"); $("playResult").innerHTML = "";
+  $("playHud").innerHTML = `<span>Moves: 0</span><span>Jodi: 0/${p.pairs}</span>`;
+  $("playBoard").innerHTML = ""; show("play");
+  memory(p.pairs, async () => {
+    if (doneToday("puzzle", "l" + i)) return;
+    await markDaily("puzzle", "l" + i, true);
+    await credit(p.coins, "Puzzle: " + p.name); toast("+" + p.coins + " coins!");
+  });
+}
+function memory(pairs, onWin) {
+  const board = $("playBoard");
+  const E = ["🍎", "🍌", "🍇", "🚗", "⭐", "🎈", "🌟", "🍒", "🍉", "🍓"].slice(0, pairs);
+  const cards = [...E, ...E].sort(() => Math.random() - 0.5);
+  const grid = document.createElement("div"); grid.className = "grid grid-cols-4 gap-1.5"; board.appendChild(grid);
+  let open = [], found = 0, lock = false, moves = 0;
+  const back = "cell bg-gradient-to-br from-violet-500 to-indigo-600 text-white";
+  cards.forEach(e => {
+    const c = document.createElement("button"); c.className = back; c.textContent = "?"; c.dataset.e = e;
+    c.onclick = () => {
+      if (lock || c.dataset.ok || open.includes(c)) return;
+      c.textContent = e; c.className = "cell bg-white border text-xl"; open.push(c);
+      if (open.length === 2) {
+        lock = true; moves++; $("playHud").innerHTML = `<span>Moves: ${moves}</span><span>Jodi: ${found}/${pairs}</span>`;
+        if (open[0].dataset.e === open[1].dataset.e) {
+          open.forEach(x => x.dataset.ok = "1"); found++; open = []; lock = false;
+          $("playHud").innerHTML = `<span>Moves: ${moves}</span><span>Jodi: ${found}/${pairs}</span>`;
+          if (found === pairs) finishWin(onWin);
+        } else setTimeout(() => { open.forEach(x => { x.textContent = "?"; x.className = back; }); open = []; lock = false; }, 650);
+      }
+    };
+    grid.appendChild(c);
+  });
+}
+function finishWin(onWin) {
+  const res = $("playResult"); res.classList.remove("hidden");
+  $("playMsg").textContent = "Sabhi jodi mil gayi!";
+  res.innerHTML = `<button id="claimW" class="btn tap">Claim coins</button>`;
+  $("claimW").onclick = async () => {
+    $("claimW").disabled = true;
+    const ok = await gateAd().catch(() => false);
+    if (!ok) { $("claimW").disabled = false; return; }
+    await onWin(); go("home");
+  };
+}
+
+// ---------- games (admin-managed, iframe, minutes then claim) ----------
+function renderGames() {
+  $("gameList").innerHTML = GAMES.length ? GAMES.map(g => {
+    const done = doneToday("game", g.id);
+    return `<div class="card p-3 flex items-center gap-3">
+      <img src="${esc(g.logo || "")}" alt="" class="w-12 h-12 rounded-xl object-cover bg-violet-100 shrink-0" onerror="this.style.visibility='hidden'">
+      <div class="flex-1 min-w-0"><b class="block truncate text-sm">${esc(g.name)}</b><p class="text-xs text-slate-500">Play ${g.minutes || 5} min · Earn ${g.coins || 10} coins</p></div>
+      <button data-game="${esc(g.id)}" class="${done ? "bg-slate-200 text-slate-500" : "ghost"} px-3 py-1.5 rounded-lg text-xs" ${done ? "disabled" : ""}>${done ? "Done" : "Play"}</button></div>`;
+  }).join("") : '<p class="text-sm text-slate-500 text-center">Abhi koi game nahi.</p>';
+}
+document.addEventListener("click", e => { const b = e.target.closest("[data-game]"); if (b) playGame(b.dataset.game); });
+const fmtMMSS = s => String(Math.floor(s / 60)).padStart(2, "0") + ":" + String(s % 60).padStart(2, "0");
+function playGame(id) {
+  const g = GAMES.find(x => x.id === id); if (!g) return;
+  if (doneToday("game", id)) return toast("Aaj ka reward mil chuka hai. Kal phir khelo.");
+  clearTimers();
+  const need = Math.max(1, Math.floor((g.minutes || 5) * 60)), coins = g.coins || 10;
+  PLAY = { done: false };
+  $("playTitle").textContent = g.name;
+  $("playHud").innerHTML = `<span>${esc(g.name)}</span><span id="gHud">00:00 / ${fmtMMSS(need)}</span>`;
+  $("playBoard").innerHTML = `<iframe id="gameFrame" sandbox="allow-scripts allow-forms allow-pointer-lock" class="w-full rounded-xl bg-white" style="height:56vh;border:0"></iframe>`;
+  $("gameFrame").srcdoc = g.html || "<p style='font-family:sans-serif;padding:20px'>Game code abhi nahi daala gaya.</p>";
+  $("playMsg").textContent = `Game ${g.minutes || 5} minute khelo, phir coins claim karo.`;
+  const res = $("playResult"); res.classList.remove("hidden");
+  res.innerHTML = `<button id="claimGame" class="btn" disabled>Claim in ${fmtMMSS(need)}</button>`;
+  show("play");
+  mountBanner("slotPlayBanner", SET.banners.big, 300, 250); $("slotPlayBanner").classList.remove("hidden");
+  let spent = 0;
+  every(() => {
+    if (PLAY.done) return;
+    if (document.visibilityState === "visible" && $("s-play").classList.contains("on")) spent++;
+    const left = Math.max(0, need - spent);
+    $("gHud").textContent = fmtMMSS(Math.min(spent, need)) + " / " + fmtMMSS(need);
+    const cb = $("claimGame");
+    if (cb) { if (left > 0) cb.textContent = "Claim in " + fmtMMSS(left); else { cb.disabled = false; cb.textContent = "Claim coins"; } }
+  }, 1000);
+  $("claimGame").onclick = async () => {
+    const cb = $("claimGame"); cb.disabled = true;
+    const ok = await gateAd().catch(() => false);
+    if (!ok) { cb.disabled = false; return; }
+    PLAY.done = true; clearTimers();
+    await credit(coins, "Game: " + g.name); await markDaily("game", id, true); toast("+" + coins + " coins!"); go("home");
+  };
+}
+
+// ---------- watch ads (rewarded, one per click, daily limit) ----------
+function renderAds() {
+  const used = dayOf("ads"), r = SET.adReward || DEF.adReward;
+  $("adList").innerHTML = `<div class="card p-3 flex items-center gap-3"><span class="ico bg-amber-100 text-amber-600"><i class="fa-solid fa-bag-shopping"></i></span>
+    <div class="flex-1"><b class="text-sm">Watch Ad (${r.sec} Sec)</b><p class="text-xs text-slate-500">Earn ${r.coins} coins</p></div>
+    <button data-ad="0" class="px-3 py-1.5 rounded-lg bg-violet-600 text-white text-xs font-bold" ${used >= SET.adDailyLimit || SET.ad.watchAd === false ? "disabled" : ""}>Watch</button></div>`;
+  $("adCount").textContent = `${used} / ${SET.adDailyLimit} Ads Watched`;
+  $("adBar").style.width = Math.min(100, used / SET.adDailyLimit * 100) + "%";
+}
+document.addEventListener("click", async e => {
+  const b = e.target.closest("[data-ad]"); if (!b) return;
+  const a = SET.adReward || DEF.adReward;
+  if (dayOf("ads") >= SET.adDailyLimit) return toast("Aaj ki ad limit khatam");
+  b.disabled = true;
+  const ok = await playAd("reward");
+  if (ok) { try { await credit(a.coins, "Watch Ad (" + a.sec + "s)"); await markDaily("ads", undefined, dayOf("ads") + 1); toast("+" + a.coins + " coins!"); } catch (err) { toast(err.message); } }
+  renderAds();
+});
+
+// ---------- daily check-in (free) ----------
+function ckState() {
+  const c = (ME && ME.checkin) || {}, n = SET.checkin.length;
+  const claimed = c.last === istDay(), streak = c.last === istDay(1) ? (c.day || 0) : 0;
+  return { claimed, next: (streak % n) + 1, done: claimed ? (c.day || 0) : streak };
+}
+function renderCheckin() {
+  if (!ME) return;
+  const s = ckState();
+  $("ckDays").innerHTML = SET.checkin.map((c, i) => {
+    const d = i + 1, cls = d <= s.done ? "bg-violet-600 text-white" : (d === s.next && !s.claimed ? "ring-2 ring-amber-400 bg-amber-50" : "bg-violet-50");
+    return `<div class="rounded-lg p-1.5 text-center ${cls}"><p class="text-[10px] font-bold">Day ${d}</p><p class="text-base">${d <= s.done ? "✓" : "⭐"}</p><p class="text-[11px] font-bold">${c}</p></div>`;
+  }).join("");
+  $("ckBtn").disabled = s.claimed;
+  $("ckBtn").textContent = s.claimed ? "Aaj ka check-in ho gaya" : `Check-in Now (+${SET.checkin[s.next - 1]} coins)`;
+  $("ckMsg").textContent = s.claimed ? "Kal phir aana, agla din ka bonus milega." : `Aaj aap ${SET.checkin[s.next - 1]} coins paoge.`;
+}
+$("ckBtn").onclick = async () => {
+  const s = ckState(); if (s.claimed) return;
+  $("ckBtn").disabled = true;
+  try { const amt = SET.checkin[s.next - 1]; await update(R(`users/${UID}/checkin`), { last: istDay(), day: s.next }); await credit(amt, "Daily check-in Day " + s.next); toast("+" + amt + " coins check-in!"); }
+  catch (e) { toast(e.message); $("ckBtn").disabled = false; }
+};
+
+// ---------- referral ----------
+function renderReferral() {
+  if (!ME) return;
+  $("rCode").textContent = ME.referCode || "--";
+  $("rEarn").textContent = SET.referralReferrer + " coins / friend";
+  $("rFriend").textContent = SET.referralReferee + " coins joining";
+  const link = location.origin + location.pathname + "?ref=" + ME.referCode;
+  $("rLink").textContent = link;
+  const msg = encodeURIComponent("Coinblast 2.0 join karo aur coins kamao! Mera code: " + ME.referCode + " " + link);
+  $("shWa").href = "https://wa.me/?text=" + msg;
+  $("shTg").href = "https://t.me/share/url?url=" + encodeURIComponent(link) + "&text=" + encodeURIComponent("Coinblast 2.0 join karo! Code: " + ME.referCode);
+  $("shIg").href = SET.support.instagram || "https://www.instagram.com/";
+  const list = Object.values(REFS || {}).sort((a, b) => b.ts - a.ts);
+  $("rList").innerHTML = list.length ? list.map(r => `<div class="flex justify-between border-b border-slate-100 py-1.5"><span>${esc(r.name)}</span><span class="text-slate-500">${new Date(r.ts).toLocaleDateString("en-IN")}</span></div>`).join("") : '<p class="text-slate-500">Abhi koi referral nahi. Code share karo!</p>';
+}
+$("rCopy").onclick = () => navigator.clipboard && navigator.clipboard.writeText(ME.referCode).then(() => toast("Code copy ho gaya")).catch(() => toast(ME.referCode));
+$("shMore").onclick = () => { if (navigator.share) navigator.share({ title: "Coinblast 2.0", text: "Mera code: " + ME.referCode, url: $("rLink").textContent }).catch(() => {}); else toast("Link copy karke share karo"); };
+
+// ---------- wallet / redeem ----------
+function renderWallet() {
+  if (!ME) return;
+  $("wBal").textContent = ME.balance || 0; $("wInr").textContent = "= ₹" + ((ME.balance || 0) / SET.coinsPerRupee).toFixed(2);
+  $("wEarned").textContent = ME.totalEarned || 0;
+  const wd = Object.values(WDS || {});
+  $("wRedeemed").textContent = wd.filter(x => x.status === "approved").reduce((s, x) => s + x.coins, 0);
+  $("wPending").textContent = wd.filter(x => x.status === "pending").reduce((s, x) => s + x.coins, 0);
+  $("rateNote").textContent = SET.coinsPerRupee + " Coins = ₹1";
+}
+const RED_NAMES = { upi: "UPI", gplay: "Google Play Gift Card", amazon: "Amazon Gift Card" };
+let REDV = "upi";
+document.querySelectorAll("[data-redopt]").forEach(b => b.onclick = () => { REDV = b.dataset.redopt; renderRedeem(); });
+function renderRedeem() {
+  if (!ME) return;
+  document.querySelectorAll("[data-redopt]").forEach(b => { const on = b.dataset.redopt === REDV; b.classList.toggle("border-violet-600", on); b.classList.toggle("bg-violet-50", on); b.classList.toggle("text-violet-700", on); b.classList.toggle("border-slate-200", !on); });
+  $("redAcc").placeholder = REDV === "upi" ? "UPI ID" : "Email ya phone (gift card ke liye)";
+  $("redBal").textContent = `Balance: ${ME.balance || 0} coins · Min ${SET.minRedeemCoins} · Max ${SET.maxRedeemCoins || 24000}`;
+  const c = Math.floor(Number($("redCoins").value) || 0);
+  $("redInfo").textContent = "= ₹" + (c / SET.coinsPerRupee).toFixed(2);
+}
+$("redCoins").addEventListener("input", renderRedeem);
+$("redForm").onsubmit = async e => {
+  e.preventDefault();
+  const acc = $("redAcc").value.trim(), coins = Math.floor(Number($("redCoins").value));
+  const max = SET.maxRedeemCoins || 24000;
+  if (acc.length < 4) return toast("Account / ID daalo");
+  if (!Number.isFinite(coins) || coins < SET.minRedeemCoins) return toast("Minimum " + SET.minRedeemCoins + " coins chahiye (₹" + (SET.minRedeemCoins / SET.coinsPerRupee) + ")");
+  if (coins > max) return toast("Maximum " + max + " coins tak redeem ho sakta hai");
+  $("redBtn").disabled = true;
+  try {
+    let ok = false;
+    await runTransaction(R(`users/${UID}/balance`), v => { if ((v || 0) < coins) return; ok = true; return v - coins; });
+    if (!ok) throw new Error("Balance kam hai");
+    const wRef = push(R(`withdrawals/${UID}`));
+    try {
+      await set(wRef, { uid: UID, name: ME.name, phone: ME.phone, method: REDV, account: acc, coins, inr: Number((coins / SET.coinsPerRupee).toFixed(2)), status: "pending", createdAt: Date.now() });
+      await push(R(`transactions/${UID}`), { type: "debit", coins, reason: "Redeem: " + RED_NAMES[REDV], ts: Date.now() });
+    } catch (err) { await runTransaction(R(`users/${UID}/balance`), v => (v || 0) + coins); throw err; }
+    $("redCoins").value = ""; $("redAcc").value = "";
+    toast("Redeem request bhej di. 24 ghante mein."); go("wallet");
+  } catch (err) { toast(err.message || fmtErr(err)); }
+  finally { $("redBtn").disabled = false; }
+};
+
+// ---------- history / leaderboard / profile / support ----------
+document.querySelectorAll("[data-hf]").forEach(b => b.onclick = () => { HF = b.dataset.hf; document.querySelectorAll("[data-hf]").forEach(x => x.classList.toggle("on", x === b)); renderHistory(); });
+function renderHistory() {
+  const list = Object.values(TXS || {}).sort((a, b) => b.ts - a.ts).filter(x => HF === "all" || x.type === HF).slice(0, 100);
+  $("txList").innerHTML = list.length ? list.map(x => `<div class="flex justify-between items-center py-2 border-b border-slate-100"><span><b class="block text-sm">${esc(x.reason)}</b><small class="text-slate-500">${new Date(x.ts).toLocaleString("en-IN")}</small></span><b class="${x.type === "credit" ? "text-green-600" : "text-red-500"}">${x.type === "credit" ? "+" : "-"}${x.coins}</b></div>`).join("") : '<p class="text-slate-500 py-4 text-center">Abhi koi entry nahi.</p>';
+}
+document.querySelectorAll("[data-lf]").forEach(b => b.onclick = () => { LF = b.dataset.lf; document.querySelectorAll("[data-lf]").forEach(x => x.classList.toggle("on", x === b)); renderLeader(); });
+function renderLeader() {
+  const w = istWeek(), m = istMonth();
+  const rows = Object.entries(LB || {}).map(([uid, u]) => ({ uid, name: u.name, score: LF === "total" ? (u.total || 0) : LF === "week" ? (u.week && u.week.k === w ? u.week.c : 0) : (u.month && u.month.k === m ? u.month.c : 0) })).filter(r => r.score > 0).sort((a, b) => b.score - a.score);
+  const me = rows.findIndex(r => r.uid === UID);
+  $("lbList").innerHTML = rows.length ? rows.slice(0, 20).map((r, i) => `<div class="flex items-center justify-between py-1.5 ${i === 0 ? "bg-amber-50 rounded-lg px-2 font-extrabold" : ""} ${r.uid === UID ? "text-violet-700" : ""}"><span>${i === 0 ? '<i class="fa-solid fa-crown text-amber-500 mr-1"></i>' : ""}${i + 1}. ${esc(r.name)}</span><span>${r.score} <i class="fa-solid fa-coins text-amber-500"></i></span></div>`).join("") + (me >= 0 ? `<p class="mt-2 text-slate-500">Aapka rank: #${me + 1}</p>` : "") : '<p class="text-slate-500 py-4 text-center">Abhi koi score nahi.</p>';
+}
+function renderProfile() { if (!ME) return; $("pName").textContent = ME.name; $("pPhone").textContent = ME.phone; $("pAvatar").textContent = (ME.name[0] || "?").toUpperCase(); }
+function renderSupport() {
+  const s = SET.support || {};
+  $("supHelp").textContent = s.help || "We are here to help you";
+  const rows = [];
+  if (s.email) rows.push(`<a class="flex items-center gap-3" href="mailto:${esc(s.email)}"><i class="fa-regular fa-envelope text-violet-600 w-5"></i>Contact Us — ${esc(s.email)}</a>`);
+  if (s.whatsapp) rows.push(`<a class="flex items-center gap-3" target="_blank" href="${esc(s.whatsapp)}"><i class="fa-brands fa-whatsapp text-green-600 w-5"></i>WhatsApp</a>`);
+  if (s.telegram) rows.push(`<a class="flex items-center gap-3" target="_blank" href="${esc(s.telegram)}"><i class="fa-brands fa-telegram text-sky-600 w-5"></i>Telegram</a>`);
+  if (s.instagram) rows.push(`<a class="flex items-center gap-3" target="_blank" href="${esc(s.instagram)}"><i class="fa-brands fa-instagram text-pink-600 w-5"></i>Instagram</a>`);
+  if (s.youtube) rows.push(`<a class="flex items-center gap-3" target="_blank" href="${esc(s.youtube)}"><i class="fa-brands fa-youtube text-red-600 w-5"></i>YouTube</a>`);
+  $("supLinks").innerHTML = rows.join("") || '<p class="text-slate-500 text-xs">Support details admin se set honge.</p>';
+}
+</script>
+<script>
+// Fallback: if the Firebase part did not start, still open the login screen.
+setTimeout(function () {
+  var s = document.getElementById("splash"); if (!s) return;
+  var l = document.getElementById("s-login"); if (l) l.classList.add("on");
+  s.style.transition = "opacity .4s"; s.style.opacity = 0; setTimeout(function () { s.remove(); }, 450);
+  if (!window.__modOK) { var t = document.getElementById("toast"); t.textContent = "Firebase load nahi ho raha. Internet check karein."; t.style.opacity = 1; }
+}, 5000);
+</script>
+</body>
+</html>
