@@ -7,7 +7,6 @@
 <meta name="theme-color" content="#5b21b6">
 <link rel="icon" href="https://i.ibb.co/TDwxSYHN/723092251a0eba4759463e33a42468df6317f369de976a8200a44b16c74205d8.png">
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
-<script src='//libtl.com/sdk.js' data-zone='11569445' data-sdk='show_11569445'></script>
 <script src="https://cdn.tailwindcss.com"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 <style>
@@ -105,24 +104,25 @@
   .redopt[data-soon="1"] .rd-ico{filter:grayscale(.9);opacity:.55}
   .redopt[data-soon="1"]{opacity:1!important}
 
-  /* v6: dark redeem pages (vouchers) */
-  .rdk{background:#0f1115!important;color:#e5e7eb!important}
-  .rdk h1,.rdk h2{color:#f8fafc}
-  .rdk-pill{display:inline-flex;align-items:center;gap:8px;background:#1b1e26;border:1px solid #2a2f3b;border-radius:999px;padding:8px 14px;font-weight:900;font-size:18px;color:#fff}
-  .rdk-coin{width:22px;height:22px;flex:0 0 22px;border-radius:50%;display:inline-block;background:radial-gradient(circle at 35% 30%,#fff7c2,#facc15 50%,#b45309);box-shadow:inset 0 -2px 0 rgba(0,0,0,.2)}
-  .rdk-tile{background:#171a21;border:1px solid #232733;border-radius:22px;padding:16px;text-align:left;display:grid;gap:6px;color:#fff}
-  .rdk-tile b{font-weight:800;font-size:15px}
-  .rdk-tile small{color:#94a3b8;font-size:12px}
-  .rdk-ti{width:44px;height:44px;border-radius:14px;background:#14302d;color:#5eead4;display:grid;place-items:center;border:1px solid #1e4a44}
-  .rdk-row{width:100%;display:flex;align-items:center;gap:14px;background:#171a21;border:1px solid #232733;border-radius:22px;padding:16px;color:#fff}
-  .rdk-card-big{display:flex;align-items:center;gap:16px;background:#171a21;border:1px solid #232733;border-radius:24px;padding:18px}
-  .rdk-logo{width:64px;height:64px;flex:0 0 64px;border-radius:18px;background:#fff;display:grid;place-items:center;box-shadow:0 8px 18px -10px rgba(0,0,0,.6)}
+  /* v7: clean light redeem pages */
+  .rdk{background:#f5f3ff!important;color:#1e1b4b!important}
+  .rdk h1,.rdk h2{color:#1e1b4b!important}
+  .rdk .text-\[\#5eead4\]{color:#7c3aed!important}
+  .rdk-pill{display:inline-flex;align-items:center;gap:8px;background:#fff;border:1px solid #e9e5ff;border-radius:999px;padding:8px 14px;font-weight:900;font-size:18px;color:#1e1b4b;box-shadow:0 8px 16px -12px rgba(76,29,149,.5)}
+  .rdk-coin{width:22px;height:22px;flex:0 0 22px;border-radius:50%;display:inline-block;background:radial-gradient(circle at 35% 30%,#fff7c2,#facc15 50%,#b45309);box-shadow:inset 0 -2px 0 rgba(0,0,0,.15)}
+  .rdk-tile{background:#fff;border:1px solid #f1eeff;border-radius:22px;padding:16px;text-align:left;display:grid;gap:6px;color:#1e1b4b;box-shadow:0 14px 24px -16px rgba(76,29,149,.45)}
+  .rdk-tile b{font-weight:800;font-size:15px;color:#1e1b4b}
+  .rdk-tile small{color:#64748b;font-size:12px}
+  .rdk-ti{width:44px;height:44px;border-radius:14px;background:#ede9fe;color:#6d28d9;display:grid;place-items:center}
+  .rdk-row{width:100%;display:flex;align-items:center;gap:14px;background:#fff;border:1px solid #f1eeff;border-radius:22px;padding:16px;color:#1e1b4b;box-shadow:0 14px 24px -16px rgba(76,29,149,.45)}
+  .rdk-card-big{display:flex;align-items:center;gap:16px;background:#fff;border:1px solid #f1eeff;border-radius:24px;padding:18px;box-shadow:0 14px 24px -16px rgba(76,29,149,.45)}
+  .rdk-logo{width:64px;height:64px;flex:0 0 64px;border-radius:18px;background:#fff;border:1px solid #efeaff;display:grid;place-items:center;box-shadow:0 8px 16px -10px rgba(76,29,149,.4)}
   .rdk-logo.big{width:72px;height:72px;flex:0 0 72px}
-  .rdk-arrow{width:44px;height:44px;flex:0 0 44px;border-radius:50%;background:#14302d;color:#5eead4;display:grid;place-items:center}
-  .rdk-soon{background:#f59e0b;color:#111;font-size:10px;font-weight:900;letter-spacing:.08em;padding:5px 9px;border-radius:999px}
-  .rdk-inst{display:inline-flex;align-items:center;gap:4px;background:#14302d;color:#5eead4;font-size:11px;font-weight:700;border-radius:999px;padding:3px 9px}
-  .rdk-btn{background:#5eead4;color:#042f2e;font-weight:900;border-radius:999px;padding:12px 18px;font-size:14px;white-space:nowrap}
-  .rdk-lock{background:transparent;border:1.5px solid #3b4252;color:#cbd5e1;border-radius:14px;padding:10px 14px;font-size:14px;white-space:nowrap}
+  .rdk-arrow{width:44px;height:44px;flex:0 0 44px;border-radius:50%;background:#ede9fe;color:#6d28d9;display:grid;place-items:center}
+  .rdk-soon{background:#f59e0b;color:#fff;font-size:10px;font-weight:900;letter-spacing:.08em;padding:5px 9px;border-radius:999px}
+  .rdk-inst{display:inline-flex;align-items:center;gap:4px;background:#dcfce7;color:#15803d;font-size:11px;font-weight:700;border-radius:999px;padding:3px 9px}
+  .rdk-btn{background:linear-gradient(180deg,#9b6cf7,#6d28d9);color:#fff;font-weight:900;border-radius:999px;padding:12px 18px;font-size:14px;white-space:nowrap;box-shadow:0 5px 0 #4c1d95}
+  .rdk-lock{background:#fff;border:1.5px solid #ddd6fe;color:#6d28d9;border-radius:14px;padding:10px 14px;font-size:14px;white-space:nowrap}
 </style>
 </head>
 <body>
@@ -555,7 +555,19 @@ function mountNative(slotId) {
 
 // ---------- ads (Monetag) ----------
 const AD_FN = () => window["show_" + (SET.ad && SET.ad.zone || DEF.ad.zone)];
-function waitSdk(ms) { return new Promise((res, rej) => { const t0 = Date.now(); const tick = () => { if (typeof AD_FN() === "function") return res(AD_FN()); if (Date.now() - t0 > ms) return rej(new Error("ad sdk")); setTimeout(tick, 300); }; tick(); }); }
+let SDK_LOADING = null;
+function waitSdk(ms) {
+  const zone = SET.ad && SET.ad.zone || DEF.ad.zone, fn = () => window["show_" + zone];
+  if (typeof fn() === "function") return Promise.resolve(fn());
+  if (!SDK_LOADING) SDK_LOADING = new Promise((res, rej) => {
+    const s = document.createElement("script");
+    s.src = "//libtl.com/sdk.js"; s.setAttribute("data-zone", zone); s.setAttribute("data-sdk", "show_" + zone);
+    s.onload = () => { const t0 = Date.now(); const tick = () => { if (typeof fn() === "function") return res(fn()); if (Date.now() - t0 > ms) return rej(new Error("ad sdk")); setTimeout(tick, 200); }; tick(); };
+    s.onerror = () => { SDK_LOADING = null; rej(new Error("ad sdk")); };
+    document.head.appendChild(s);
+  });
+  return SDK_LOADING;
+}
 function overlay(on, msg) { const o = $("adOverlay"); o.classList.toggle("hidden", !on); o.classList.toggle("flex", on); if (msg) $("adMsg").textContent = msg; }
 // Runs a Monetag ad. Resolves only when the ad was actually watched. Anything else = no reward.
 async function playAd(kind) {
