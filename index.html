@@ -46,6 +46,40 @@
   .coin{position:absolute;width:14px;height:14px;border-radius:50%;background:radial-gradient(circle at 30% 30%,#fde68a,#f59e0b);opacity:.6;animation:drift 6s linear infinite}
   @keyframes drift{from{transform:translateY(-10vh)}to{transform:translateY(110vh) rotate(360deg)}}
   @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+  /* premium polish */
+  body{background:linear-gradient(180deg,#f5f3ff 0%,#eef2ff 60%,#f8fafc 100%)!important;letter-spacing:.005em}
+  .card{border:1px solid rgba(124,58,237,.10);box-shadow:0 10px 30px -12px rgba(49,46,129,.18),0 2px 6px rgba(15,23,42,.04)!important;border-radius:20px!important}
+  .hero{background:linear-gradient(140deg,#1e1b4b 0%,#4338ca 52%,#7c3aed 100%)!important;box-shadow:0 18px 40px -18px rgba(49,46,129,.55)}
+  .btn{background:linear-gradient(135deg,#8b5cf6,#4f46e5)!important;border-radius:16px!important;font-weight:800!important;box-shadow:0 10px 24px -10px rgba(79,70,229,.7)!important}
+  .btn:active{transform:scale(.98)}
+  .ghost{border-radius:12px!important;border:1px solid rgba(124,58,237,.35)!important;background:#fff!important;color:#5b21b6!important}
+  .ico{border-radius:14px!important;box-shadow:inset 0 0 0 1px rgba(255,255,255,.6)}
+  .chip{border-radius:999px!important;border:1px solid rgba(124,58,237,.18)!important}
+  .chip.on{background:linear-gradient(135deg,#7c3aed,#4f46e5)!important}
+  nav{background:rgba(255,255,255,.86)!important;backdrop-filter:saturate(1.6) blur(14px);border-top:1px solid rgba(124,58,237,.10)!important}
+  .nav-btn{font-weight:700!important}
+  .mrow{border-bottom:1px solid rgba(124,58,237,.08)!important}
+  header h1{letter-spacing:-.01em}
+  .field{border-radius:14px!important;border:1px solid rgba(124,58,237,.18)!important;background:#fff!important}
+  .tap{transition:transform .14s cubic-bezier(.2,.8,.2,1)}
+
+  .logo-tile{width:58px;height:58px;flex:0 0 58px;border-radius:18px;display:grid;place-items:center;position:relative;overflow:hidden;box-shadow:inset 0 1px 0 rgba(255,255,255,.55),inset 0 -6px 12px rgba(0,0,0,.18),0 12px 22px -10px rgba(15,23,42,.55)}
+  .logo-tile:after{content:"";position:absolute;left:0;right:0;top:0;height:50%;background:linear-gradient(180deg,rgba(255,255,255,.45),rgba(255,255,255,0));border-radius:18px 18px 50% 50%;pointer-events:none}
+  .logo-tile svg{position:relative;z-index:1;filter:drop-shadow(0 2px 2px rgba(0,0,0,.25))}
+
+  /* v4: mockup look (purple hero, 3D cards, raised buttons, floating nav) */
+  body{background:#f0edfb!important}
+  .hero{background:radial-gradient(120% 100% at 100% 0%,rgba(255,255,255,.32) 0,rgba(255,255,255,0) 45%),linear-gradient(135deg,#8b5cf6 0%,#6d28d9 50%,#4338ca 100%)!important;color:#fff!important;position:relative;overflow:hidden;box-shadow:0 26px 40px -24px rgba(76,29,149,.85)!important}
+  .hero:before{content:"";position:absolute;right:-50px;top:-60px;width:200px;height:200px;border-radius:50%;background:radial-gradient(circle,rgba(253,230,138,.5) 0,rgba(253,230,138,0) 70%);pointer-events:none}
+  .card{background:linear-gradient(180deg,#ffffff 0%,#faf8ff 100%)!important;border:1px solid rgba(255,255,255,.95)!important;box-shadow:inset 0 1px 0 #fff,0 16px 28px -16px rgba(76,29,149,.38),0 2px 0 rgba(109,40,217,.05)!important;border-radius:24px!important}
+  .qa{background:linear-gradient(180deg,#ffffff,#f4f1ff)!important;border-radius:22px!important;box-shadow:0 14px 22px -14px rgba(76,29,149,.5),inset 0 -3px 0 rgba(124,58,237,.08)!important}
+  .btn{background:linear-gradient(180deg,#9b6cf7 0%,#6d28d9 100%)!important;color:#fff!important;border-radius:18px!important;box-shadow:0 6px 0 #4c1d95,0 16px 24px -12px rgba(76,29,149,.85)!important;font-weight:800!important}
+  .btn:active{transform:translateY(4px)!important;box-shadow:0 2px 0 #4c1d95!important}
+  .ghost{border-radius:16px!important;box-shadow:0 5px 0 rgba(109,40,217,.18)!important}
+  .chip.on{box-shadow:0 6px 12px -6px rgba(109,40,217,.7)}
+  nav{background:#ffffff!important;border-radius:28px!important;margin:0 12px 12px!important;box-shadow:0 22px 40px -14px rgba(76,29,149,.5),0 2px 0 rgba(109,40,217,.06)!important;border:1px solid rgba(124,58,237,.08)!important;backdrop-filter:none!important}
+  .logo-tile{border-radius:20px!important;box-shadow:inset 0 2px 0 rgba(255,255,255,.6),inset 0 -8px 14px rgba(0,0,0,.2),0 14px 24px -12px rgba(49,46,129,.7)!important}
 </style>
 </head>
 <body>
@@ -130,6 +164,7 @@
       <div class="flex items-center justify-between mb-2"><p class="font-extrabold text-sm">Top Offer</p><button data-go="offers" class="text-xs font-bold text-violet-700">View All</button></div>
       <div id="offerList" class="space-y-2.5"></div>
     </div>
+      <div class="card p-4"><div class="flex items-center justify-between mb-2"><p class="font-extrabold text-sm">Leaderboard</p><button data-go="leader" class="text-xs font-bold text-violet-700">View all</button></div><div id="homeLb"></div></div>
     <div class="grad-refer rounded-[18px] p-4 text-white flex items-center justify-between shadow-lg" style="background:linear-gradient(135deg,#7c3aed,#4f46e5)">
       <div><p class="font-extrabold">Refer &amp; Earn</p><p class="text-xs opacity-90">Invite friends and earn unlimited coins</p><button data-go="referral" class="mt-2 bg-white text-violet-700 font-bold text-xs px-3 py-1.5 rounded-lg">Invite Now</button></div>
       <i class="fa-solid fa-gift text-4xl opacity-80"></i></div>
@@ -148,7 +183,6 @@
   <header class="hero px-4 pt-6 pb-6 rounded-b-[24px]"><button data-back class="w-8 h-8 rounded-lg bg-white/15 grid place-items-center mb-2"><i class="fa-solid fa-arrow-left text-sm"></i></button><h1 class="text-xl font-black">Solve Puzzle</h1><p class="text-xs opacity-90">Earn Coins</p></header>
   <div class="px-4 -mt-3 space-y-2.5" id="puzList"></div>
   <div class="px-4 mt-4 card p-3 text-xs text-slate-600"><i class="fa-solid fa-trophy text-amber-500 mr-1"></i>Har level roz ek baar khel sakte ho. Jodi milne par coins.</div>
-  <div id="slotNativePuzzle" class="px-4 mt-4"></div>
 </section>
 
 <!-- GAMES -->
@@ -165,6 +199,8 @@
     <div id="playHud" class="mt-3 card p-2.5 flex justify-between text-xs font-bold"></div>
     <div id="playBoard" class="mt-3 card p-3 relative overflow-hidden" style="min-height:260px"></div>
     <div id="slotPlayBanner" class="mt-3 flex justify-center hidden"></div>
+    <div id="slotPlayNative" class="mt-3 flex justify-center hidden"></div>
+    <div id="slotPlayNative" class="mt-3 hidden"></div>
     <p id="playMsg" class="mt-3 text-center text-sm font-semibold text-slate-700"></p>
     <div id="playResult" class="hidden mt-3"></div>
   </div>
@@ -251,11 +287,21 @@
   </div>
 </section>
 
+<!-- REDEEM HISTORY -->
+<section id="s-redhist" class="screen pb-24 max-w-md mx-auto">
+  <header class="hero px-4 pt-6 pb-6 rounded-b-[24px]"><button data-back class="w-8 h-8 rounded-lg bg-white/15 grid place-items-center mb-2"><i class="fa-solid fa-arrow-left text-sm"></i></button><h1 class="text-xl font-black">Redeem History</h1></header>
+  <div class="px-4 -mt-3"><div id="redList" class="card p-3 text-xs space-y-2"></div></div>
+</section>
+
 <!-- LEADERBOARD -->
 <section id="s-leader" class="screen pb-24 max-w-md mx-auto">
-  <header class="hero px-4 pt-6 pb-6 rounded-b-[24px]"><button data-back class="w-8 h-8 rounded-lg bg-white/15 grid place-items-center mb-2"><i class="fa-solid fa-arrow-left text-sm"></i></button><h1 class="text-xl font-black">Leaderboard</h1><p class="text-xs opacity-90">Top Earners</p></header>
-  <div class="px-4 -mt-3"><div class="flex gap-2 mb-3"><button class="chip on" data-lf="week">This Week</button><button class="chip" data-lf="month">This Month</button><button class="chip" data-lf="total">All Time</button></div>
-    <div id="lbList" class="card p-3 text-xs"></div></div>
+  <header class="hero px-4 pt-6 pb-16 rounded-b-[28px] text-center"><button data-back class="w-8 h-8 rounded-lg bg-white/15 grid place-items-center absolute left-4 top-6"><i class="fa-solid fa-arrow-left text-sm"></i></button><h1 class="text-xl font-black">Leaderboard</h1><p class="text-xs opacity-90">Top earners · roz raat 12 baje update</p></header>
+  <div class="px-4 -mt-10 space-y-3">
+    <div class="card p-2 flex gap-2 justify-center"><button class="chip on" data-lf="week">This Week</button><button class="chip" data-lf="month">This Month</button><button class="chip" data-lf="total">All Time</button></div>
+    <div class="card p-4"><div id="lbPodium" class="grid grid-cols-3 gap-2 items-end"></div></div>
+    <div class="card p-3"><div id="lbList"></div></div>
+    <div id="lbMe" class="card p-3 text-sm text-center"></div>
+  </div>
 </section>
 
 <!-- PROFILE (as in the design: name + menu) -->
@@ -264,6 +310,7 @@
     <h1 class="mt-2 text-lg font-extrabold" id="pName">--</h1><p class="text-indigo-100 text-xs" id="pPhone">--</p></header>
   <div class="px-4 -mt-8"><div class="card px-4 py-1">
     <button class="mrow" data-go="history"><i class="fa-solid fa-clock-rotate-left"></i>Transaction History</button>
+    <button class="mrow" data-go="redhist"><i class="fa-solid fa-money-bill-transfer"></i>Redeem History</button>
     <button class="mrow" data-go="leader"><i class="fa-solid fa-trophy"></i>Leaderboard</button>
     <button class="mrow" data-go="support"><i class="fa-solid fa-headset"></i>Support &amp; Settings</button>
     <button class="mrow" data-go="referral"><i class="fa-solid fa-user-group"></i>Referral</button>
@@ -323,6 +370,8 @@
   <p id="adMsg" class="mt-4 text-base font-bold">Ad load ho raha hai…</p>
   <p class="mt-1 text-xs text-white/60">Ad poora dekhne par hi coins milenge</p>
 </div>
+<div id="adLoadOv" class="fixed inset-0 z-[90] hidden items-center justify-center p-5" style="background:rgba(15,23,42,.7);backdrop-filter:blur(3px)"><div class="card w-full max-w-xs p-6 text-center"><div class="mx-auto w-12 h-12 rounded-full border-4 border-violet-200 border-t-violet-600 animate-spin"></div><p class="mt-4 font-bold text-sm">Ad load ho raha hai…</p><p class="text-xs text-slate-500 mt-1">Ek second ruko</p></div></div>
+<div id="lvlOv" class="fixed inset-0 z-[75] hidden items-center justify-center p-5" style="background:rgba(15,23,42,.55);backdrop-filter:blur(4px)"><div id="lvlOvBox" class="card w-full max-w-xs p-6 text-center"></div></div>
 <div id="toast" class="fixed top-4 left-1/2 -translate-x-1/2 z-[80] px-4 py-2.5 rounded-xl bg-slate-900 text-white text-sm font-semibold shadow-xl opacity-0 pointer-events-none max-w-[90vw] text-center transition-opacity"></div>
 
 <script type="module">
@@ -360,13 +409,18 @@ const fmtErr = e => {
   if (c.includes("network")) return "Internet check karein";
   return e.message || "Kuch gadbad hui, dobara try karein";
 };
-const DEF = { coinsPerRupee: 120, minRedeemCoins: 1200, maxRedeemCoins: 24000, referralReferrer: 500, referralReferee: 200, adDailyLimit: 20,
+const DEF = { referralBot: "https://t.me/CoinBlastRewardsBot", coinsPerRupee: 120, minRedeemCoins: 1200, maxRedeemCoins: 24000, referralReferrer: 500, referralReferee: 200, adDailyLimit: 20,
   adReward: { sec: 15, coins: 7 }, banners: { big: "c6270abacc2ed228deca10f82f7babd4", strip: "c18a36997f2f204e63b53f019fb4f19c", native: "198d30c9fbecee26360432020aba1bb2" },
   checkin: [10, 15, 20, 40, 50],
   puzzle: [{ name: "Easy", pairs: 4, coins: 8 }, { name: "Medium", pairs: 6, coins: 8 }, { name: "Hard", pairs: 8, coins: 8 }, { name: "Expert", pairs: 10, coins: 8 }],
   ad: { zone: "11569445", claimAd: true, watchAd: true, timeout: 20, inApp: { frequency: 1, capping: 0.034, interval: 120, timeout: 5, everyPage: false } },
   support: { help: "We are here to help you", email: "", whatsapp: "", telegram: "", instagram: "", youtube: "" },
-  texts: { terms: "Coinblast 2.0 ek rewards app hai. Coins sirf valid tasks, ads, puzzles aur games ke complete hone par milte hain.", privacy: "Hum aapka naam, mobile number aur coins ka record sirf app chalane ke liye rakhte hain.", about: "Coinblast 2.0 mein aap puzzles solve karke, ads dekh kar aur games khel kar coins kama sakte ho." } };
+  puzzleCoins: 8, puzzleGamesPerDay: 10, redeemOptions: { upi: true, gplay: true, amazon: true },
+  texts: {
+    about: "Coinblast 2.0 is a simple rewards app where you can earn coins by solving puzzles, watching short ads, playing games, checking in every day and inviting your friends. Coins can be converted into UPI or gift card rewards once you reach the minimum limit. We keep the app light, fair and easy to use, and we keep improving it based on your feedback. Thank you for being part of Coinblast 2.0.",
+    privacy: "Your privacy matters to us. We only collect what we need to run the app: your name, mobile number, the coins you earn and the redeem requests you make. We never sell your personal information to third parties. Ads are shown by our advertising partners, and they may use anonymous device information to show relevant ads. You can ask us to delete your account and data at any time by contacting support. We keep transaction records for accounting and fraud prevention.",
+    terms: "By using Coinblast 2.0 you agree to these terms. Coins are rewards for completing puzzles, watching ads, playing games, daily check-ins and valid offers. Coins have no cash value until they are redeemed under the stated rules. Fake activity, automation, multiple accounts or any form of cheating can cancel your coins and block your account. Redeem requests are reviewed manually and usually processed within 24 hours. We may change rewards, limits or features at any time to keep the app fair for everyone."
+  } };
 let SET = JSON.parse(JSON.stringify(DEF));
 let ME = null, UID = null, OFFERS = [], GAMES = [], DONE = {}, REFS = {}, LB = {}, TXS = {}, WDS = {}, unsubUser = null, REGISTERING = false, bonusBusy = false, PLAY = null, TIMERS = [], RED = null, HF = "all", LF = "week";
 
@@ -387,10 +441,9 @@ if (window.Telegram && Telegram.WebApp) { try { Telegram.WebApp.ready(); Telegra
 const TAB_SCREENS = ["home", "offers", "wallet", "redeem", "profile"];
 function show(name) {
   document.querySelectorAll(".screen").forEach(s => s.classList.toggle("on", s.id === "s-" + name));
-  if (name !== "play") { const sb = $("slotPlayBanner"); if (sb) { sb.classList.add("hidden"); sb.innerHTML = ""; sb.dataset.key = ""; } }
+  if (name !== "play") { const sb = $("slotPlayBanner"); if (sb) { sb.classList.add("hidden"); sb.innerHTML = ""; sb.dataset.key = ""; } const sn = $("slotPlayNative"); if (sn) { sn.classList.add("hidden"); sn.innerHTML = ""; sn.dataset.key = ""; } }
   if (name === "home") mountBanner("slotStrip", SET.banners.strip, 320, 50);
-  if (name === "puzzle") mountNative("slotNativePuzzle");
-  $("nav").classList.toggle("hidden", !TAB_SCREENS.includes(name) && !["history", "leader", "support", "referral", "puzzle", "games", "ads", "checkin", "text"].includes(name));
+  $("nav").classList.toggle("hidden", !TAB_SCREENS.includes(name) && !["history", "redhist", "leader", "support", "referral", "puzzle", "games", "ads", "checkin", "text"].includes(name));
   document.querySelectorAll(".nav-btn").forEach(b => b.classList.toggle("on", b.dataset.go === name));
   window.scrollTo(0, 0);
 }
@@ -408,6 +461,7 @@ function go(p) {
   if (p === "checkin") { renderCheckin(); return show("checkin"); }
   if (p === "referral") { renderReferral(); return show("referral"); }
   if (p === "history") { renderHistory(); return show("history"); }
+  if (p === "redhist") { renderRedHist(); return show("redhist"); }
   if (p === "leader") { renderLeader(); return show("leader"); }
   if (p === "support") { renderSupport(); return show("support"); }
 }
@@ -421,7 +475,7 @@ document.addEventListener("click", e => {
 });
 $("menuBtn").onclick = () => $("sideMenu").classList.remove("hidden");
 $("bellBtn").onclick = () => { $("notifPanel").classList.remove("hidden"); localStorage.setItem("cb_seen", Date.now()); $("bellDot").classList.add("hidden"); };
-function textPage(k) { $("textTitle").textContent = { terms: "Terms & Conditions", privacy: "Privacy Policy", about: "About Us" }[k]; $("textBody").innerHTML = `<p>${esc(SET.texts[k] || "")}</p>`; show("text"); }
+function textPage(k) { $("textTitle").textContent = { terms: "Terms & Conditions", privacy: "Privacy Policy", about: "About Us" }[k]; $("textBody").innerHTML = `<p>${esc(SET.texts[k] || DEF.texts[k] || "")}</p>`; show("text"); }
 
 // ---------- Adsterra banners + native (mounted per screen, once per key) ----------
 function mountBanner(slotId, key, w, h) {
@@ -533,7 +587,7 @@ async function enterApp() {
     ME = snap.val();
     if (ME.blocked) return show("blocked");
     const on = (document.querySelector(".screen.on") || {}).id;
-    if (!on || on === "s-login" || on === "s-reg" || on === "s-blocked") { renderHome(); show("home"); startInApp(); }
+    if (!on || on === "s-login" || on === "s-reg" || on === "s-blocked") { renderHome(); show("home"); }
     else refreshVisible();
     processBonus();
   });
@@ -561,7 +615,7 @@ onValue(R("notifications"), snap => {
   $("bellDot").classList.toggle("hidden", !items.some(x => x.ts > seen));
   $("notifList").innerHTML = items.length ? items.map(x => `<div class="rounded-xl bg-violet-50 p-3"><p class="font-bold text-sm">${esc(x.title)}</p><p class="text-xs text-slate-600 mt-1">${esc(x.body)}</p></div>`).join("") : '<p class="text-slate-500 text-sm">Abhi koi notification nahi.</p>';
 });
-onValue(R("lb"), snap => { LB = snap.exists() ? snap.val() : {}; if ((document.querySelector(".screen.on") || {}).id === "s-leader") renderLeader(); });
+onValue(R("lb"), snap => { LB = snap.exists() ? snap.val() : {}; renderLeader(); renderHomeLb(); });
 function attachLists() {
   onValue(R("tasksDone/" + UID), s => { DONE = s.exists() ? s.val() : {}; renderOffers(); renderHome(); });
   onValue(R("referrals/" + UID), s => { REFS = s.exists() ? s.val() : {}; renderReferral(); });
@@ -591,11 +645,16 @@ async function credit(amount, reason) {
 }
 const dayOf = k => (ME && ME.daily && ME.daily.date === istDay() ? (ME.daily[k] || 0) : 0);
 const doneToday = (key, id) => !!(ME && ME.daily && ME.daily.date === istDay() && ME.daily[key] && ME.daily[key][id]);
+function curDaily() { return ME && ME.daily && ME.daily.date === istDay() ? ME.daily : {}; }
+// writes the whole daily block for today; a new day starts from zero automatically
+async function dailyWrite(patch) {
+  const c = curDaily();
+  await set(R(`users/${UID}/daily`), { ...c, date: istDay(), ...patch });
+}
 async function markDaily(key, id, value) {
-  const d = ME && ME.daily && ME.daily.date === istDay() ? ME.daily : { date: istDay() };
-  const payload = { date: istDay(), ads: d.ads || 0, puzzle: d.puzzle || {}, game: d.game || {}, offer: d.offer || {} };
-  if (key === "ads") payload.ads = value; else { payload[key] = { ...(payload[key] || {}), [id]: value }; }
-  await update(R(`users/${UID}/daily`), payload);
+  if (key === "ads") return dailyWrite({ ads: value });
+  const sub = { ...(curDaily()[key] || {}) }; sub[id] = value;
+  return dailyWrite({ [key]: sub });
 }
 
 // ---------- home ----------
@@ -605,7 +664,7 @@ function renderHome() {
   $("offerList").innerHTML = OFFERS.slice(0, 3).map(offerCard).join("") || '<p class="text-xs text-slate-500">Abhi koi offer nahi.</p>';
 }
 function offerCard(t) {
-  const done = !!DONE[t.id];
+  const done = DONE[t.id] === istDay();
   return `<div class="card p-3 flex items-center gap-3"><span class="ico ${t.type === "telegram" ? "bg-sky-100 text-sky-600" : "bg-violet-100 text-violet-600"}"><i class="fa-brands ${t.type === "telegram" ? "fa-telegram" : "fa-link"}"></i></span>
     <div class="flex-1 min-w-0"><b class="block truncate text-sm">${esc(t.title)}</b><small class="text-slate-500 truncate block text-xs">${esc(t.subtitle || t.description || "")}</small><small class="font-bold text-amber-600 text-xs">+${t.reward || 0} coins</small></div>
     <button data-offer="${esc(t.id)}" class="${done ? "bg-slate-200 text-slate-500" : "bg-violet-600 text-white"} px-3 py-1.5 rounded-lg text-xs font-bold" ${done ? "disabled" : ""}>${done ? "Done" : "Join"}</button></div>`;
@@ -613,16 +672,16 @@ function offerCard(t) {
 function renderOffers() { $("offerAll").innerHTML = OFFERS.map(offerCard).join("") || '<p class="text-sm text-slate-500">Abhi koi offer nahi.</p>'; }
 document.addEventListener("click", e => { const b = e.target.closest("[data-offer]"); if (b) { const t = OFFERS.find(x => x.id === b.dataset.offer); if (t) openOffer(t); } });
 function openOffer(t) {
-  if (DONE[t.id]) return toast("Ye offer complete ho chuka hai");
+  if (DONE[t.id] === istDay()) return toast("Ye offer aaj complete ho chuka hai. Kal phir aana.");
   if (t.link) window.open(t.link, "_blank");
   startTimedPlay(t.title, `<p class="text-center text-xs text-slate-600">${esc(t.description || "Join karo aur timer poora hone tak raho.")}</p>`, t.seconds || 20, async () => {
-    await credit(t.reward || 0, "Offer: " + t.title); await set(R(`tasksDone/${UID}/${t.id}`), true); toast("+" + (t.reward || 0) + " coins!");
+    await credit(t.reward || 0, "Offer: " + t.title); await set(R(`tasksDone/${UID}/${t.id}`), istDay()); toast("+" + (t.reward || 0) + " coins!");
   });
 }
 
 // ---------- claim gate: coins only after the ad ----------
 // returns true only when the ad was watched (or claim-ads are switched off in admin)
-async function gateAd() { if (SET.ad.claimAd === false) return true; return await playAd("reward"); }
+async function gateAd() { if (SET.ad.claimAd === false) return true; return await runLevelAd(); }
 
 // ---------- generic timed play (offers, games) ----------
 function startTimedPlay(title, body, seconds, onDone) {
@@ -651,56 +710,59 @@ function startTimedPlay(title, body, seconds, onDone) {
   };
 }
 
-// ---------- puzzle ----------
+// ---------- puzzle: memory pairs (10 games a day, 8 coins a win) ----------
 function renderPuzzles() {
-  $("puzList").innerHTML = SET.puzzle.map((p, i) => {
-    const done = doneToday("puzzle", "l" + i);
-    return `<div class="card p-3 flex items-center gap-3"><span class="ico bg-amber-100 text-amber-600"><i class="fa-solid fa-puzzle-piece"></i></span>
-      <div class="flex-1"><b class="text-sm">${esc(p.name)} Puzzle</b><p class="text-xs text-slate-500">${p.pairs} jodi · Earn ${p.coins} coins</p></div>
-      <button data-puz="${i}" class="${done ? "bg-slate-200 text-slate-500" : "ghost"} px-3 py-1.5 rounded-lg text-xs" ${done ? "disabled" : ""}>${done ? "Done" : "Play"}</button></div>`;
-  }).join("");
+  const per = SET.puzzleGamesPerDay || 10, left = Math.max(0, per - dayOf("puzzleGames"));
+  $("puzList").innerHTML = `<p class="text-xs text-slate-600">Aaj baaki puzzles: <b>${left}</b> / ${per} (roz raat 12 baje reset)</p>` + SET.puzzle.map((p, i) => `<div class="card p-3 flex items-center gap-3"><span class="ico bg-amber-100 text-amber-600"><i class="fa-solid fa-puzzle-piece"></i></span>
+    <div class="flex-1"><b class="text-sm">${esc(p.name)} Puzzle</b><p class="text-xs text-slate-500">${p.pairs} jodi · Earn ${SET.puzzleCoins || 8} coins</p></div>
+    <button data-puz="${i}" class="ghost px-3 py-1.5 rounded-lg text-xs" ${left <= 0 ? "disabled" : ""}>${left <= 0 ? "Kal" : "Play"}</button></div>`).join("");
 }
 document.addEventListener("click", e => { const b = e.target.closest("[data-puz]"); if (b) playPuzzle(+b.dataset.puz); });
 function playPuzzle(i) {
-  const p = SET.puzzle[i];
-  if (doneToday("puzzle", "l" + i)) return toast("Ye level aaj complete ho chuka hai");
+  const p = SET.puzzle[i], per = SET.puzzleGamesPerDay || 10, coins = SET.puzzleCoins || 8;
+  if (dayOf("puzzleGames") >= per) return toast("Aaj ke " + per + " puzzle games khatam. Kal phir khelo.");
   clearTimers(); PLAY = { done: false };
-  $("playTitle").textContent = `${p.name} Puzzle`; $("playMsg").textContent = ""; $("playResult").classList.add("hidden"); $("playResult").innerHTML = "";
+  $("playTitle").textContent = `${p.name} Puzzle`;
+  $("playMsg").textContent = "Same jodi ke cards khojo.";
+  $("playResult").classList.add("hidden"); $("playResult").innerHTML = "";
   $("playHud").innerHTML = `<span>Moves: 0</span><span>Jodi: 0/${p.pairs}</span>`;
   $("playBoard").innerHTML = ""; show("play");
-  memory(p.pairs, async () => {
-    if (doneToday("puzzle", "l" + i)) return;
-    await markDaily("puzzle", "l" + i, true);
-    await credit(p.coins, "Puzzle: " + p.name); toast("+" + p.coins + " coins!");
-  });
+  dailyWrite({ puzzleGames: dayOf("puzzleGames") + 1 }).catch(() => {});
+  mountBanner("slotPlayBanner", SET.banners.big, 300, 250); $("slotPlayBanner").classList.remove("hidden");
+  memory(p.pairs, async () => { await credit(coins, "Puzzle: " + p.name); toast("+" + coins + " coins!"); });
 }
 function memory(pairs, onWin) {
   const board = $("playBoard");
   const E = ["🍎", "🍌", "🍇", "🚗", "⭐", "🎈", "🌟", "🍒", "🍉", "🍓"].slice(0, pairs);
   const cards = [...E, ...E].sort(() => Math.random() - 0.5);
-  const grid = document.createElement("div"); grid.className = "grid grid-cols-4 gap-1.5"; board.appendChild(grid);
+  const cols = pairs <= 4 ? 4 : pairs <= 6 ? 4 : 5;
+  const grid = document.createElement("div"); grid.style.cssText = `display:grid;grid-template-columns:repeat(${cols},1fr);gap:6px`; board.appendChild(grid);
   let open = [], found = 0, lock = false, moves = 0;
   const back = "cell bg-gradient-to-br from-violet-500 to-indigo-600 text-white";
   cards.forEach(e => {
     const c = document.createElement("button"); c.className = back; c.textContent = "?"; c.dataset.e = e;
     c.onclick = () => {
       if (lock || c.dataset.ok || open.includes(c)) return;
-      c.textContent = e; c.className = "cell bg-white border text-xl"; open.push(c);
+      SFX.play("tap"); c.textContent = e; c.className = "cell bg-white border text-xl"; open.push(c);
       if (open.length === 2) {
-        lock = true; moves++; $("playHud").innerHTML = `<span>Moves: ${moves}</span><span>Jodi: ${found}/${pairs}</span>`;
+        lock = true; moves++;
         if (open[0].dataset.e === open[1].dataset.e) {
-          open.forEach(x => x.dataset.ok = "1"); found++; open = []; lock = false;
+          open.forEach(x => x.dataset.ok = "1"); SFX.play("match"); found++; open = []; lock = false;
           $("playHud").innerHTML = `<span>Moves: ${moves}</span><span>Jodi: ${found}/${pairs}</span>`;
           if (found === pairs) finishWin(onWin);
-        } else setTimeout(() => { open.forEach(x => { x.textContent = "?"; x.className = back; }); open = []; lock = false; }, 650);
+        } else {
+          $("playHud").innerHTML = `<span>Moves: ${moves}</span><span>Jodi: ${found}/${pairs}</span>`;
+          setTimeout(() => { open.forEach(x => { x.textContent = "?"; x.className = back; }); open = []; lock = false; }, 650);
+        }
       }
     };
     grid.appendChild(c);
   });
+  $("playHud").innerHTML = `<span>Moves: 0</span><span>Jodi: 0/${pairs}</span>`;
 }
 function finishWin(onWin) {
   const res = $("playResult"); res.classList.remove("hidden");
-  $("playMsg").textContent = "Sabhi jodi mil gayi!";
+  SFX.play("win"); $("playMsg").textContent = "Sabhi jodi mil gayi!";
   res.innerHTML = `<button id="claimW" class="btn tap">Claim coins</button>`;
   $("claimW").onclick = async () => {
     $("claimW").disabled = true;
@@ -709,20 +771,28 @@ function finishWin(onWin) {
     await onWin(); go("home");
   };
 }
+$("playBack").onclick = () => { clearTimers(); go("home"); };
 
 // ---------- games (admin-managed, iframe, minutes then claim) ----------
 function renderGames() {
-  $("gameList").innerHTML = GAMES.length ? GAMES.map(g => {
+  const gCard = (tile, name, desc, key, best, id) => { const left = Math.max(0, 10 - dayOf(key)); return `<div class="card p-3 flex items-center gap-3">${tile}<div class="flex-1 min-w-0"><b class="block text-sm">${name}</b><p class="text-xs text-slate-500">${desc}</p><p class="text-[11px] text-slate-500">Aaj baaki: <b>${left}</b>/10 · Best score: <b>${dayOf(best)}</b></p></div><button data-game="${id}" class="ghost px-3 py-1.5 rounded-lg text-xs" ${left <= 0 ? "disabled" : ""}>${left <= 0 ? "Kal" : "Play"}</button></div>`; };
+  const lvlCard = gCard(logoTile(LOGO_CANDY, "linear-gradient(135deg,#a78bfa,#4338ca)"), "Candy Crush", "20 moves mein score banao. Har game 10 coins.", "gCandy", "bestCandy", "__level");
+  const jumboCard = gCard(logoTile(LOGO_BALL, "linear-gradient(135deg,#fbbf24,#e11d48)"), "Jumbo Ball · Hard", "Ball ko bounce karao, upar chadho. Spikes se bacho. Har game 10 coins.", "gJumbo", "bestJumbo", "__jumbo");
+  const fruitCard = gCard(logoTile(LOGO_FRUIT, "linear-gradient(135deg,#fb7185,#f97316)"), "Fruit Slice · Hard", "Fruit kaato, bomb mat kaatna. 3 chances. Har game 10 coins.", "gFruit", "bestFruit", "__fruit");
+  $("gameList").innerHTML = lvlCard + jumboCard + fruitCard + (GAMES.length ? GAMES.map(g => {
     const done = doneToday("game", g.id);
     return `<div class="card p-3 flex items-center gap-3">
       <img src="${esc(g.logo || "")}" alt="" class="w-12 h-12 rounded-xl object-cover bg-violet-100 shrink-0" onerror="this.style.visibility='hidden'">
       <div class="flex-1 min-w-0"><b class="block truncate text-sm">${esc(g.name)}</b><p class="text-xs text-slate-500">Play ${g.minutes || 5} min · Earn ${g.coins || 10} coins</p></div>
       <button data-game="${esc(g.id)}" class="${done ? "bg-slate-200 text-slate-500" : "ghost"} px-3 py-1.5 rounded-lg text-xs" ${done ? "disabled" : ""}>${done ? "Done" : "Play"}</button></div>`;
-  }).join("") : '<p class="text-sm text-slate-500 text-center">Abhi koi game nahi.</p>';
+  }).join("") : '');
 }
 document.addEventListener("click", e => { const b = e.target.closest("[data-game]"); if (b) playGame(b.dataset.game); });
 const fmtMMSS = s => String(Math.floor(s / 60)).padStart(2, "0") + ":" + String(s % 60).padStart(2, "0");
 function playGame(id) {
+  if (id === "__level") return startLevelGame();
+  if (id === "__jumbo") return startJumbo();
+  if (id === "__fruit") return startFruit();
   const g = GAMES.find(x => x.id === id); if (!g) return;
   if (doneToday("game", id)) return toast("Aaj ka reward mil chuka hai. Kal phir khelo.");
   clearTimers();
@@ -730,13 +800,16 @@ function playGame(id) {
   PLAY = { done: false };
   $("playTitle").textContent = g.name;
   $("playHud").innerHTML = `<span>${esc(g.name)}</span><span id="gHud">00:00 / ${fmtMMSS(need)}</span>`;
-  $("playBoard").innerHTML = `<iframe id="gameFrame" sandbox="allow-scripts allow-forms allow-pointer-lock" class="w-full rounded-xl bg-white" style="height:56vh;border:0"></iframe>`;
+  if (g.url) $("playBoard").innerHTML = `<iframe id="gameFrame" src="${esc(g.url)}" allow="fullscreen; autoplay; gamepad; clipboard-write" class="w-full bg-white rounded-xl" style="height:calc(100dvh - 230px);min-height:420px;border:0"></iframe>`;
+  else {
+    $("playBoard").innerHTML = `<iframe id="gameFrame" sandbox="allow-scripts allow-forms allow-pointer-lock" class="w-full rounded-xl bg-white" style="height:calc(100dvh - 330px);min-height:360px;border:0"></iframe>`;
+    }
   $("gameFrame").srcdoc = g.html || "<p style='font-family:sans-serif;padding:20px'>Game code abhi nahi daala gaya.</p>";
   $("playMsg").textContent = `Game ${g.minutes || 5} minute khelo, phir coins claim karo.`;
   const res = $("playResult"); res.classList.remove("hidden");
   res.innerHTML = `<button id="claimGame" class="btn" disabled>Claim in ${fmtMMSS(need)}</button>`;
   show("play");
-  mountBanner("slotPlayBanner", SET.banners.big, 300, 250); $("slotPlayBanner").classList.remove("hidden");
+  if (!g.url) { mountBanner("slotPlayBanner", SET.banners.big, 300, 250); $("slotPlayBanner").classList.remove("hidden"); }
   let spent = 0;
   every(() => {
     if (PLAY.done) return;
@@ -755,6 +828,459 @@ function playGame(id) {
   };
 }
 
+// ---------- ad: 3s loader, then the rewarded ad. Coins only if the 15s ad was really watched (no tab switch, no early skip) ----------
+async function runLevelAd() {
+  const ov = $("adLoadOv"); ov.classList.remove("hidden"); ov.classList.add("flex");
+  await new Promise(r => setTimeout(r, 3000));
+  ov.classList.add("hidden"); ov.classList.remove("flex");
+  let left = false;
+  const onV = () => { if (document.hidden) left = true; };
+  document.addEventListener("visibilitychange", onV);
+  const t0 = Date.now(); let ok = false;
+  try {
+    const fn = await waitSdk(8000);
+    await Promise.race([fn(), new Promise((_, rej) => setTimeout(() => rej(new Error("timeout")), (SET.ad.timeout || 30) * 1000))]);
+    ok = true;
+  } catch (e) { ok = false; }
+  document.removeEventListener("visibilitychange", onV);
+  if (ok && (left || Date.now() - t0 < 14500)) ok = false;
+  if (!ok) toast("Ad poora nahi dekha. Coins nahi mile.");
+  return ok;
+}
+
+// ---------- sound (synthesised, no files) ----------
+const SFX = {
+  ctx: null,
+  init() {
+    if (!this.ctx) { try { this.ctx = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) { return; } }
+    if (this.ctx.state === "suspended") this.ctx.resume();
+  },
+  tone(f, d, type = "sine", v = 0.12, slide = 0, delay = 0) {
+    if (!this.ctx) return;
+    const t = this.ctx.currentTime + delay, o = this.ctx.createOscillator(), g = this.ctx.createGain();
+    o.type = type; o.frequency.setValueAtTime(f, t);
+    if (slide) o.frequency.exponentialRampToValueAtTime(slide, t + d);
+    g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(v, t + 0.01); g.gain.exponentialRampToValueAtTime(0.0001, t + d);
+    o.connect(g); g.connect(this.ctx.destination); o.start(t); o.stop(t + d + 0.03);
+  },
+  play(n) {
+    const S = {
+      tap: () => this.tone(620, 0.05, "triangle", 0.08),
+      swap: () => this.tone(300, 0.12, "sine", 0.1, 520),
+      match: () => { this.tone(660, 0.12, "triangle", 0.12); this.tone(880, 0.14, "triangle", 0.1, 0, 0.05); },
+      win: () => [523, 659, 784, 1046].forEach((f, i) => this.tone(f, 0.18, "triangle", 0.12, 0, i * 0.09)),
+      slice: () => this.tone(900, 0.09, "sawtooth", 0.07, 300),
+      bomb: () => this.tone(130, 0.55, "sawtooth", 0.25, 40),
+      bounce: () => this.tone(520, 0.1, "sine", 0.12, 780),
+      lose: () => this.tone(200, 0.3, "square", 0.1, 90),
+      miss: () => this.tone(300, 0.2, "triangle", 0.1, 150),
+      over: () => [392, 330, 262].forEach((f, i) => this.tone(f, 0.25, "triangle", 0.12, 0, i * 0.14)),
+      coin: () => { this.tone(1200, 0.08, "triangle", 0.12); this.tone(1600, 0.1, "triangle", 0.1, 0, 0.07); },
+    };
+    try { (S[n] || S.tap)(); } catch (e) {}
+  }
+};
+document.addEventListener("pointerdown", () => SFX.init(), { passive: true });
+
+// ---------- shared helpers for the three score games ----------
+async function setDaily(patch) {
+  const d = ME && ME.daily && ME.daily.date === istDay() ? ME.daily : {};
+  await update(R(`users/${UID}/daily`), { ...d, ...patch, date: istDay() });
+}
+function later(fn, ms) { const t = setTimeout(fn, ms); TIMERS.push(t); return t; }
+const cdWait = ms => new Promise(r => setTimeout(r, ms));
+function showOv(html) { const ov = $("lvlOv"); $("lvlOvBox").innerHTML = html; ov.classList.remove("hidden"); ov.classList.add("flex"); }
+function hideOv() { const ov = $("lvlOv"); ov.classList.add("hidden"); ov.classList.remove("flex"); }
+// End-of-game panel: score, coins, then claim (ad) and retry (only while plays are left today)
+function showResult(title, score, coins, sub, dailyKey, retry) {
+  SFX.play("over");
+  const left = Math.max(0, 10 - dayOf(dailyKey));
+  const claimBtn = coins > 0 ? `<button id="ovClaim" class="btn tap mt-5 w-full">Coins claim karo (ad dekho)</button>` : `<p class="text-xs text-slate-500 mt-4">Score kam hai, coins nahi bane. Score badhao!</p>`;
+  const retryBtn = left > 0 ? `<button id="ovRetry" class="ghost w-full py-2 mt-3">Dobara khelo (${left} bache)</button>` : `<p class="text-xs text-slate-500 mt-3">Aaj ke 10 games khatam. Kal phir khelo.</p>`;
+  showOv(`<p class="text-[11px] font-black tracking-[0.25em] text-violet-600">${title}</p>
+    <p class="text-5xl font-black my-3">${score}</p>
+    <p class="text-xs text-slate-500">${sub}</p>
+    <p class="text-sm mt-2">Coins: <b>${coins}</b></p>${claimBtn}${retryBtn}`);
+  if (coins > 0) $("ovClaim").onclick = async () => {
+    $("ovClaim").disabled = true;
+    const ok = await runLevelAd();
+    if (!ok) { $("ovClaim").disabled = false; return; }
+    await credit(coins, title + " score " + score); SFX.play("coin"); toast("+" + coins + " coins!");
+    const c = $("ovClaim"); if (c) c.remove();
+  };
+  if (left > 0) $("ovRetry").onclick = () => { hideOv(); retry(); };
+}
+
+// ---------- Candy Crush: 20 moves, score based ----------
+const CANDY = ["#ef4444", "#f59e0b", "#22c55e", "#3b82f6", "#a855f7", "#ec4899"];
+const CD_MOVES = 20;
+const CD = { n: 7, board: [], cells: [], sel: -1, score: 0, moves: CD_MOVES, colors: 4, busy: false, on: false, over: false, grid: null, dragFrom: -1 };
+const cdRand = () => Math.floor(Math.random() * CD.colors);
+const cdColors = s => (s < 800 ? 4 : s < 2000 ? 5 : 6);
+function cdMatches(b) {
+  const n = CD.n, out = new Set();
+  for (let r = 0; r < n; r++) for (let c = 0; c < n; c++) {
+    const i = r * n + c, v = b[i]; if (v < 0) continue;
+    if (c <= n - 3 && v === b[i + 1] && v === b[i + 2]) { out.add(i); out.add(i + 1); out.add(i + 2); }
+    if (r <= n - 3 && v === b[i + n] && v === b[i + 2 * n]) { out.add(i); out.add(i + n); out.add(i + 2 * n); }
+  }
+  return out;
+}
+function cdFill(b) {
+  const n = CD.n;
+  for (let c = 0; c < n; c++) {
+    const col = []; for (let r = n - 1; r >= 0; r--) if (b[r * n + c] >= 0) col.push(b[r * n + c]);
+    for (let r = n - 1; r >= 0; r--) { const k = n - 1 - r; b[r * n + c] = k < col.length ? col[k] : cdRand(); }
+  }
+}
+function cdAdj(a, b) { const n = CD.n; return Math.abs(Math.floor(a / n) - Math.floor(b / n)) + Math.abs(a % n - b % n) === 1; }
+function cdSwap(a, b) { const t = CD.board[a]; CD.board[a] = CD.board[b]; CD.board[b] = t; }
+function cdHasMove() {
+  const N = CD.n * CD.n;
+  for (let i = 0; i < N; i++) for (let j = i + 1; j < N; j++) {
+    if (!cdAdj(i, j)) continue;
+    cdSwap(i, j); const ok = cdMatches(CD.board).size > 0; cdSwap(i, j);
+    if (ok) return true;
+  }
+  return false;
+}
+function cdNewBoard() {
+  do {
+    CD.board = Array.from({ length: CD.n * CD.n }, cdRand);
+    for (;;) { const m = cdMatches(CD.board); if (!m.size) break; m.forEach(i => CD.board[i] = -1); cdFill(CD.board); }
+  } while (!cdHasMove());
+}
+function cdDraw() {
+  CD.board.forEach((v, i) => {
+    const d = CD.cells[i]; if (!d) return;
+    const sel = i === CD.sel;
+    if (v < 0) { d.style.opacity = "0"; d.style.transform = "scale(.3)"; return; }
+    const c = CANDY[v];
+    d.style.opacity = "1";
+    d.style.background = `radial-gradient(circle at 32% 26%, #ffffffdd 0, ${c} 30%, ${c} 66%, #0005 100%)`;
+    d.style.boxShadow = sel ? `0 0 0 3px #fff, 0 0 18px ${c}` : "0 5px 9px rgba(0,0,0,.3), inset 0 -4px 0 rgba(0,0,0,.18)";
+    d.style.transform = sel ? "scale(1.12)" : "scale(1)";
+  });
+  $("playHud").innerHTML = `<span>Score <b>${CD.score}</b></span><span>Moves <b>${CD.moves}</b></span><span>Reward <b>10</b></span>`;
+}
+function cdIdx(e) {
+  const r = CD.grid.getBoundingClientRect(), pad = 8, gap = 5;
+  const pitch = (r.width - 2 * pad - gap * (CD.n - 1)) / CD.n + gap;
+  const c = Math.max(0, Math.min(CD.n - 1, Math.floor((e.clientX - r.left - pad) / pitch)));
+  const rw = Math.max(0, Math.min(CD.n - 1, Math.floor((e.clientY - r.top - pad) / pitch)));
+  return rw * CD.n + c;
+}
+async function cdTap(i) {
+  if (CD.busy || CD.over || !CD.on) return;
+  if (CD.sel < 0) { SFX.play("tap"); CD.sel = i; cdDraw(); return; }
+  const a = CD.sel; CD.sel = -1;
+  if (a === i) { cdDraw(); return; }
+  if (!cdAdj(a, i)) { CD.sel = i; cdDraw(); return; }
+  cdSwap(a, i);
+  if (!cdMatches(CD.board).size) { SFX.play("lose"); cdDraw(); await cdWait(160); cdSwap(a, i); cdDraw(); return; }
+  SFX.play("swap");
+  CD.busy = true; CD.moves--; cdDraw();
+  let mult = 1;
+  for (;;) {
+    const m = cdMatches(CD.board); if (!m.size) break;
+    CD.score += m.size * 10 * mult;
+    SFX.play(m.size >= 4 ? "win" : "match");
+    if (mult > 1) $("playMsg").textContent = "Combo x" + mult + "!";
+    mult++;
+    m.forEach(k => CD.board[k] = -1); cdDraw(); await cdWait(230);
+    if (!CD.on) return;
+    cdFill(CD.board); cdDraw(); await cdWait(260);
+    if (!CD.on) return;
+  }
+  CD.colors = cdColors(CD.score);
+  CD.busy = false; cdDraw();
+  if (CD.moves <= 0) return cdEnd();
+  if (!cdHasMove()) { cdNewBoard(); cdDraw(); $("playMsg").textContent = "Koi move nahi bacha, board shuffle hua."; }
+}
+function cdEnd() {
+  if (CD.over) return;
+  CD.over = true; CD.on = false; CD.busy = true;
+  const s = CD.score;
+  setDaily({ bestCandy: Math.max(dayOf("bestCandy"), s) }).catch(() => {});
+  showResult("Candy Crush", s, 10, "Moves khatam. Har game 10 coins.", "gCandy", startLevelGame);
+}
+function startLevelGame() {
+  if (dayOf("gCandy") >= 10) return toast("Aaj ke 10 Candy games khatam. Kal phir khelo.");
+  clearTimers(); PLAY = { done: false }; hideOv(); JB.on = false; FS.on = false;
+  setDaily({ gCandy: dayOf("gCandy") + 1 }).catch(() => {});
+  $("playTitle").textContent = "Candy Crush";
+  $("playResult").classList.add("hidden"); $("playResult").innerHTML = "";
+  $("playBoard").innerHTML = ""; show("play");
+  mountBanner("slotPlayBanner", SET.banners.big, 300, 250); $("slotPlayBanner").classList.remove("hidden");
+  CD.score = 0; CD.moves = CD_MOVES; CD.colors = 4; CD.sel = -1; CD.busy = false; CD.over = false; CD.on = true; CD.dragFrom = -1;
+  $("playMsg").textContent = "Candy ko finger se khinch kar swap karo. 20 moves mein zyada score banao.";
+  const board = $("playBoard");
+  const grid = document.createElement("div");
+  grid.style.cssText = `display:grid;grid-template-columns:repeat(${CD.n},1fr);gap:5px;width:100%;aspect-ratio:1/1;background:linear-gradient(160deg,#1e1b4b,#3730a3);padding:8px;border-radius:20px;box-sizing:border-box;box-shadow:inset 0 2px 10px rgba(0,0,0,.4);touch-action:none;user-select:none`;
+  board.appendChild(grid); CD.grid = grid; CD.cells = [];
+  for (let i = 0; i < CD.n * CD.n; i++) {
+    const d = document.createElement("div");
+    d.style.cssText = "border-radius:50%;pointer-events:none;transition:transform .18s,opacity .24s,box-shadow .18s";
+    grid.appendChild(d); CD.cells.push(d);
+  }
+  grid.onpointerdown = e => { if (CD.busy || CD.over || !CD.on) return; CD.dragFrom = cdIdx(e); grid.setPointerCapture(e.pointerId); };
+  grid.onpointermove = e => {
+    if (CD.dragFrom < 0 || CD.busy) return;
+    const j = cdIdx(e);
+    if (j === CD.dragFrom || !cdAdj(CD.dragFrom, j)) return;
+    const from = CD.dragFrom; CD.dragFrom = -1; CD.sel = from; cdTap(j);
+  };
+  grid.onpointerup = () => { if (CD.dragFrom >= 0) { const i = CD.dragFrom; CD.dragFrom = -1; cdTap(i); } };
+  grid.onpointercancel = () => { CD.dragFrom = -1; };
+  cdNewBoard(); cdDraw();
+}
+
+// ---------- Jumbo Ball: bounce upward, score = height, 3 lives ----------
+const JB = { on: false, dead: false, lives: 3, W: 300, H: 440, x: 150, y: 0, vy: 0, vx: 0, camY: 0, hold: 0, plats: [], topY: 0, raf: 0, last: 0, wrap: null, ballEl: null, maxY: 0 };
+const JB_G = 0.42, JB_BOUNCE = 11.2, JB_R = 13;
+const jbScore = () => Math.floor(JB.maxY / 10);
+function jbParams(h) { return { pw: Math.max(40, 92 - h / 30), gap: Math.min(120, 80 + h / 25), speed: Math.min(2, 0.8 + h / 1200), spike: Math.min(0.6, 0.15 + h / 3000) }; }
+function jbSpawnTo(y) {
+  while (JB.topY < y) {
+    const P = jbParams(JB.topY);
+    JB.topY += P.gap * (0.85 + Math.random() * 0.25);
+    const w = P.pw, x = Math.random() * (JB.W - w);
+    JB.plats.push({ x, y: JB.topY, w, dx: (Math.random() < 0.5 ? -1 : 1) * P.speed * (0.6 + Math.random() * 0.8), spike: JB.topY > 150 && Math.random() < P.spike, el: null });
+  }
+}
+function jbHud() { $("playHud").innerHTML = `<span>Score <b>${jbScore()}</b></span><span>${"❤️".repeat(Math.max(0, JB.lives))}${"🖤".repeat(Math.max(0, 3 - JB.lives))}</span><span>Reward <b>10</b></span>`; }
+function jbRespawn() {
+  const B = JB;
+  const vis = B.plats.filter(p => p.y >= B.camY + 30 && !p.spike).sort((a, b) => a.y - b.y);
+  const p = vis[0] || B.plats.filter(p => !p.spike).sort((a, b) => b.y - a.y)[0];
+  if (!p) return;
+  B.x = p.x + p.w / 2; B.y = p.y + JB_R; B.vy = JB_BOUNCE; B.vx = 0; B.camY = Math.min(B.camY, B.y - B.H * 0.45);
+}
+function jbLose() {
+  JB.lives--; SFX.play("lose");
+  if (JB.lives <= 0) return jbEnd();
+  jbRespawn();
+}
+function jbEnd() {
+  if (JB.dead) return;
+  JB.dead = true; JB.on = false; cancelAnimationFrame(JB.raf);
+  const s = jbScore();
+  setDaily({ bestJumbo: Math.max(dayOf("bestJumbo"), s) }).catch(() => {});
+  showResult("Jumbo Ball", s, 10, `Height ${Math.floor(JB.maxY)}px · Har game 10 coins`, "gJumbo", startJumbo);
+}
+function jbStep(dt) {
+  const B = JB;
+  if (B.hold) B.vx += (B.hold * 0.9 - B.vx) * Math.min(1, 0.18 * dt); else B.vx *= Math.pow(0.9, dt);
+  B.x += B.vx * dt;
+  if (B.x < JB_R) { B.x = JB_R; B.vx = 0; }
+  if (B.x > B.W - JB_R) { B.x = B.W - JB_R; B.vx = 0; }
+  const prevBottom = B.y - JB_R;
+  B.vy -= JB_G * dt; B.y += B.vy * dt;
+  if (B.y > B.maxY) B.maxY = B.y;
+  for (const p of B.plats) {
+    p.x += p.dx * dt;
+    if (p.x < 0) { p.x = 0; p.dx = Math.abs(p.dx); }
+    if (p.x + p.w > B.W) { p.x = B.W - p.w; p.dx = -Math.abs(p.dx); }
+  }
+  if (B.vy < 0) for (const p of B.plats) {
+    if (B.x < p.x - 4 || B.x > p.x + p.w + 4) continue;
+    const bottom = B.y - JB_R;
+    if (prevBottom >= p.y - 2 && bottom <= p.y + 6) {
+      if (p.spike) return jbLose();
+      B.y = p.y + JB_R; B.vy = JB_BOUNCE; SFX.play("bounce"); break;
+    }
+  }
+  B.camY = Math.max(B.camY, B.y - B.H * 0.4);
+  if (B.y < B.camY - 70) return jbLose();
+  jbSpawnTo(B.camY + B.H + 900);
+  B.plats = B.plats.filter(p => { if (p.y < B.camY - 200) { if (p.el) p.el.remove(); return false; } return true; });
+}
+function jbDraw() {
+  const B = JB, w = B.wrap; if (!w) return;
+  for (const p of B.plats) {
+    if (!p.el) {
+      p.el = document.createElement("div");
+      p.el.style.cssText = `position:absolute;height:12px;width:${p.w}px;border-radius:7px;background:${p.spike ? "linear-gradient(90deg,#7f1d1d,#ef4444,#7f1d1d)" : "linear-gradient(90deg,#34d399,#10b981)"};box-shadow:0 3px 0 rgba(0,0,0,.25)`;
+      w.appendChild(p.el);
+    }
+    p.el.style.left = p.x + "px"; p.el.style.top = (B.H - (p.y - B.camY)) + "px";
+  }
+  B.ballEl.style.left = (B.x - JB_R) + "px"; B.ballEl.style.top = (B.H - (B.y - B.camY) - JB_R) + "px";
+  jbHud();
+}
+function jbFrame(now) {
+  if (!JB.on) return;
+  const dt = Math.min(2.2, Math.max(0.2, (now - JB.last) / 16.67));
+  JB.last = now;
+  jbStep(dt);
+  if (JB.on) { jbDraw(); JB.raf = requestAnimationFrame(jbFrame); }
+}
+function startJumbo() {
+  if (dayOf("gJumbo") >= 10) return toast("Aaj ke 10 Jumbo Ball games khatam. Kal phir khelo.");
+  clearTimers(); PLAY = { done: false }; CD.on = false; FS.on = false; hideOv();
+  setDaily({ gJumbo: dayOf("gJumbo") + 1 }).catch(() => {});
+  $("playTitle").textContent = "Jumbo Ball";
+  $("playResult").classList.add("hidden"); $("playResult").innerHTML = "";
+  $("playBoard").innerHTML = ""; show("play");
+  mountBanner("slotPlayBanner", SET.banners.big, 300, 250); $("slotPlayBanner").classList.remove("hidden");
+  JB.lives = 3; JB.dead = false;
+  const wrap = $("playBoard");
+  const w = document.createElement("div");
+  w.style.cssText = `position:relative;width:100%;height:${JB.H}px;overflow:hidden;border-radius:20px;background:linear-gradient(180deg,#1e1b4b 0%,#4c1d95 60%,#c4b5fd 100%)`;
+  wrap.appendChild(w); JB.wrap = w; JB.W = w.clientWidth || 300;
+  JB.ballEl = document.createElement("div");
+  JB.ballEl.style.cssText = `position:absolute;width:${2 * JB_R}px;height:${2 * JB_R}px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff,#fde047 35%,#f97316 80%);box-shadow:0 6px 12px rgba(0,0,0,.4)`;
+  w.appendChild(JB.ballEl);
+  JB.plats = [{ x: JB.W / 2 - 70, y: 0, w: 140, dx: 0, spike: false, el: null }];
+  JB.topY = 0; jbSpawnTo(JB.H + 800);
+  JB.x = JB.W / 2; JB.y = JB_R + 4; JB.vy = JB_BOUNCE; JB.vx = 0; JB.camY = 0; JB.hold = 0; JB.maxY = JB.y;
+  const up = () => { JB.hold = 0; };
+  w.onpointerdown = e => { const r = w.getBoundingClientRect(); JB.hold = (e.clientX - r.left) < r.width / 2 ? -1 : 1; };
+  w.onpointerup = up; w.onpointercancel = up; w.onpointerleave = up;
+  $("playMsg").textContent = "Screen ke left ya right hisse ko daba kar rakho. Spikes se bacho.";
+  JB.on = true; JB.last = performance.now();
+  cancelAnimationFrame(JB.raf); JB.raf = requestAnimationFrame(jbFrame);
+  jbDraw();
+}
+
+// ---------- Fruit Slice: swipe to slice, bombs end the run, 3 chances ----------
+const FS = { on: false, lives: 3, W: 300, H: 440, cv: null, ctx: null, dpr: 1, objs: [], parts: [], trail: [], down: false, lx: 0, ly: 0, sliced: 0, spawnT: 0, raf: 0, last: 0 };
+const FS_G = 0.2;
+const FS_COL = [["#ef4444", "#fecaca"], ["#f59e0b", "#fef3c7"], ["#22c55e", "#dcfce7"], ["#a855f7", "#f3e8ff"], ["#f472b6", "#fce7f3"], ["#eab308", "#fef9c3"]];
+const fsInterval = () => Math.max(320, 900 - 15 * FS.sliced);
+const fsBombP = () => Math.min(0.35, 0.08 + 0.005 * FS.sliced);
+function fsSpawn() {
+  const W = FS.W, H = FS.H;
+  const bomb = Math.random() < fsBombP();
+  const r = bomb ? 19 : 20 + Math.random() * 6;
+  const col = FS_COL[(Math.random() * FS_COL.length) | 0];
+  const x = r + Math.random() * (W - 2 * r);
+  const peak = H * (0.6 + Math.random() * 0.22);
+  const vy = -Math.sqrt(2 * FS_G * peak);
+  const vx = (W / 2 - x) * 0.006 + (Math.random() - 0.5) * 1.4;
+  FS.objs.push({ x, y: H + r, vx, vy, r, bomb, col, sliced: false });
+}
+function fsBurst(x, y, color, n) {
+  for (let i = 0; i < n; i++) {
+    const a = Math.random() * Math.PI * 2, s = 1 + Math.random() * 4;
+    FS.parts.push({ x, y, vx: Math.cos(a) * s, vy: Math.sin(a) * s - 2, life: 0.6 + Math.random() * 0.5, color, r: 2 + Math.random() * 3 });
+  }
+}
+function fsStep(dt) {
+  FS.spawnT += dt * 16.67;
+  if (FS.spawnT >= fsInterval()) { FS.spawnT = 0; fsSpawn(); if (Math.random() < 0.3) fsSpawn(); }
+  for (const o of FS.objs) { o.vy += FS_G * dt; o.x += o.vx * dt; o.y += o.vy * dt; }
+  const keep = [];
+  for (const o of FS.objs) {
+    if (o.sliced) continue;
+    if (o.y - o.r > FS.H && o.vy > 0) {
+      if (!o.bomb) { FS.lives--; SFX.play("miss"); $("playMsg").textContent = "Fruit chhut gaya! 1 chance kam."; if (FS.lives <= 0) { fsEnd(); return; } }
+      continue;
+    }
+    keep.push(o);
+  }
+  FS.objs = keep;
+  for (const p of FS.parts) { p.life -= dt; p.vy += 0.25 * dt; p.x += p.vx * dt; p.y += p.vy * dt; }
+  FS.parts = FS.parts.filter(p => p.life > 0);
+  for (const t of FS.trail) t.life -= dt / 60;
+  FS.trail = FS.trail.filter(t => t.life > 0);
+}
+function fsSegHit(o, x1, y1, x2, y2) {
+  const dx = x2 - x1, dy = y2 - y1, L2 = dx * dx + dy * dy;
+  let t = L2 ? ((o.x - x1) * dx + (o.y - y1) * dy) / L2 : 0;
+  t = Math.max(0, Math.min(1, t));
+  const px = x1 + t * dx, py = y1 + t * dy;
+  return (o.x - px) ** 2 + (o.y - py) ** 2 <= (o.r + 8) ** 2;
+}
+function fsSlice(x1, y1, x2, y2) {
+  if (!FS.on) return;
+  for (const o of FS.objs) {
+    if (o.sliced || !fsSegHit(o, x1, y1, x2, y2)) continue;
+    o.sliced = true;
+    if (o.bomb) { SFX.play("bomb"); fsBurst(o.x, o.y, "#111827", 30); return fsEnd(); }
+    FS.sliced++; SFX.play("slice"); fsBurst(o.x, o.y, o.col[0], 14);
+  }
+}
+function fsPos(e) { const r = FS.cv.getBoundingClientRect(); return [(e.clientX - r.left) * (FS.W / r.width), (e.clientY - r.top) * (FS.H / r.height)]; }
+function fsDraw() {
+  const ctx = FS.ctx, W = FS.W, H = FS.H;
+  ctx.setTransform(FS.dpr, 0, 0, FS.dpr, 0, 0);
+  const g = ctx.createLinearGradient(0, 0, 0, H); g.addColorStop(0, "#1e1b4b"); g.addColorStop(1, "#7c3aed");
+  ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+  for (const o of FS.objs) {
+    if (o.sliced) continue;
+    ctx.save();
+    if (o.bomb) {
+      ctx.fillStyle = "#111827"; ctx.beginPath(); ctx.arc(o.x, o.y, o.r, 0, Math.PI * 2); ctx.fill();
+      ctx.strokeStyle = "#f59e0b"; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(o.x, o.y - o.r); ctx.quadraticCurveTo(o.x + 6, o.y - o.r - 10, o.x + 12, o.y - o.r - 6); ctx.stroke();
+      ctx.fillStyle = "#fb923c"; ctx.beginPath(); ctx.arc(o.x + 12, o.y - o.r - 6, 3, 0, Math.PI * 2); ctx.fill();
+    } else {
+      const rg = ctx.createRadialGradient(o.x - o.r * 0.35, o.y - o.r * 0.35, o.r * 0.1, o.x, o.y, o.r);
+      rg.addColorStop(0, o.col[1]); rg.addColorStop(0.6, o.col[0]); rg.addColorStop(1, "#0008");
+      ctx.fillStyle = rg; ctx.beginPath(); ctx.arc(o.x, o.y, o.r, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = "#ffffff77"; ctx.beginPath(); ctx.arc(o.x - o.r * 0.35, o.y - o.r * 0.35, o.r * 0.22, 0, Math.PI * 2); ctx.fill();
+    }
+    ctx.restore();
+  }
+  for (const p of FS.parts) { ctx.globalAlpha = Math.max(0, p.life); ctx.fillStyle = p.color; ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2); ctx.fill(); }
+  ctx.globalAlpha = 1;
+  if (FS.trail.length > 1) {
+    ctx.strokeStyle = "#ffffff"; ctx.lineCap = "round";
+    for (let i = 1; i < FS.trail.length; i++) {
+      const a = FS.trail[i - 1], b = FS.trail[i], k = Math.max(0, Math.min(1, b.life / 0.35));
+      ctx.globalAlpha = k; ctx.lineWidth = 2 + 4 * k; ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
+    }
+    ctx.globalAlpha = 1;
+  }
+  fsHud();
+}
+function fsHud() { $("playHud").innerHTML = `<span>Score <b>${FS.sliced * 10}</b></span><span>${"❤️".repeat(Math.max(0, FS.lives))}${"🖤".repeat(Math.max(0, 3 - FS.lives))}</span><span>Reward <b>10</b></span>`; }
+function fsFrame(now) {
+  if (!FS.on) return;
+  const dt = Math.min(2.2, Math.max(0.2, (now - FS.last) / 16.67));
+  FS.last = now;
+  fsStep(dt);
+  if (FS.on) { fsDraw(); FS.raf = requestAnimationFrame(fsFrame); }
+}
+function fsEnd() {
+  if (!FS.on) return;
+  FS.on = false; cancelAnimationFrame(FS.raf);
+  const s = FS.sliced * 10;
+  setDaily({ bestFruit: Math.max(dayOf("bestFruit"), s) }).catch(() => {});
+  showResult("Fruit Slice", s, 10, `${FS.sliced} fruit kaate. Har game 10 coins.`, "gFruit", startFruit);
+}
+function startFruit() {
+  if (dayOf("gFruit") >= 10) return toast("Aaj ke 10 Fruit Slice games khatam. Kal phir khelo.");
+  clearTimers(); PLAY = { done: false }; CD.on = false; JB.on = false; hideOv();
+  setDaily({ gFruit: dayOf("gFruit") + 1 }).catch(() => {});
+  $("playTitle").textContent = "Fruit Slice";
+  $("playResult").classList.add("hidden"); $("playResult").innerHTML = "";
+  const board = $("playBoard"); board.innerHTML = ""; show("play");
+  mountBanner("slotPlayBanner", SET.banners.big, 300, 250); $("slotPlayBanner").classList.remove("hidden");
+  const cv = document.createElement("canvas");
+  cv.style.cssText = "width:100%;height:440px;border-radius:20px;touch-action:none;display:block;cursor:crosshair";
+  board.appendChild(cv);
+  FS.cv = cv; FS.ctx = cv.getContext("2d");
+  FS.dpr = Math.min(2, window.devicePixelRatio || 1); FS.W = cv.clientWidth || 300; FS.H = 440;
+  cv.width = FS.W * FS.dpr; cv.height = FS.H * FS.dpr;
+  cv.onpointerdown = e => { cv.setPointerCapture(e.pointerId); FS.down = true; const [x, y] = fsPos(e); FS.lx = x; FS.ly = y; FS.trail.push({ x, y, life: 0.35 }); };
+  cv.onpointermove = e => { if (!FS.down) return; const [x, y] = fsPos(e); fsSlice(FS.lx, FS.ly, x, y); FS.trail.push({ x, y, life: 0.35 }); FS.lx = x; FS.ly = y; };
+  const up = () => { FS.down = false; };
+  cv.onpointerup = up; cv.onpointercancel = up;
+  FS.lives = 3; FS.sliced = 0; FS.objs = []; FS.parts = []; FS.trail = []; FS.spawnT = fsInterval(); FS.down = false;
+  $("playMsg").textContent = "Fruit ko swipe karke kaato. Bomb mat kaatna!";
+  FS.on = true; FS.last = performance.now();
+  cancelAnimationFrame(FS.raf); FS.raf = requestAnimationFrame(fsFrame);
+  fsHud();
+}
+
+// ---------- card tiles ----------
+function logoTile(svg, bg) { return `<span class="logo-tile" style="background:${bg}">${svg}</span>`; }
+const LOGO_CANDY = `<svg viewBox="0 0 48 48" width="36" height="36"><circle cx="17" cy="18" r="11" fill="#ef4444"/><circle cx="32" cy="16" r="9" fill="#facc15"/><circle cx="19" cy="34" r="10" fill="#22c55e"/><circle cx="34" cy="33" r="9" fill="#60a5fa"/><circle cx="13" cy="13" r="3" fill="#fff" opacity=".85"/><circle cx="28" cy="12" r="2.5" fill="#fff" opacity=".85"/><circle cx="15" cy="30" r="2.5" fill="#fff" opacity=".85"/><circle cx="30" cy="29" r="2.5" fill="#fff" opacity=".85"/></svg>`;
+const LOGO_BALL = `<svg viewBox="0 0 48 48" width="36" height="36"><defs><radialGradient id="jbgLogo" cx=".35" cy=".3" r=".8"><stop offset="0" stop-color="#fff"/><stop offset=".35" stop-color="#fde047"/><stop offset=".85" stop-color="#f97316"/></radialGradient></defs><rect x="8" y="38" width="32" height="6" rx="3" fill="#34d399"/><circle cx="24" cy="22" r="13" fill="url(#jbgLogo)"/></svg>`;
+const LOGO_FRUIT = `<svg viewBox="0 0 48 48" width="36" height="36"><circle cx="24" cy="27" r="16" fill="#ef4444"/><path d="M24 11 q2 -6 8 -6" stroke="#166534" stroke-width="3" fill="none" stroke-linecap="round"/><ellipse cx="32" cy="10" rx="6" ry="3" fill="#22c55e" transform="rotate(-20 32 10)"/><path d="M6 14 L42 40" stroke="#fff" stroke-width="3" stroke-linecap="round" opacity=".9"/><circle cx="17" cy="22" r="3" fill="#fff" opacity=".7"/></svg>`;
+$("playBack").onclick = () => { CD.on = false; JB.on = false; FS.on = false; cancelAnimationFrame(JB.raf); cancelAnimationFrame(FS.raf); clearTimers(); hideOv(); go("home"); };
+
 // ---------- watch ads (rewarded, one per click, daily limit) ----------
 function renderAds() {
   const used = dayOf("ads"), r = SET.adReward || DEF.adReward;
@@ -769,7 +1295,7 @@ document.addEventListener("click", async e => {
   const a = SET.adReward || DEF.adReward;
   if (dayOf("ads") >= SET.adDailyLimit) return toast("Aaj ki ad limit khatam");
   b.disabled = true;
-  const ok = await playAd("reward");
+  const ok = await runLevelAd();
   if (ok) { try { await credit(a.coins, "Watch Ad (" + a.sec + "s)"); await markDaily("ads", undefined, dayOf("ads") + 1); toast("+" + a.coins + " coins!"); } catch (err) { toast(err.message); } }
   renderAds();
 });
@@ -804,7 +1330,7 @@ function renderReferral() {
   $("rCode").textContent = ME.referCode || "--";
   $("rEarn").textContent = SET.referralReferrer + " coins / friend";
   $("rFriend").textContent = SET.referralReferee + " coins joining";
-  const link = location.origin + location.pathname + "?ref=" + ME.referCode;
+  const link = (SET.referralBot || DEF.referralBot) + "?start=" + ME.referCode;
   $("rLink").textContent = link;
   const msg = encodeURIComponent("Coinblast 2.0 join karo aur coins kamao! Mera code: " + ME.referCode + " " + link);
   $("shWa").href = "https://wa.me/?text=" + msg;
@@ -813,7 +1339,7 @@ function renderReferral() {
   const list = Object.values(REFS || {}).sort((a, b) => b.ts - a.ts);
   $("rList").innerHTML = list.length ? list.map(r => `<div class="flex justify-between border-b border-slate-100 py-1.5"><span>${esc(r.name)}</span><span class="text-slate-500">${new Date(r.ts).toLocaleDateString("en-IN")}</span></div>`).join("") : '<p class="text-slate-500">Abhi koi referral nahi. Code share karo!</p>';
 }
-$("rCopy").onclick = () => navigator.clipboard && navigator.clipboard.writeText(ME.referCode).then(() => toast("Code copy ho gaya")).catch(() => toast(ME.referCode));
+$("rCopy").onclick = () => { const l = $("rLink").textContent; navigator.clipboard && navigator.clipboard.writeText(l).then(() => toast("Referral link copy ho gaya")).catch(() => toast(l)); };
 $("shMore").onclick = () => { if (navigator.share) navigator.share({ title: "Coinblast 2.0", text: "Mera code: " + ME.referCode, url: $("rLink").textContent }).catch(() => {}); else toast("Link copy karke share karo"); };
 
 // ---------- wallet / redeem ----------
@@ -828,18 +1354,26 @@ function renderWallet() {
 }
 const RED_NAMES = { upi: "UPI", gplay: "Google Play Gift Card", amazon: "Amazon Gift Card" };
 let REDV = "upi";
-document.querySelectorAll("[data-redopt]").forEach(b => b.onclick = () => { REDV = b.dataset.redopt; renderRedeem(); });
+const redOn = k => !(SET.redeemOptions && SET.redeemOptions[k] === false);
+document.querySelectorAll("[data-redopt]").forEach(b => b.onclick = () => { if (!redOn(b.dataset.redopt)) return toast("Coming soon"); REDV = b.dataset.redopt; renderRedeem(); });
 function renderRedeem() {
   if (!ME) return;
-  document.querySelectorAll("[data-redopt]").forEach(b => { const on = b.dataset.redopt === REDV; b.classList.toggle("border-violet-600", on); b.classList.toggle("bg-violet-50", on); b.classList.toggle("text-violet-700", on); b.classList.toggle("border-slate-200", !on); });
+  document.querySelectorAll("[data-redopt]").forEach(b => {
+    const k = b.dataset.redopt, on = k === REDV, ok = redOn(k);
+    b.classList.toggle("border-violet-600", on); b.classList.toggle("bg-violet-50", on); b.classList.toggle("text-violet-700", on); b.classList.toggle("border-slate-200", !on);
+    b.style.opacity = ok ? "" : ".45"; b.title = ok ? "" : "Coming soon";
+  });
+  const soon = !redOn(REDV);
+  $("redBtn").disabled = soon; $("redBtn").textContent = soon ? "Coming soon" : "Request Redeem";
   $("redAcc").placeholder = REDV === "upi" ? "UPI ID" : "Email ya phone (gift card ke liye)";
   $("redBal").textContent = `Balance: ${ME.balance || 0} coins · Min ${SET.minRedeemCoins} · Max ${SET.maxRedeemCoins || 24000}`;
   const c = Math.floor(Number($("redCoins").value) || 0);
-  $("redInfo").textContent = "= ₹" + (c / SET.coinsPerRupee).toFixed(2);
+  $("redInfo").textContent = soon ? "Ye option abhi coming soon hai" : "= ₹" + (c / SET.coinsPerRupee).toFixed(2);
 }
 $("redCoins").addEventListener("input", renderRedeem);
 $("redForm").onsubmit = async e => {
   e.preventDefault();
+  if (!redOn(REDV)) return toast("Coming soon");
   const acc = $("redAcc").value.trim(), coins = Math.floor(Number($("redCoins").value));
   const max = SET.maxRedeemCoins || 24000;
   if (acc.length < 4) return toast("Account / ID daalo");
@@ -858,7 +1392,7 @@ $("redForm").onsubmit = async e => {
     $("redCoins").value = ""; $("redAcc").value = "";
     toast("Redeem request bhej di. 24 ghante mein."); go("wallet");
   } catch (err) { toast(err.message || fmtErr(err)); }
-  finally { $("redBtn").disabled = false; }
+  finally { renderRedeem(); }
 };
 
 // ---------- history / leaderboard / profile / support ----------
@@ -868,12 +1402,34 @@ function renderHistory() {
   $("txList").innerHTML = list.length ? list.map(x => `<div class="flex justify-between items-center py-2 border-b border-slate-100"><span><b class="block text-sm">${esc(x.reason)}</b><small class="text-slate-500">${new Date(x.ts).toLocaleString("en-IN")}</small></span><b class="${x.type === "credit" ? "text-green-600" : "text-red-500"}">${x.type === "credit" ? "+" : "-"}${x.coins}</b></div>`).join("") : '<p class="text-slate-500 py-4 text-center">Abhi koi entry nahi.</p>';
 }
 document.querySelectorAll("[data-lf]").forEach(b => b.onclick = () => { LF = b.dataset.lf; document.querySelectorAll("[data-lf]").forEach(x => x.classList.toggle("on", x === b)); renderLeader(); });
-function renderLeader() {
+function lbRows() {
   const w = istWeek(), m = istMonth();
-  const rows = Object.entries(LB || {}).map(([uid, u]) => ({ uid, name: u.name, score: LF === "total" ? (u.total || 0) : LF === "week" ? (u.week && u.week.k === w ? u.week.c : 0) : (u.month && u.month.k === m ? u.month.c : 0) })).filter(r => r.score > 0).sort((a, b) => b.score - a.score);
-  const me = rows.findIndex(r => r.uid === UID);
-  $("lbList").innerHTML = rows.length ? rows.slice(0, 20).map((r, i) => `<div class="flex items-center justify-between py-1.5 ${i === 0 ? "bg-amber-50 rounded-lg px-2 font-extrabold" : ""} ${r.uid === UID ? "text-violet-700" : ""}"><span>${i === 0 ? '<i class="fa-solid fa-crown text-amber-500 mr-1"></i>' : ""}${i + 1}. ${esc(r.name)}</span><span>${r.score} <i class="fa-solid fa-coins text-amber-500"></i></span></div>`).join("") + (me >= 0 ? `<p class="mt-2 text-slate-500">Aapka rank: #${me + 1}</p>` : "") : '<p class="text-slate-500 py-4 text-center">Abhi koi score nahi.</p>';
+  return Object.entries(LB || {}).map(([uid, u]) => ({ uid, name: u.name || "User", score: LF === "total" ? (u.total || 0) : LF === "week" ? (u.week && u.week.k === w ? u.week.c : 0) : (u.month && u.month.k === m ? u.month.c : 0) })).filter(r => r.score > 0).sort((a, b) => b.score - a.score);
 }
+function podiumHTML(rows) {
+  const col = ["#f59e0b", "#94a3b8", "#d97706"], ht = [120, 90, 74], order = [1, 0, 2];
+  return order.map((ix, k) => {
+    const r = rows[ix];
+    if (!r) return "<div></div>";
+    return `<div class="text-center">${ix === 0 ? '<i class="fa-solid fa-crown text-amber-500 text-lg"></i>' : ""}<div class="mx-auto w-11 h-11 rounded-full grid place-items-center font-black text-white" style="background:${col[ix]}">${esc((r.name[0] || "?").toUpperCase())}</div><p class="text-xs font-bold mt-1 truncate">${esc(r.name)}</p><div class="rounded-t-xl text-white font-black text-xs pt-2" style="height:${ht[k]}px;background:${col[ix]}">#${ix + 1}<br><span class="text-[11px]">${r.score}</span></div></div>`;
+  }).join("");
+}
+function renderLeader() {
+  const rows = lbRows(), me = rows.findIndex(r => r.uid === UID);
+  $("lbPodium").innerHTML = rows.length ? podiumHTML(rows) : '<p class="col-span-3 text-center text-slate-500 text-xs py-4">Abhi koi score nahi.</p>';
+  $("lbList").innerHTML = rows.slice(3, 30).map((r, i) => `<div class="flex items-center gap-3 py-2 border-b border-slate-100 ${r.uid === UID ? "bg-violet-50 rounded-lg px-2" : ""}"><span class="w-6 text-center text-xs font-bold text-slate-500">${i + 4}</span><span class="w-8 h-8 rounded-full bg-violet-100 text-violet-700 font-bold grid place-items-center text-xs">${esc((r.name[0] || "?").toUpperCase())}</span><span class="flex-1 min-w-0 truncate text-sm font-semibold">${esc(r.name)}</span><span class="font-bold text-sm">${r.score}</span></div>`).join("");
+  $("lbMe").innerHTML = me >= 0 ? `Aapka rank: <b>#${me + 1}</b> · Score: <b>${rows[me].score}</b> coins` : "Aap abhi leaderboard par nahi ho. Coins kamao!";
+}
+function renderHomeLb() {
+  const el = $("homeLb"); if (!el) return;
+  const rows = lbRows().slice(0, 5);
+  el.innerHTML = rows.length ? rows.map((r, i) => `<div class="flex items-center gap-2 py-1.5 text-xs border-b border-slate-100 last:border-0"><span class="w-5 font-black ${i === 0 ? "text-amber-500" : "text-slate-500"}">${i + 1}</span><span class="flex-1 truncate font-semibold">${esc(r.name)}</span><span class="font-bold">${r.score}</span></div>`).join("") : '<p class="text-xs text-slate-500">Abhi koi score nahi.</p>';
+}
+function renderRedHist() {
+  const list = Object.values(WDS || {}).sort((a, b) => b.createdAt - a.createdAt);
+  $("redList").innerHTML = list.length ? list.map(x => `<div class="border-b border-slate-100 pb-2"><div class="flex justify-between"><span><b class="text-sm">${esc(RED_NAMES[x.method] || x.method)}</b><br><span class="text-slate-500">${x.coins} coins · ₹${x.inr} · ${new Date(x.createdAt).toLocaleDateString("en-IN")}</span></span><span class="font-bold ${x.status === "approved" ? "text-green-600" : x.status === "rejected" ? "text-red-500" : "text-amber-600"}">${esc(x.status)}</span></div>${x.giftCode ? `<div class="mt-2 flex items-center justify-between bg-green-50 rounded-lg p-2"><span>Gift code: <b class="tracking-wider select-all">${esc(x.giftCode)}</b></span><button data-copycode="${esc(x.giftCode)}" class="ghost px-2 py-1 rounded text-[11px]">Copy</button></div>` : ""}</div>`).join("") : '<p class="text-slate-500">Abhi koi redeem request nahi.</p>';
+}
+document.addEventListener("click", e => { const b = e.target.closest("[data-copycode]"); if (b) navigator.clipboard && navigator.clipboard.writeText(b.dataset.copycode).then(() => toast("Code copy ho gaya")).catch(() => toast(b.dataset.copycode)); });
 function renderProfile() { if (!ME) return; $("pName").textContent = ME.name; $("pPhone").textContent = ME.phone; $("pAvatar").textContent = (ME.name[0] || "?").toUpperCase(); }
 function renderSupport() {
   const s = SET.support || {};
