@@ -98,6 +98,12 @@
   header h1{font-weight:900!important;letter-spacing:-.01em}
   .card{transition:transform .15s ease}
   .card:active{transform:scale(.99)}
+
+  .redopt{position:relative}
+  .redopt[data-soon="1"]::after{content:none!important;display:none!important}
+  .redopt[data-soon="1"]::before{content:"COMING";position:absolute;top:-9px;right:-6px;background:linear-gradient(135deg,#f59e0b,#f97316);color:#fff;font-size:9px;font-weight:900;letter-spacing:.08em;padding:3px 8px;border-radius:999px;box-shadow:0 6px 10px -5px rgba(0,0,0,.45);z-index:2}
+  .redopt[data-soon="1"] .rd-ico{filter:grayscale(.9);opacity:.55}
+  .redopt[data-soon="1"]{opacity:1!important}
 </style>
 </head>
 <body>
@@ -308,17 +314,17 @@
       <div>
         <p class="rd-label">Coins</p>
         <div class="flex flex-wrap gap-2 mb-3">
-          <button type="button" class="rd-chip" data-qc="1200">1,200</button>
-          <button type="button" class="rd-chip" data-qc="2400">2,400</button>
+          <button type="button" class="rd-chip" data-qc="1500">1,200</button>
+          <button type="button" class="rd-chip" data-qc="3000">2,400</button>
           <button type="button" class="rd-chip" data-qc="6000">6,000</button>
-          <button type="button" class="rd-chip" data-qc="12000">12,000</button>
-          <button type="button" class="rd-chip" data-qc="24000">24,000</button>
+          <button type="button" class="rd-chip" data-qc="15000">12,000</button>
+          <button type="button" class="rd-chip" data-qc="30000">24,000</button>
         </div>
-        <div class="field"><i class="fa-solid fa-coins"></i><input id="redCoins" type="number" inputmode="numeric" placeholder="Coins (1200 se 24000)"></div>
+        <div class="field"><i class="fa-solid fa-coins"></i><input id="redCoins" type="number" inputmode="numeric" placeholder="Coins (1500 se 30000)"></div>
       </div>
       <div class="rd-preview"><span>Aap ko milega</span><b id="redInfo">= ₹0.00</b></div>
       <button class="btn tap w-full" type="submit" id="redBtn">Request redeem</button>
-      <p class="text-[11px] text-slate-500 text-center">Min ₹10 (1200 coins) · Max ₹200 (24000 coins) · 120 coins = ₹1<br>Redemption usually 24 ghante mein.</p>
+      <p class="text-[11px] text-slate-500 text-center">Min ₹10 (1500 coins) · Max ₹200 (30000 coins) · 150 coins = ₹1<br>Redemption usually 24 ghante mein.</p>
     </form>
   </div>
 </section>
@@ -359,7 +365,6 @@
     <button class="mrow" data-go="leader"><i class="fa-solid fa-trophy"></i>Leaderboard</button>
     <button class="mrow" data-go="support"><i class="fa-solid fa-headset"></i>Support &amp; Settings</button>
     <button class="mrow" data-go="referral"><i class="fa-solid fa-user-group"></i>Referral</button>
-    <button class="mrow text-red-600" data-logout><i class="fa-solid fa-right-from-bracket text-red-600"></i>Logout</button>
   </div></div>
 </section>
 
@@ -454,7 +459,7 @@ const fmtErr = e => {
   if (c.includes("network")) return "Internet check karein";
   return e.message || "Kuch gadbad hui, dobara try karein";
 };
-const DEF = { referralBot: "https://t.me/CoinBlastRewardsBot", coinsPerRupee: 120, minRedeemCoins: 1200, maxRedeemCoins: 24000, referralReferrer: 500, referralReferee: 200, adDailyLimit: 20,
+const DEF = { referralBot: "https://t.me/CoinBlastRewardsBot", coinsPerRupee: 150, minRedeemCoins: 1500, maxRedeemCoins: 30000, referralReferrer: 500, referralReferee: 200, adDailyLimit: 20,
   adReward: { sec: 15, coins: 7 }, banners: { big: "c6270abacc2ed228deca10f82f7babd4", strip: "c18a36997f2f204e63b53f019fb4f19c", native: "198d30c9fbecee26360432020aba1bb2" },
   checkin: [10, 15, 20, 40, 50],
   puzzle: [{ name: "Easy", pairs: 4, coins: 8 }, { name: "Medium", pairs: 6, coins: 8 }, { name: "Hard", pairs: 8, coins: 8 }, { name: "Expert", pairs: 10, coins: 8 }],
@@ -695,7 +700,7 @@ function attachLists() {
   onValue(R("tasksDone/" + UID), s => { DONE = s.exists() ? s.val() : {}; renderOffers(); renderHome(); });
   onValue(R("referrals/" + UID), s => { REFS = s.exists() ? s.val() : {}; renderReferral(); });
   onValue(R("transactions/" + UID), s => { TXS = s.exists() ? s.val() : {}; renderHistory(); renderWallet(); });
-  onValue(R("withdrawals/" + UID), s => { WDS = s.exists() ? s.val() : {}; renderWallet(); renderRedeem(); });
+  onValue(R("withdrawals/" + UID), s => { WDS = s.exists() ? s.val() : {}; renderWallet(); renderRedeem(); checkApproved(); });
 }
 function startNotifs() {}
 async function processBonus() {
@@ -746,10 +751,42 @@ function offerCard(t) {
 }
 function renderOffers() { $("offerAll").innerHTML = OFFERS.map(offerCard).join("") || '<p class="text-sm text-slate-500">Abhi koi offer nahi.</p>'; }
 document.addEventListener("click", e => { const b = e.target.closest("[data-offer]"); if (b) { const t = OFFERS.find(x => x.id === b.dataset.offer); if (t) openOffer(t); } });
+function shrinkImage(file, maxW, q) {
+  return new Promise((res, rej) => {
+    const img = new Image();
+    img.onload = () => { const s = Math.min(1, maxW / img.width); const c = document.createElement("canvas"); c.width = Math.round(img.width * s); c.height = Math.round(img.height * s); c.getContext("2d").drawImage(img, 0, 0, c.width, c.height); res(c.toDataURL("image/jpeg", q)); };
+    img.onerror = () => rej(new Error("Image load nahi hui"));
+    img.src = URL.createObjectURL(file);
+  });
+}
+function proofPanel(t) {
+  PLAY.done = true; clearTimers();
+  $("playTitle").textContent = "Screenshot upload";
+  $("playMsg").textContent = "Offer complete karne ka screenshot daalo.";
+  $("playResult").classList.add("hidden"); $("playResult").innerHTML = "";
+  $("playHud").innerHTML = `<span>${esc(t.title)}</span><span>Proof</span>`;
+  $("playBoard").innerHTML = `<div class="card p-4 space-y-3"><p class="font-extrabold">Screenshot upload</p><p class="text-xs text-slate-500">Admin check karega. Approve hone par coins milenge (12-24 ghante).</p><input id="pfFile" type="file" accept="image/*" class="block w-full text-sm"><img id="pfPrev" class="hidden rounded-xl max-h-64 mx-auto"><button id="pfSend" class="btn tap w-full" disabled>Upload karo</button></div>`;
+  $("pfFile").onchange = async e => {
+    const f = e.target.files[0]; if (!f) return;
+    try { const url = await shrinkImage(f, 900, 0.7); $("pfPrev").src = url; $("pfPrev").classList.remove("hidden"); $("pfSend").dataset.img = url; $("pfSend").disabled = false; }
+    catch (err) { toast(err.message); }
+  };
+  $("pfSend").onclick = async () => {
+    const img = $("pfSend").dataset.img; if (!img) return;
+    $("pfSend").disabled = true;
+    try {
+      await set(R(`proofs/${UID}/${t.id}`), { img, status: "pending", title: t.title, coins: t.reward || 0, at: Date.now() });
+      await set(R(`tasksDone/${UID}/${t.id}`), istDay());
+      toast("Screenshot bhej diya. Admin check karega."); go("offers");
+    } catch (err) { $("pfSend").disabled = false; toast(err.message || "Upload nahi hua"); }
+  };
+  return "stay";
+}
 function openOffer(t) {
   if (DONE[t.id] === istDay()) return toast("Ye offer aaj complete ho chuka hai. Kal phir aana.");
   if (t.link) window.open(t.link, "_blank");
   startTimedPlay(t.title, `<p class="text-center text-xs text-slate-600">${esc(t.description || "Join karo aur timer poora hone tak raho.")}</p>`, t.seconds || 20, async () => {
+    if (t.proof) return proofPanel(t);
     await credit(t.reward || 0, "Offer: " + t.title); await set(R(`tasksDone/${UID}/${t.id}`), istDay()); toast("+" + (t.reward || 0) + " coins!");
   });
 }
@@ -781,7 +818,7 @@ function startTimedPlay(title, body, seconds, onDone) {
     const ok = await gateAd().catch(() => false);
     // the amount is added inside onDone so it runs only after the ad
     if (!ok) { btn.disabled = false; return; }
-    PLAY.done = true; clearTimers(); await onDone(); go("home");
+    PLAY.done = true; clearTimers(); const r = await onDone(); if (r !== "stay") go("home");
   };
 }
 
@@ -1201,8 +1238,14 @@ function startJumbo() {
   JB.lives = 3; JB.dead = false;
   const wrap = $("playBoard");
   const w = document.createElement("div");
-  w.style.cssText = `position:relative;width:100%;height:${JB.H}px;overflow:hidden;border-radius:20px;background:linear-gradient(180deg,#1e1b4b 0%,#4c1d95 60%,#c4b5fd 100%)`;
+  w.style.cssText = `position:relative;width:100%;height:${JB.H}px;overflow:hidden;border-radius:20px;touch-action:none;background:linear-gradient(180deg,#1e1b4b 0%,#4c1d95 60%,#c4b5fd 100%)`;
   wrap.appendChild(w); JB.wrap = w; JB.W = w.clientWidth || 300;
+  const ctl = document.createElement("div");
+  ctl.className = "flex gap-3 mt-3"; ctl.style.touchAction = "none";
+  ctl.innerHTML = `<button id="jbL" class="btn flex-1" style="touch-action:none">◀ Left</button><button id="jbR" class="btn flex-1" style="touch-action:none">Right ▶</button>`;
+  wrap.appendChild(ctl);
+  const bindHold = (el, d) => { el.onpointerdown = e => { e.preventDefault(); JB.hold = d; }; el.onpointerup = el.onpointercancel = el.onpointerleave = () => { JB.hold = 0; }; };
+  bindHold($("jbL"), -1); bindHold($("jbR"), 1);
   JB.ballEl = document.createElement("div");
   JB.ballEl.style.cssText = `position:absolute;width:${2 * JB_R}px;height:${2 * JB_R}px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff,#fde047 35%,#f97316 80%);box-shadow:0 6px 12px rgba(0,0,0,.4)`;
   w.appendChild(JB.ballEl);
@@ -1436,7 +1479,7 @@ function renderRedeem() {
   document.querySelectorAll("[data-redopt]").forEach(b => {
     const k = b.dataset.redopt, on = k === REDV, ok = redOn(k);
     b.classList.toggle("border-violet-600", on); b.classList.toggle("bg-violet-50", on); b.classList.toggle("text-violet-700", on); b.classList.toggle("border-slate-200", !on);
-    b.style.opacity = ok ? "" : ".45"; b.title = ok ? "" : "Coming soon";
+    b.title = ok ? "" : "Coming soon";
   });
   const soon = !redOn(REDV);
   $("redBtn").disabled = soon; $("redBtn").textContent = soon ? "Coming soon" : "Request Redeem";
@@ -1501,6 +1544,22 @@ function renderHomeLb() {
   const el = $("homeLb"); if (!el) return;
   const rows = lbRows().slice(0, 5);
   el.innerHTML = rows.length ? rows.map((r, i) => `<div class="flex items-center gap-2 py-1.5 text-xs border-b border-slate-100 last:border-0"><span class="w-5 font-black ${i === 0 ? "text-amber-500" : "text-slate-500"}">${i + 1}</span><span class="flex-1 truncate font-semibold">${esc(r.name)}</span><span class="font-bold">${r.score}</span></div>`).join("") : '<p class="text-xs text-slate-500">Abhi koi score nahi.</p>';
+}
+function checkApproved() {
+  if (!UID || document.querySelector("#lvlOv.flex")) return;
+  const hit = Object.entries(WDS || {}).find(([, w]) => w && w.status === "approved" && !w.seen);
+  if (!hit) return;
+  const [id, w] = hit;
+  showOv(`<p class="text-[11px] font-black tracking-[0.25em] text-emerald-600">REDEEM APPROVED</p>
+    <p class="text-4xl my-3">🎉</p>
+    <p class="text-sm text-slate-600">${esc(RED_NAMES[w.method] || w.method)} · ${w.coins} coins (₹${w.inr}) ka redeem approve ho gaya.</p>
+    ${w.giftCode ? `<p class="text-sm mt-3">Gift code: <b class="select-all">${esc(w.giftCode)}</b></p>` : ""}
+    <button id="ovHist" class="btn tap mt-5 w-full">Check history</button>`);
+  $("ovHist").onclick = async () => {
+    $("ovHist").disabled = true;
+    try { await update(R(`withdrawals/${UID}/${id}`), { seen: true }); } catch (e) {}
+    hideOv(); go("redhist");
+  };
 }
 function renderRedHist() {
   const list = Object.values(WDS || {}).sort((a, b) => b.createdAt - a.createdAt);
