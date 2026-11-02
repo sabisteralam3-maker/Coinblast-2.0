@@ -104,6 +104,25 @@
   .redopt[data-soon="1"]::before{content:"COMING";position:absolute;top:-9px;right:-6px;background:linear-gradient(135deg,#f59e0b,#f97316);color:#fff;font-size:9px;font-weight:900;letter-spacing:.08em;padding:3px 8px;border-radius:999px;box-shadow:0 6px 10px -5px rgba(0,0,0,.45);z-index:2}
   .redopt[data-soon="1"] .rd-ico{filter:grayscale(.9);opacity:.55}
   .redopt[data-soon="1"]{opacity:1!important}
+
+  /* v6: dark redeem pages (vouchers) */
+  .rdk{background:#0f1115!important;color:#e5e7eb!important}
+  .rdk h1,.rdk h2{color:#f8fafc}
+  .rdk-pill{display:inline-flex;align-items:center;gap:8px;background:#1b1e26;border:1px solid #2a2f3b;border-radius:999px;padding:8px 14px;font-weight:900;font-size:18px;color:#fff}
+  .rdk-coin{width:22px;height:22px;flex:0 0 22px;border-radius:50%;display:inline-block;background:radial-gradient(circle at 35% 30%,#fff7c2,#facc15 50%,#b45309);box-shadow:inset 0 -2px 0 rgba(0,0,0,.2)}
+  .rdk-tile{background:#171a21;border:1px solid #232733;border-radius:22px;padding:16px;text-align:left;display:grid;gap:6px;color:#fff}
+  .rdk-tile b{font-weight:800;font-size:15px}
+  .rdk-tile small{color:#94a3b8;font-size:12px}
+  .rdk-ti{width:44px;height:44px;border-radius:14px;background:#14302d;color:#5eead4;display:grid;place-items:center;border:1px solid #1e4a44}
+  .rdk-row{width:100%;display:flex;align-items:center;gap:14px;background:#171a21;border:1px solid #232733;border-radius:22px;padding:16px;color:#fff}
+  .rdk-card-big{display:flex;align-items:center;gap:16px;background:#171a21;border:1px solid #232733;border-radius:24px;padding:18px}
+  .rdk-logo{width:64px;height:64px;flex:0 0 64px;border-radius:18px;background:#fff;display:grid;place-items:center;box-shadow:0 8px 18px -10px rgba(0,0,0,.6)}
+  .rdk-logo.big{width:72px;height:72px;flex:0 0 72px}
+  .rdk-arrow{width:44px;height:44px;flex:0 0 44px;border-radius:50%;background:#14302d;color:#5eead4;display:grid;place-items:center}
+  .rdk-soon{background:#f59e0b;color:#111;font-size:10px;font-weight:900;letter-spacing:.08em;padding:5px 9px;border-radius:999px}
+  .rdk-inst{display:inline-flex;align-items:center;gap:4px;background:#14302d;color:#5eead4;font-size:11px;font-weight:700;border-radius:999px;padding:3px 9px}
+  .rdk-btn{background:#5eead4;color:#042f2e;font-weight:900;border-radius:999px;padding:12px 18px;font-size:14px;white-space:nowrap}
+  .rdk-lock{background:transparent;border:1.5px solid #3b4252;color:#cbd5e1;border-radius:14px;padding:10px 14px;font-size:14px;white-space:nowrap}
 </style>
 </head>
 <body>
@@ -283,49 +302,38 @@
 </section>
 
 <!-- REDEEM -->
-<section id="s-redeem" class="screen pb-28 max-w-md mx-auto">
-  <header class="hero rd-hero px-5 pt-7 pb-28 rounded-b-[34px]">
+<section id="s-redeem" class="screen pb-28 max-w-md mx-auto rdk">
+  <div class="w-full px-5 pt-6">
     <div class="flex items-center justify-between">
-      <button data-back class="w-9 h-9 rounded-full bg-white/20 grid place-items-center"><i class="fa-solid fa-arrow-left text-sm"></i></button>
-      <button data-go="redhist" class="text-xs font-bold bg-white/20 rounded-full px-3 py-1.5"><i class="fa-solid fa-clock-rotate-left mr-1"></i>History</button>
+      <h1 class="text-3xl font-black text-[#5eead4]">Redeem</h1>
+      <div class="rdk-pill"><span id="rdBalTop">0</span><span class="rdk-coin"></span></div>
     </div>
-    <p class="text-[11px] uppercase tracking-[0.25em] opacity-80 mt-6">Redeem</p>
-    <h1 class="text-2xl font-black leading-tight">Coins ko cash mein badlo</h1>
-  </header>
-  <div class="px-4 -mt-20 space-y-4 relative">
-    <div class="card rd-balance p-5 text-white">
-      <p class="text-[11px] uppercase tracking-[0.2em] opacity-80">Redeemable balance</p>
-      <p class="text-3xl font-black mt-1" id="redBig">0 <span class="text-sm font-bold opacity-80">coins</span></p>
-      <p class="text-xs opacity-90 mt-1" id="redBal">Balance: 0 coins</p>
+    <div class="grid grid-cols-2 gap-3 mt-5">
+      <button data-go="redhist" class="rdk-tile"><span class="rdk-ti"><i class="fa-solid fa-clock-rotate-left"></i></span><b>My Rewards</b><small>View history</small></button>
+      <button id="rdHelp" class="rdk-tile"><span class="rdk-ti"><i class="fa-solid fa-life-ring"></i></span><b>Withdrawal Help</b><small>Chat with support</small></button>
+      <button id="rdHow" class="rdk-tile"><span class="rdk-ti"><i class="fa-solid fa-circle-question"></i></span><b>How it works?</b><small>Learn more</small></button>
+      <button id="rdFaq" class="rdk-tile"><span class="rdk-ti"><i class="fa-solid fa-square-poll-vertical"></i></span><b>FAQ</b><small>Get help</small></button>
     </div>
-    <form id="redForm" class="card p-5 space-y-4">
-      <div>
-        <p class="rd-label">Option chuno</p>
-        <div class="grid grid-cols-3 gap-2" id="redOpts">
-          <button type="button" class="redopt rd-tile" data-redopt="upi"><span class="rd-ico" style="background:linear-gradient(135deg,#fb923c,#f59e0b)"><i class="fa-solid fa-indian-rupee-sign"></i></span><b>UPI</b></button>
-          <button type="button" class="redopt rd-tile" data-redopt="gplay"><span class="rd-ico" style="background:linear-gradient(135deg,#34d399,#0ea5e9)"><i class="fa-brands fa-google-play"></i></span><b>Google Play</b></button>
-          <button type="button" class="redopt rd-tile" data-redopt="amazon"><span class="rd-ico" style="background:linear-gradient(135deg,#fbbf24,#f97316)"><i class="fa-brands fa-amazon"></i></span><b>Amazon</b></button>
-        </div>
-      </div>
-      <div>
-        <p class="rd-label">Account / ID</p>
-        <div class="field"><i class="fa-solid fa-at"></i><input id="redAcc" placeholder="UPI ID"></div>
-      </div>
-      <div>
-        <p class="rd-label">Coins</p>
-        <div class="flex flex-wrap gap-2 mb-3">
-          <button type="button" class="rd-chip" data-qc="1500">1,200</button>
-          <button type="button" class="rd-chip" data-qc="3000">2,400</button>
-          <button type="button" class="rd-chip" data-qc="6000">6,000</button>
-          <button type="button" class="rd-chip" data-qc="15000">12,000</button>
-          <button type="button" class="rd-chip" data-qc="30000">24,000</button>
-        </div>
-        <div class="field"><i class="fa-solid fa-coins"></i><input id="redCoins" type="number" inputmode="numeric" placeholder="Coins (1500 se 30000)"></div>
-      </div>
-      <div class="rd-preview"><span>Aap ko milega</span><b id="redInfo">= ₹0.00</b></div>
-      <button class="btn tap w-full" type="submit" id="redBtn">Request redeem</button>
-      <p class="text-[11px] text-slate-500 text-center">Min ₹10 (1500 coins) · Max ₹200 (30000 coins) · 150 coins = ₹1<br>Redemption usually 24 ghante mein.</p>
-    </form>
+    <h2 class="text-xl font-extrabold mt-7 mb-3">Redeem Rewards Via</h2>
+    <div id="rdList" class="space-y-3"></div>
+  </div>
+  <form id="redForm" class="hidden">
+    <p id="redBig"></p><p id="redBal"></p><p id="redInfo"></p>
+    <input id="redAcc"><input id="redCoins" type="number">
+    <button id="redBtn" type="submit">Request redeem</button>
+  </form>
+</section>
+
+<!-- VOUCHERS -->
+<section id="s-vouchers" class="screen pb-28 max-w-md mx-auto rdk">
+  <div class="w-full px-5 pt-6">
+    <div class="flex items-center justify-between">
+      <button data-go="redeem" class="rdk-pill"><i class="fa-solid fa-arrow-left"></i></button>
+      <div class="rdk-pill"><span id="vcBal">0</span><span class="rdk-coin"></span></div>
+    </div>
+    <div class="rdk-card-big mt-5"><span id="vcLogo" class="rdk-logo big"></span><div><h1 id="vcTitle" class="text-2xl font-black">UPI</h1><p class="text-[#5eead4] font-bold">Gift Voucher</p><p class="text-sm text-slate-400">Choose an amount to redeem</p></div></div>
+    <h2 class="text-xl font-extrabold mt-7 mb-3">Choose an amount to redeem</h2>
+    <div id="vcList" class="space-y-3"></div>
   </div>
 </section>
 
@@ -503,7 +511,8 @@ function go(p) {
   if (p === "home") { renderHome(); return show("home"); }
   if (p === "offers") { renderOffers(); return show("offers"); }
   if (p === "wallet") { renderWallet(); return show("wallet"); }
-  if (p === "redeem") { renderRedeem(); return show("redeem"); }
+  if (p === "redeem") { renderRedeem(); renderRedeemList(); return show("redeem"); }
+  if (p === "vouchers") { renderVouchers(); return show("vouchers"); }
   if (p === "profile") { renderProfile(); return show("profile"); }
   if (p === "puzzle") { renderPuzzles(); return show("puzzle"); }
   if (p === "games") { renderGames(); return show("games"); }
@@ -684,6 +693,7 @@ onAuthStateChanged(auth, async u => {
 onValue(R("settings/app"), snap => {
   const v = snap.exists() ? snap.val() : {};
   SET = { ...DEF, ...v, ad: { ...DEF.ad, ...(v.ad || {}) }, banners: { ...DEF.banners, ...(v.banners || {}) }, adReward: v.adReward || DEF.adReward, support: { ...DEF.support, ...(v.support || {}) }, texts: { ...DEF.texts, ...(v.texts || {}) }, checkin: v.checkin || DEF.checkin, puzzle: v.puzzle || DEF.puzzle };
+  SET.coinsPerRupee = 150; SET.minRedeemCoins = 1500; SET.maxRedeemCoins = 30000;
   document.querySelectorAll(".minr").forEach(e => e.textContent = Math.round(SET.minRedeemCoins / SET.coinsPerRupee));
   refreshVisible();
 });
@@ -1004,15 +1014,18 @@ const cdWait = ms => new Promise(r => setTimeout(r, ms));
 function showOv(html) { const ov = $("lvlOv"); $("lvlOvBox").innerHTML = html; ov.classList.remove("hidden"); ov.classList.add("flex"); }
 function hideOv() { const ov = $("lvlOv"); ov.classList.add("hidden"); ov.classList.remove("flex"); }
 // End-of-game panel: score, coins, then claim (ad) and retry (only while plays are left today)
-function showResult(title, score, coins, sub, dailyKey, retry) {
+let GAME_T0 = 0;
+function showResult(title, score, coinsIfPlayed, sub, dailyKey, retry) {
   SFX.play("over");
+  const secs = (performance.now() - GAME_T0) / 1000;
+  const coins = secs >= 40 ? coinsIfPlayed : 0;
   const left = Math.max(0, 10 - dayOf(dailyKey));
-  const claimBtn = coins > 0 ? `<button id="ovClaim" class="btn tap mt-5 w-full">Coins claim karo (ad dekho)</button>` : `<p class="text-xs text-slate-500 mt-4">Score kam hai, coins nahi bane. Score badhao!</p>`;
+  const claimBtn = coins > 0 ? `<button id="ovClaim" class="btn tap mt-5 w-full">Coins claim karo (ad dekho)</button>` : `<p class="text-xs text-rose-500 mt-4">40 second se pehle game khatam hua, isliye coins nahi mile. Dobara khelo aur 40 second tak khelo.</p>`;
   const retryBtn = left > 0 ? `<button id="ovRetry" class="ghost w-full py-2 mt-3">Dobara khelo (${left} bache)</button>` : `<p class="text-xs text-slate-500 mt-3">Aaj ke 10 games khatam. Kal phir khelo.</p>`;
   showOv(`<p class="text-[11px] font-black tracking-[0.25em] text-violet-600">${title}</p>
     <p class="text-5xl font-black my-3">${score}</p>
     <p class="text-xs text-slate-500">${sub}</p>
-    <p class="text-sm mt-2">Coins: <b>${coins}</b></p>${claimBtn}${retryBtn}`);
+    <p class="text-sm mt-2">Coins: <b>${coins}</b> · Khela: <b>${Math.floor(secs)}s</b></p>${claimBtn}${retryBtn}`);
   if (coins > 0) $("ovClaim").onclick = async () => {
     $("ovClaim").disabled = true;
     const ok = await runLevelAd();
@@ -1120,12 +1133,12 @@ function startLevelGame() {
   if (dayOf("gCandy") >= 10) return toast("Aaj ke 10 Candy games khatam. Kal phir khelo.");
   clearTimers(); PLAY = { done: false }; hideOv(); JB.on = false; FS.on = false;
   setDaily({ gCandy: dayOf("gCandy") + 1 }).catch(() => {});
-  $("playTitle").textContent = "Candy Crush";
+  $("playTitle").textContent = "Candy Crush"; GAME_T0 = performance.now();
   $("playResult").classList.add("hidden"); $("playResult").innerHTML = "";
   $("playBoard").innerHTML = ""; show("play");
   mountBanner("slotPlayBanner", SET.banners.big, 300, 250); $("slotPlayBanner").classList.remove("hidden");
   CD.score = 0; CD.moves = CD_MOVES; CD.colors = 4; CD.sel = -1; CD.busy = false; CD.over = false; CD.on = true; CD.dragFrom = -1;
-  $("playMsg").textContent = "Candy ko finger se khinch kar swap karo. 20 moves mein zyada score banao.";
+  $("playMsg").textContent = "Candy ko finger se khinch kar swap karo. 40 second khelne par hi coins milenge.";
   const board = $("playBoard");
   const grid = document.createElement("div");
   grid.style.cssText = `display:grid;grid-template-columns:repeat(${CD.n},1fr);gap:5px;width:100%;aspect-ratio:1/1;background:linear-gradient(160deg,#1e1b4b,#3730a3);padding:8px;border-radius:20px;box-sizing:border-box;box-shadow:inset 0 2px 10px rgba(0,0,0,.4);touch-action:none;user-select:none`;
@@ -1231,7 +1244,7 @@ function startJumbo() {
   if (dayOf("gJumbo") >= 10) return toast("Aaj ke 10 Jumbo Ball games khatam. Kal phir khelo.");
   clearTimers(); PLAY = { done: false }; CD.on = false; FS.on = false; hideOv();
   setDaily({ gJumbo: dayOf("gJumbo") + 1 }).catch(() => {});
-  $("playTitle").textContent = "Jumbo Ball";
+  $("playTitle").textContent = "Jumbo Ball"; GAME_T0 = performance.now();
   $("playResult").classList.add("hidden"); $("playResult").innerHTML = "";
   $("playBoard").innerHTML = ""; show("play");
   mountBanner("slotPlayBanner", SET.banners.big, 300, 250); $("slotPlayBanner").classList.remove("hidden");
@@ -1255,7 +1268,7 @@ function startJumbo() {
   const up = () => { JB.hold = 0; };
   w.onpointerdown = e => { const r = w.getBoundingClientRect(); JB.hold = (e.clientX - r.left) < r.width / 2 ? -1 : 1; };
   w.onpointerup = up; w.onpointercancel = up; w.onpointerleave = up;
-  $("playMsg").textContent = "Screen ke left ya right hisse ko daba kar rakho. Spikes se bacho.";
+  $("playMsg").textContent = "Left / Right button daba kar rakho. 40 second khelne par hi coins milenge.";
   JB.on = true; JB.last = performance.now();
   cancelAnimationFrame(JB.raf); JB.raf = requestAnimationFrame(jbFrame);
   jbDraw();
@@ -1371,7 +1384,7 @@ function startFruit() {
   if (dayOf("gFruit") >= 10) return toast("Aaj ke 10 Fruit Slice games khatam. Kal phir khelo.");
   clearTimers(); PLAY = { done: false }; CD.on = false; JB.on = false; hideOv();
   setDaily({ gFruit: dayOf("gFruit") + 1 }).catch(() => {});
-  $("playTitle").textContent = "Fruit Slice";
+  $("playTitle").textContent = "Fruit Slice"; GAME_T0 = performance.now();
   $("playResult").classList.add("hidden"); $("playResult").innerHTML = "";
   const board = $("playBoard"); board.innerHTML = ""; show("play");
   mountBanner("slotPlayBanner", SET.banners.big, 300, 250); $("slotPlayBanner").classList.remove("hidden");
@@ -1386,7 +1399,7 @@ function startFruit() {
   const up = () => { FS.down = false; };
   cv.onpointerup = up; cv.onpointercancel = up;
   FS.lives = 3; FS.sliced = 0; FS.objs = []; FS.parts = []; FS.trail = []; FS.spawnT = fsInterval(); FS.down = false;
-  $("playMsg").textContent = "Fruit ko swipe karke kaato. Bomb mat kaatna!";
+  $("playMsg").textContent = "Fruit ko swipe karke kaato. 40 second khelne par hi coins milenge. Bomb mat kaatna!";
   FS.on = true; FS.last = performance.now();
   cancelAnimationFrame(FS.raf); FS.raf = requestAnimationFrame(fsFrame);
   fsHud();
@@ -1545,6 +1558,62 @@ function renderHomeLb() {
   const rows = lbRows().slice(0, 5);
   el.innerHTML = rows.length ? rows.map((r, i) => `<div class="flex items-center gap-2 py-1.5 text-xs border-b border-slate-100 last:border-0"><span class="w-5 font-black ${i === 0 ? "text-amber-500" : "text-slate-500"}">${i + 1}</span><span class="flex-1 truncate font-semibold">${esc(r.name)}</span><span class="font-bold">${r.score}</span></div>`).join("") : '<p class="text-xs text-slate-500">Abhi koi score nahi.</p>';
 }
+// ---------- redeem: vouchers (150 coins = Rs 1; amounts Rs 10 to Rs 200) ----------
+const RD_AMOUNTS = [10, 25, 50, 100, 200];
+const RD_BRAND = {
+  gplay: `<svg viewBox="0 0 24 24" width="34" height="34"><path d="M4 2.5l11 9.5-11 9.5z" fill="#00c3ff"/><path d="M15 12l3.2-2.8L4 2.5z" fill="#34d399"/><path d="M15 12l3.2 2.8L4 21.5z" fill="#f43f5e"/><path d="M18.2 9.2l2.6 1.5v2.6l-2.6 1.5-3.2-2.8z" fill="#facc15"/></svg>`,
+  upi: `<b style="font:900 15px/1 Arial,sans-serif;color:#1e3a8a;letter-spacing:-.5px">UPI</b>`,
+  amazon: `<b style="font:900 30px/1 Georgia,serif;color:#111">a</b>`
+};
+function renderRedeemList() {
+  const bal = ME ? (ME.balance || 0) : 0;
+  $("rdBalTop").textContent = bal.toLocaleString("en-IN");
+  const items = [["gplay", "Google Play"], ["upi", "UPI"], ["amazon", "Amazon"]];
+  $("rdList").innerHTML = items.map(([k, name]) => `<button data-rv="${k}" class="rdk-row"><span class="rdk-logo">${RD_BRAND[k]}</span><span class="flex-1 text-left min-w-0"><b class="block text-lg">${name}</b><small class="block text-slate-400">Gift Voucher</small><small class="block text-xs text-[#5eead4] mt-1"><i class="fa-solid fa-tag mr-1"></i>${RD_AMOUNTS.length} amounts available</small></span>${redOn(k) ? '<span class="rdk-arrow"><i class="fa-solid fa-arrow-right"></i></span>' : '<span class="rdk-soon">COMING</span>'}</button>`).join("");
+}
+function renderVouchers() {
+  const m = REDV, bal = ME ? (ME.balance || 0) : 0;
+  $("vcTitle").textContent = RED_NAMES[m] || m;
+  $("vcLogo").innerHTML = RD_BRAND[m] || "";
+  $("vcBal").textContent = bal.toLocaleString("en-IN");
+  $("vcList").innerHTML = RD_AMOUNTS.map(inr => {
+    const cost = inr * SET.coinsPerRupee, ok = bal >= cost;
+    return `<div class="rdk-row"><div class="flex-1 min-w-0"><div class="flex items-center gap-2 flex-wrap"><b class="text-3xl font-black">₹${inr}</b><span class="rdk-inst"><i class="fa-solid fa-bolt"></i> Instant</span></div><small class="flex items-center gap-2 text-slate-400 mt-1"><span class="rdk-coin"></span>${cost.toLocaleString("en-IN")} coins</small></div><button data-rd="${inr}" class="${ok ? "rdk-btn" : "rdk-lock"}" ${ok ? "" : "disabled"}>${ok ? "Redeem" : '<i class="fa-solid fa-lock"></i> Locked'}</button></div>`;
+  }).join("");
+}
+function redeemAmount(inr) {
+  if (!redOn(REDV)) return toast("Coming soon");
+  const coins = inr * SET.coinsPerRupee;
+  if ((ME ? ME.balance || 0 : 0) < coins) return toast("Coins kam hain");
+  showOv(`<p class="text-[11px] font-black tracking-[0.25em] text-violet-600">REDEEM ₹${inr}</p>
+    <p class="text-sm text-slate-600 mt-3">${esc(RED_NAMES[REDV])} · ${coins.toLocaleString("en-IN")} coins</p>
+    <div class="field mt-4"><i class="fa-solid fa-at"></i><input id="ovAcc" placeholder="${REDV === "upi" ? "UPI ID" : "Email ya phone"}"></div>
+    <button id="ovGo" class="btn tap mt-4 w-full">Confirm redeem</button>
+    <button id="ovX" class="ghost w-full py-2 mt-3">Cancel</button>`);
+  $("ovX").onclick = hideOv;
+  $("ovGo").onclick = () => {
+    const acc = $("ovAcc").value.trim();
+    if (acc.length < 4) return toast("Account / ID daalo");
+    $("redAcc").value = acc; $("redCoins").value = coins;
+    hideOv(); $("redForm").requestSubmit();
+  };
+}
+function infoOv(title, body, extra) {
+  showOv(`<p class="text-[11px] font-black tracking-[0.25em] text-violet-600">${title}</p><p class="text-sm text-slate-600 mt-3 text-left">${body}</p>${extra || ""}<button id="ovClose" class="ghost w-full py-2 mt-4">Band karo</button>`);
+  $("ovClose").onclick = hideOv;
+}
+document.addEventListener("click", e => {
+  const rv = e.target.closest("[data-rv]"), rd = e.target.closest("[data-rd]");
+  if (rv) { REDV = rv.dataset.rv; if (!redOn(REDV)) return toast("Coming soon"); return go("vouchers"); }
+  if (rd) return redeemAmount(+rd.dataset.rd);
+  if (e.target.closest("#rdHow")) return infoOv("HOW IT WORKS", "1500 coins = ₹10. Coins se voucher chuno, amount chuno aur apna UPI ID ya email daalo. Admin 24 ghante mein approve karega. Approve hone par aapko popup aayega aur history mein gift code dikhega.");
+  if (e.target.closest("#rdFaq")) return infoOv("FAQ", "<b>Minimum?</b> 1500 coins (₹10).<br><b>Maximum?</b> ₹200 per redeem (30000 coins).<br><b>Kitna time?</b> Usually 24 ghante.<br><b>Galat ID?</b> Support se contact karo.");
+  if (e.target.closest("#rdHelp")) {
+    const href = contactHref(SET.support && SET.support.contact);
+    return infoOv("WITHDRAWAL HELP", "Redeem ya payment ke baare mein support se baat karo.", href ? `<a href="${href}" target="_blank" class="btn tap mt-5 w-full inline-block text-center">Support se baat karo</a>` : "");
+  }
+});
+
 function checkApproved() {
   if (!UID || document.querySelector("#lvlOv.flex")) return;
   const hit = Object.entries(WDS || {}).find(([, w]) => w && w.status === "approved" && !w.seen);
