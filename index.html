@@ -1434,18 +1434,19 @@ function arRayClear(g, r, c, d) {
 function arGen(stage) {
   const g = Array.from({ length: AR.R }, () => Array(AR.C).fill(null));
   const arrows = [];
-  const target = Math.min(22, 8 + stage * 3);
+  const target = Math.min(14, 10 + stage * 2);
   let tries = 0;
-  while (arrows.length < target && tries < 20000) {
+  while (arrows.length < target && tries < 80000) {
     tries++;
-    const steps = 2 + ((Math.random() * 3) | 0);
+    const steps = 2 + ((Math.random() * 3) | 0); // 2 to 4 steps, bends are chosen most of the time
     let r = (Math.random() * AR.R) | 0, c = (Math.random() * AR.C) | 0;
     if (g[r][c] !== null) continue;
     const cells = [[r, c]], used = new Set([r * AR.C + c]);
     let lastD = -1, ok = true;
     for (let s = 0; s < steps; s++) {
       const cand = [0, 1, 2, 3].filter(d => lastD < 0 || d !== (lastD + 2) % 4);
-      const d = cand[(Math.random() * cand.length) | 0];
+      const turns = cand.filter(d => lastD >= 0 && d % 2 !== lastD % 2);
+      const d = (turns.length && Math.random() < 0.6) ? turns[(Math.random() * turns.length) | 0] : cand[(Math.random() * cand.length) | 0];
       const [dr, dc] = AR_DIR[d], nr = r + dr, nc = c + dc;
       if (!arInside(nr, nc) || g[nr][nc] !== null || used.has(nr * AR.C + nc)) { ok = false; break; }
       r = nr; c = nc; cells.push([r, c]); used.add(r * AR.C + c); lastD = d;
@@ -1471,13 +1472,13 @@ function arLayout() {
 function drawPath(A, offX, offY, color, alpha, now, hint) {
   const x = AR.ctx, cell = AR.cell;
   const pts = A.cells.map(([r, c]) => [AR.ox + c * cell + cell / 2 + offX, AR.oy + r * cell + cell / 2 + offY]);
-  x.globalAlpha = alpha; x.strokeStyle = color; x.fillStyle = color; x.lineCap = "round"; x.lineJoin = "round"; x.lineWidth = Math.max(3, cell * 0.11);
+  x.globalAlpha = alpha; x.strokeStyle = color; x.fillStyle = color; x.lineCap = "round"; x.lineJoin = "round"; x.lineWidth = Math.max(4, cell * 0.14);
   if (hint) { const p = 0.5 + 0.5 * Math.sin(now / 140); x.save(); x.shadowColor = "rgba(37,99,235,0.6)"; x.shadowBlur = 8 + 8 * p; }
   x.beginPath(); x.moveTo(pts[0][0], pts[0][1]);
   for (let i = 1; i < pts.length; i++) x.lineTo(pts[i][0], pts[i][1]);
   x.stroke();
   const [hx, hy] = pts[pts.length - 1], [dr, dc] = AR_DIR[A.d], ux = dc, uy = dr, nx = -uy, ny = ux;
-  const tipX = hx + ux * cell * 0.3, tipY = hy + uy * cell * 0.3, bx = hx + ux * cell * 0.02, by = hy + uy * cell * 0.02, bw = cell * 0.2;
+  const tipX = hx + ux * cell * 0.34, tipY = hy + uy * cell * 0.34, bx = hx + ux * cell * 0.04, by = hy + uy * cell * 0.04, bw = cell * 0.24;
   x.beginPath(); x.moveTo(tipX, tipY); x.lineTo(bx + nx * bw, by + ny * bw); x.lineTo(bx - nx * bw, by - ny * bw); x.closePath(); x.fill();
   if (hint) x.restore();
   x.globalAlpha = 1;
