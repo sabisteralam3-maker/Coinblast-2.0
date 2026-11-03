@@ -913,7 +913,9 @@ function renderGames() {
   const lvlCard = gCard(logoTile(LOGO_CANDY, "linear-gradient(135deg,#a78bfa,#4338ca)"), "Candy Crush", "20 moves mein score banao. Har game 10 coins.", "gCandy", "bestCandy", "__level");
   const jumboCard = gCard(logoTile(LOGO_BALL, "linear-gradient(135deg,#fbbf24,#e11d48)"), "Jumbo Ball · Hard", "Ball ko bounce karao, upar chadho. Spikes se bacho. Har game 10 coins.", "gJumbo", "bestJumbo", "__jumbo");
   const fruitCard = gCard(logoTile(LOGO_FRUIT, "linear-gradient(135deg,#fb7185,#f97316)"), "Fruit Slice · Hard", "Fruit kaato, bomb mat kaatna. 3 chances. Har game 10 coins.", "gFruit", "bestFruit", "__fruit");
-  $("gameList").innerHTML = lvlCard + jumboCard + fruitCard + (GAMES.length ? GAMES.map(g => {
+  const arrowCard = gCard(logoTile(LOGO_ARROW, "linear-gradient(135deg,#60a5fa,#2563eb)"), "Tap Away Arrows", "Jo arrow bahar ja sake wahi tap karo. 3 dil. Board jitna bada, utna mushkil.", "gArrows", "bestArrows", "__arrows");
+  const knifeCard = gCard(logoTile(LOGO_KNIFE, "linear-gradient(135deg,#34d399,#0f766e)"), "Knife Hit", "Ghoomti target par chaku phenko. Pehle se gade chaku se takraaye to khel khatam.", "gKnife", "bestKnife", "__knife");
+  $("gameList").innerHTML = lvlCard + jumboCard + fruitCard + arrowCard + knifeCard + (GAMES.length ? GAMES.map(g => {
     const done = doneToday("game", g.id);
     return `<div class="card p-3 flex items-center gap-3">
       <img src="${esc(g.logo || "")}" alt="" class="w-12 h-12 rounded-xl object-cover bg-violet-100 shrink-0" onerror="this.style.visibility='hidden'">
@@ -927,6 +929,8 @@ function playGame(id) {
   if (id === "__level") return startLevelGame();
   if (id === "__jumbo") return startJumbo();
   if (id === "__fruit") return startFruit();
+  if (id === "__arrows") return startArrows();
+  if (id === "__knife") return startKnife();
   const g = GAMES.find(x => x.id === id); if (!g) return;
   if (doneToday("game", id)) return toast("Aaj ka reward mil chuka hai. Kal phir khelo.");
   clearTimers();
@@ -1417,12 +1421,254 @@ function startFruit() {
   fsHud();
 }
 
+// ---------- Tap Away Arrows (canvas): tap an arrow whose path is clear; 3 hearts; 2 hints per run ----------
+const AR = { on: false, running: false, ended: false, R: 7, C: 5, grid: [], hearts: 3, score: 0, stage: 1, busy: false, left: 0, cv: null, ctx: null, dpr: 1, W: 300, H: 400, cell: 50, ox: 0, oy: 12, anim: [], shake: null, hint: null, hintsLeft: 2, raf: 0, last: 0, nextAt: 0 };
+const AR_DIR = [[-1, 0], [0, 1], [1, 0], [0, -1]]; // up, right, down, left as [row, col]
+function arRayClear(g, r, c, d) {
+  let [dr, dc] = AR_DIR[d]; r += dr; c += dc;
+  while (r >= 0 && r < AR.R && c >= 0 && c < AR.C) { if (g[r][c] !== null) return false; r += dr; c += dc; }
+  return true;
+}
+// each arrow is placed only where its path is clear of the arrows placed before it, so every board can be cleared
+function arGen(stage) {
+  const g = Array.from({ length: AR.R }, () => Array(AR.C).fill(null));
+  const target = Math.min(AR.R * AR.C - 6, 12 + stage * 4);
+  let placed = 0, tries = 0;
+  while (placed < target && tries < 8000) {
+    tries++;
+    const r = (Math.random() * AR.R) | 0, c = (Math.random() * AR.C) | 0;
+    if (g[r][c] !== null) continue;
+    const d = (Math.random() * 4) | 0;
+    if (!arRayClear(g, r, c, d)) continue;
+    g[r][c] = d; placed++;
+  }
+  return g;
+}
+function arHud() { $("playHud").innerHTML = `<span>Score <b>${AR.score}</b></span><span>${"❤️".repeat(Math.max(0, AR.hearts))}${"🖤".repeat(Math.max(0, 3 - AR.hearts))}</span><span><b>${AR.left}</b> arrows</span>`; }
+function arHintBtn() { const b = $("arHint"); if (!b) return; b.textContent = `💡 Hint (${AR.hintsLeft})`; b.disabled = AR.hintsLeft <= 0; }
+function arLayout() {
+  const W = AR.cv.clientWidth || 300;
+  AR.W = W; AR.cell = Math.floor((W - 24) / AR.C); AR.ox = (W - AR.cell * AR.C) / 2; AR.oy = 12;
+  AR.H = AR.oy + AR.cell * AR.R + 12; AR.dpr = Math.min(2, window.devicePixelRatio || 1);
+  AR.cv.width = Math.round(W * AR.dpr); AR.cv.height = Math.round(AR.H * AR.dpr); AR.cv.style.height = AR.H + "px";
+}
+function drawArrow(x, px, py, d, cell, color, alpha) {
+  const [dr, dc] = AR_DIR[d], ux = dc, uy = dr, nx = -uy, ny = ux, s = cell * 0.28;
+  const tailX = px - ux * s, tailY = py - uy * s, headX = px + ux * s, headY = py + uy * s;
+  x.globalAlpha = alpha; x.strokeStyle = color; x.fillStyle = color; x.lineCap = "round"; x.lineWidth = Math.max(3, cell * 0.1);
+  x.beginPath(); x.moveTo(tailX, tailY); x.lineTo(headX - ux * cell * 0.05, headY - uy * cell * 0.05); x.stroke();
+  const tipX = headX + ux * cell * 0.17, tipY = headY + uy * cell * 0.17, bw = cell * 0.17;
+  x.beginPath(); x.moveTo(tipX, tipY); x.lineTo(headX + nx * bw, headY + ny * bw); x.lineTo(headX - nx * bw, headY - ny * bw); x.closePath(); x.fill();
+  x.globalAlpha = 1;
+}
+function arDraw(now) {
+  const x = AR.ctx, cell = AR.cell, ox = AR.ox, oy = AR.oy;
+  x.setTransform(AR.dpr, 0, 0, AR.dpr, 0, 0);
+  x.fillStyle = "#ffffff"; x.fillRect(0, 0, AR.W, AR.H);
+  const cx = c => ox + c * cell + cell / 2, cy = r => oy + r * cell + cell / 2;
+  // dashed escape line: where each arrow would fly out
+  x.setLineDash([4, 6]); x.strokeStyle = "#e2e8f0"; x.lineWidth = 2;
+  for (let r = 0; r < AR.R; r++) for (let c = 0; c < AR.C; c++) {
+    const d = AR.grid[r][c]; if (d === null) continue;
+    const [dr, dc] = AR_DIR[d];
+    x.beginPath(); x.moveTo(cx(c), cy(r)); x.lineTo(cx(c) + dc * AR.W * 2, cy(r) + dr * AR.W * 2); x.stroke();
+  }
+  x.setLineDash([]);
+  for (let r = 0; r < AR.R; r++) for (let c = 0; c < AR.C; c++) {
+    const d = AR.grid[r][c]; if (d === null) continue;
+    const isHint = AR.hint && AR.hint.r === r && AR.hint.c === c;
+    let px = cx(c); const py = cy(r);
+    if (AR.shake && AR.shake.r === r && AR.shake.c === c) px += Math.sin(AR.shake.t * 30) * 5 * (1 - AR.shake.t);
+    if (isHint) { const pulse = 0.5 + 0.5 * Math.sin(now / 140); x.fillStyle = `rgba(37,99,235,${0.12 + 0.12 * pulse})`; x.beginPath(); x.arc(px, py, cell * 0.46, 0, Math.PI * 2); x.fill(); }
+    drawArrow(x, px, py, d, cell, isHint ? "#2563eb" : "#1e2a44", 1);
+  }
+  for (const a of AR.anim) { const [dr, dc] = AR_DIR[a.d], k = a.t * cell * 12; drawArrow(x, cx(a.c) + dc * k, cy(a.r) + dr * k, a.d, cell, "#1e2a44", Math.max(0, 1 - a.t)); }
+}
+function arFrame(now) {
+  if (!AR.running) return;
+  const dt = Math.min(0.05, Math.max(0.001, (now - AR.last) / 1000)); AR.last = now;
+  for (const a of AR.anim) a.t += dt * 2.2;
+  AR.anim = AR.anim.filter(a => a.t < 1);
+  if (AR.shake) { AR.shake.t += dt * 2.5; if (AR.shake.t >= 1) AR.shake = null; }
+  if (AR.hint && now > AR.hint.until) AR.hint = null;
+  if (AR.busy && AR.anim.length === 0) {
+    if (!AR.nextAt) AR.nextAt = now + 500;
+    if (now >= AR.nextAt) { AR.nextAt = 0; AR.busy = false; AR.stage++; arBoard(); }
+  }
+  arDraw(now);
+  AR.raf = requestAnimationFrame(arFrame);
+}
+function arBoard() {
+  AR.grid = arGen(AR.stage); AR.left = 0;
+  for (let r = 0; r < AR.R; r++) for (let c = 0; c < AR.C; c++) if (AR.grid[r][c] !== null) AR.left++;
+  AR.anim = []; AR.shake = null; AR.hint = null;
+  arLayout(); arHud(); arHintBtn();
+}
+function arPointer(e) {
+  if (!AR.on || AR.busy) return;
+  const rect = AR.cv.getBoundingClientRect();
+  const x = (e.clientX - rect.left) * (AR.W / rect.width), y = (e.clientY - rect.top) * (AR.H / rect.height);
+  const c = Math.floor((x - AR.ox) / AR.cell), r = Math.floor((y - AR.oy) / AR.cell);
+  if (r < 0 || r >= AR.R || c < 0 || c >= AR.C) return;
+  const d = AR.grid[r][c]; if (d === null) return;
+  arTap(r, c, d);
+}
+function arTap(r, c, d) {
+  if (AR.anim.some(a => a.r === r && a.c === c)) return;
+  if (arRayClear(AR.grid, r, c, d)) {
+    AR.grid[r][c] = null; AR.left--; AR.score += 10; SFX.play("slice");
+    AR.anim.push({ r, c, d, t: 0 });
+    arHud();
+    if (AR.left === 0) AR.busy = true;
+  } else {
+    AR.hearts--; SFX.play("lose"); AR.shake = { r, c, t: 0 };
+    arHud();
+    if (AR.hearts <= 0) { AR.on = false; setTimeout(arEnd, 800); }
+  }
+}
+function arHint() {
+  if (!AR.on || AR.busy || AR.hintsLeft <= 0) return;
+  const cells = [];
+  for (let r = 0; r < AR.R; r++) for (let c = 0; c < AR.C; c++) { const d = AR.grid[r][c]; if (d !== null && arRayClear(AR.grid, r, c, d)) cells.push([r, c]); }
+  if (!cells.length) return;
+  const [r, c] = cells[(Math.random() * cells.length) | 0];
+  AR.hint = { r, c, until: performance.now() + 2200 }; AR.hintsLeft--; arHintBtn(); SFX.play("tap");
+}
+function startArrows() {
+  if (dayOf("gArrows") >= 10) return toast("Aaj ke 10 games khatam. Kal phir khelo.");
+  clearTimers(); PLAY = { done: false }; CD.on = false; JB.on = false; FS.on = false; KN.on = false; hideOv();
+  setDaily({ gArrows: dayOf("gArrows") + 1 }).catch(() => {});
+  $("playTitle").textContent = "Tap Away Arrows";
+  $("playResult").classList.add("hidden"); $("playResult").innerHTML = "";
+  const board = $("playBoard"); board.innerHTML = ""; show("play");
+  mountBanner("slotPlayBanner", SET.banners.big, 300, 250); $("slotPlayBanner").classList.remove("hidden");
+  AR.cv = document.createElement("canvas");
+  AR.cv.style.cssText = "display:block;width:100%;border-radius:22px;background:#fff;box-shadow:0 14px 28px -18px rgba(15,23,42,.35);touch-action:none;cursor:pointer";
+  board.appendChild(AR.cv); AR.ctx = AR.cv.getContext("2d");
+  const row = document.createElement("div"); row.className = "flex justify-center mt-4";
+  row.innerHTML = `<button id="arHint" class="ghost px-6 py-2">💡 Hint (2)</button>`;
+  board.appendChild(row); $("arHint").onclick = arHint;
+  AR.cv.onpointerdown = arPointer;
+  AR.on = true; AR.ended = false; AR.running = true; AR.hearts = 3; AR.score = 0; AR.stage = 1; AR.busy = false; AR.hintsLeft = 2; AR.nextAt = 0;
+  GAME_T0 = performance.now();
+  $("playMsg").textContent = "Jo arrow bina rukawat ke bahar nikal sake, usi ko tap karo. 40 second khelne par hi coins milenge.";
+  arBoard(); AR.last = performance.now(); cancelAnimationFrame(AR.raf); AR.raf = requestAnimationFrame(arFrame);
+}
+function arEnd() {
+  if (AR.ended) return; AR.ended = true; AR.on = false; AR.running = false;
+  setDaily({ bestArrows: Math.max(dayOf("bestArrows"), AR.score) }).catch(() => {});
+  showResult("Tap Away Arrows", AR.score, 10, `Level ${AR.stage} tak pahunche.`, "gArrows", startArrows);
+}
+
+// ---------- Knife Hit (canvas): throw knives into the spinning target; touching a stuck knife ends the run ----------
+const KN = { on: false, W: 300, H: 440, cv: null, ctx: null, dpr: 1, cx: 150, cy: 170, R: 88, ang: 0, dir: 1, spd: 0.025, stuck: [], apples: [], thrown: null, left: 5, stage: 1, score: 0, raf: 0, last: 0, pauseUntil: 0, parts: [] };
+const knWrap = a => { a = a % (2 * Math.PI); if (a > Math.PI) a -= 2 * Math.PI; if (a < -Math.PI) a += 2 * Math.PI; return a; };
+function knSetStage() {
+  KN.left = 5 + KN.stage;
+  KN.spd = Math.min(0.09, 0.022 + 0.006 * KN.stage);
+  KN.dir = KN.stage % 2 ? 1 : -1;
+  KN.stuck = []; KN.apples = [];
+  for (let i = 0; i < 4; i++) KN.apples.push(Math.random() * 2 * Math.PI);
+}
+function knThrow() {
+  if (!KN.on || KN.thrown || KN.left <= 0 || performance.now() < KN.pauseUntil) return;
+  KN.thrown = { y: KN.H - 70 }; SFX.play("tap");
+}
+function knImpact() {
+  const rel = knWrap(Math.PI / 2 - KN.ang); // the tip reaches the bottom of the target
+  KN.thrown = null;
+  for (const s of KN.stuck) if (Math.abs(knWrap(rel - s)) < 0.17) return knEnd();
+  KN.apples = KN.apples.filter(ap => { if (Math.abs(knWrap(rel - ap)) < 0.2) { KN.score += 5; SFX.play("coin"); return false; } return true; });
+  KN.stuck.push(rel); KN.left--; KN.score += 10; SFX.play("match");
+  for (let i = 0; i < 10; i++) { const a = Math.random() * Math.PI * 2, s = 1 + Math.random() * 2.5; KN.parts.push({ x: KN.cx, y: KN.cy + KN.R, vx: Math.cos(a) * s, vy: Math.sin(a) * s - 1, life: 1 }); }
+  if (KN.left <= 0) { KN.stage++; knSetStage(); KN.pauseUntil = performance.now() + 700; SFX.play("win"); }
+}
+function knStep(dt) {
+  if (performance.now() >= KN.pauseUntil) KN.ang += KN.spd * KN.dir * dt;
+  if (KN.thrown) { KN.thrown.y -= 22 * dt; if (KN.thrown.y <= KN.cy + KN.R) knImpact(); }
+  for (const p of KN.parts) { p.x += p.vx * dt; p.y += p.vy * dt; p.vy += 0.15 * dt; p.life -= 0.035 * dt; }
+  KN.parts = KN.parts.filter(p => p.life > 0);
+}
+// knife: tip at (x,y), u = direction it points, L = blade length; gold guard, brown handle, gold pommel
+function knDrawKnife(x, y, ux, uy, L) {
+  const c = KN.ctx;
+  c.save(); c.translate(x, y); c.rotate(Math.atan2(ux, -uy));
+  const g = c.createLinearGradient(-6, 0, 6, 0);
+  g.addColorStop(0, "#bae6fd"); g.addColorStop(0.5, "#ffffff"); g.addColorStop(1, "#38bdf8");
+  c.fillStyle = g; c.beginPath(); c.moveTo(0, 0); c.lineTo(6, 12); c.lineTo(6, L); c.lineTo(-6, L); c.lineTo(-6, 12); c.closePath(); c.fill();
+  c.strokeStyle = "#0284c7"; c.lineWidth = 1; c.stroke();
+  c.fillStyle = "#facc15"; c.fillRect(-13, L, 26, 6);
+  c.fillStyle = "#92400e"; c.fillRect(-4, L + 6, 8, 26);
+  c.fillStyle = "#78350f"; for (let i = 0; i < 4; i++) c.fillRect(-4, L + 9 + i * 6, 8, 2);
+  c.fillStyle = "#facc15"; c.beginPath(); c.arc(0, L + 36, 4.5, 0, Math.PI * 2); c.fill();
+  c.restore();
+}
+function knApple(x, y) {
+  const c = KN.ctx;
+  c.fillStyle = "#dc2626"; c.beginPath(); c.arc(x, y, 9, 0, Math.PI * 2); c.fill();
+  c.fillStyle = "#fca5a5"; c.beginPath(); c.arc(x - 3, y - 3, 2.6, 0, Math.PI * 2); c.fill();
+  c.fillStyle = "#16a34a"; c.beginPath(); c.ellipse(x + 3, y - 11, 3.5, 2, 0.6, 0, Math.PI * 2); c.fill();
+}
+function knDraw() {
+  const c = KN.ctx, W = KN.W, H = KN.H, cx = KN.cx, cy = KN.cy, R = KN.R, a = KN.ang;
+  c.setTransform(KN.dpr, 0, 0, KN.dpr, 0, 0);
+  const bg = c.createLinearGradient(0, 0, 0, H); bg.addColorStop(0, "#0b3a44"); bg.addColorStop(1, "#072a33");
+  c.fillStyle = bg; c.fillRect(0, 0, W, H);
+  c.fillStyle = "rgba(255,255,255,0.035)"; for (let x = 0; x < W; x += 40) c.fillRect(x, 0, 1, H);
+  c.fillStyle = "#a16207"; c.beginPath(); c.arc(cx, cy, R + 8, 0, Math.PI * 2); c.fill();
+  for (let i = 0; i < 6; i++) { c.fillStyle = i % 2 ? "#facc15" : "#fde68a"; c.beginPath(); c.arc(cx, cy, R * (1 - i * 0.155), 0, Math.PI * 2); c.fill(); }
+  for (const ap of KN.apples) { const w = ap + a; knApple(cx + Math.cos(w) * (R + 6), cy + Math.sin(w) * (R + 6)); }
+  for (const s of KN.stuck) { const w = s + a, dx = Math.cos(w), dy = Math.sin(w); knDrawKnife(cx + dx * (R - 18), cy + dy * (R - 18), -dx, -dy, 20); }
+  if (KN.thrown) knDrawKnife(cx, KN.thrown.y, 0, -1, 46);
+  for (const p of KN.parts) { c.globalAlpha = Math.max(0, p.life); c.fillStyle = "#fde047"; c.beginPath(); c.arc(p.x, p.y, 2.2, 0, Math.PI * 2); c.fill(); }
+  c.globalAlpha = 1;
+  c.fillStyle = "#67e8f9";
+  for (let i = 0; i < Math.min(KN.left, 10); i++) { const kx = 22, ky = H - 30 - i * 17; c.beginPath(); c.moveTo(kx, ky - 8); c.lineTo(kx + 5, ky + 5); c.lineTo(kx - 5, ky + 5); c.closePath(); c.fill(); }
+}
+function knHud() { $("playHud").innerHTML = `<span>Score <b>${KN.score}</b></span><span>Stage <b>${KN.stage}</b></span><span>Knives <b>${KN.left}</b></span>`; }
+function knFrame(now) {
+  if (!KN.on) return;
+  const dt = Math.min(2.2, Math.max(0.2, (now - KN.last) / 16.67)); KN.last = now;
+  knStep(dt);
+  if (KN.on) { knDraw(); knHud(); KN.raf = requestAnimationFrame(knFrame); }
+}
+function knEnd() {
+  if (!KN.on) return; KN.on = false; cancelAnimationFrame(KN.raf);
+  knDraw();
+  setDaily({ bestKnife: Math.max(dayOf("bestKnife"), KN.score) }).catch(() => {});
+  setTimeout(() => showResult("Knife Hit", KN.score, 10, `Stage ${KN.stage} tak pahunche.`, "gKnife", startKnife), 700);
+}
+function startKnife() {
+  if (dayOf("gKnife") >= 10) return toast("Aaj ke 10 games khatam. Kal phir khelo.");
+  clearTimers(); PLAY = { done: false }; CD.on = false; JB.on = false; FS.on = false; AR.on = false; AR.running = false; hideOv();
+  setDaily({ gKnife: dayOf("gKnife") + 1 }).catch(() => {});
+  $("playTitle").textContent = "Knife Hit";
+  $("playResult").classList.add("hidden"); $("playResult").innerHTML = "";
+  const board = $("playBoard"); board.innerHTML = ""; show("play");
+  mountBanner("slotPlayBanner", SET.banners.big, 300, 250); $("slotPlayBanner").classList.remove("hidden");
+  const cv = document.createElement("canvas");
+  cv.style.cssText = "width:100%;height:440px;border-radius:22px;touch-action:none;display:block;cursor:pointer";
+  board.appendChild(cv);
+  KN.cv = cv; KN.ctx = cv.getContext("2d"); KN.dpr = Math.min(2, window.devicePixelRatio || 1);
+  KN.W = cv.clientWidth || 300; KN.H = 440; cv.width = KN.W * KN.dpr; cv.height = KN.H * KN.dpr;
+  KN.cx = KN.W / 2; KN.cy = 170; KN.R = 88;
+  KN.stage = 1; KN.score = 0; KN.thrown = null; KN.ang = 0; KN.pauseUntil = 0; KN.parts = [];
+  knSetStage();
+  cv.onpointerdown = () => knThrow();
+  $("playMsg").textContent = "Screen par tap karke chaku phenko. 40 second khelne par hi coins milenge.";
+  KN.on = true; KN.last = performance.now(); GAME_T0 = performance.now();
+  cancelAnimationFrame(KN.raf); KN.raf = requestAnimationFrame(knFrame);
+  knHud();
+}
+
 // ---------- card tiles ----------
 function logoTile(svg, bg) { return `<span class="logo-tile" style="background:${bg}">${svg}</span>`; }
 const LOGO_CANDY = `<svg viewBox="0 0 48 48" width="36" height="36"><circle cx="17" cy="18" r="11" fill="#ef4444"/><circle cx="32" cy="16" r="9" fill="#facc15"/><circle cx="19" cy="34" r="10" fill="#22c55e"/><circle cx="34" cy="33" r="9" fill="#60a5fa"/><circle cx="13" cy="13" r="3" fill="#fff" opacity=".85"/><circle cx="28" cy="12" r="2.5" fill="#fff" opacity=".85"/><circle cx="15" cy="30" r="2.5" fill="#fff" opacity=".85"/><circle cx="30" cy="29" r="2.5" fill="#fff" opacity=".85"/></svg>`;
 const LOGO_BALL = `<svg viewBox="0 0 48 48" width="36" height="36"><defs><radialGradient id="jbgLogo" cx=".35" cy=".3" r=".8"><stop offset="0" stop-color="#fff"/><stop offset=".35" stop-color="#fde047"/><stop offset=".85" stop-color="#f97316"/></radialGradient></defs><rect x="8" y="38" width="32" height="6" rx="3" fill="#34d399"/><circle cx="24" cy="22" r="13" fill="url(#jbgLogo)"/></svg>`;
+const LOGO_ARROW = `<svg viewBox="0 0 48 48" width="36" height="36"><path d="M24 6 L36 22 H29 V42 H19 V22 H12 Z" fill="#ffffff"/></svg>`;
+const LOGO_KNIFE = `<svg viewBox="0 0 48 48" width="36" height="36"><path d="M24 4 L30 26 H18 Z" fill="#e5e7eb"/><rect x="21" y="26" width="6" height="8" fill="#7c2d12"/><circle cx="24" cy="38" r="4" fill="#facc15"/></svg>`;
 const LOGO_FRUIT = `<svg viewBox="0 0 48 48" width="36" height="36"><circle cx="24" cy="27" r="16" fill="#ef4444"/><path d="M24 11 q2 -6 8 -6" stroke="#166534" stroke-width="3" fill="none" stroke-linecap="round"/><ellipse cx="32" cy="10" rx="6" ry="3" fill="#22c55e" transform="rotate(-20 32 10)"/><path d="M6 14 L42 40" stroke="#fff" stroke-width="3" stroke-linecap="round" opacity=".9"/><circle cx="17" cy="22" r="3" fill="#fff" opacity=".7"/></svg>`;
-$("playBack").onclick = () => { CD.on = false; JB.on = false; FS.on = false; cancelAnimationFrame(JB.raf); cancelAnimationFrame(FS.raf); clearTimers(); hideOv(); go("home"); };
+$("playBack").onclick = () => { CD.on = false; JB.on = false; FS.on = false; AR.on = false; AR.running = false; cancelAnimationFrame(AR.raf); KN.on = false; cancelAnimationFrame(JB.raf); cancelAnimationFrame(FS.raf); cancelAnimationFrame(KN.raf); clearTimers(); hideOv(); go("home"); };
 
 // ---------- watch ads (rewarded, one per click, daily limit) ----------
 function renderAds() {
