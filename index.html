@@ -126,8 +126,8 @@
   /* v8: all game boards same compact size as Candy Crush */
   #playBoard{max-width:300px;margin-left:auto;margin-right:auto}
   /* v9: game box size, HUD overlaid on the game */
-  #playBoard{min-height:420px!important;max-width:300px;margin-left:auto;margin-right:auto}
-  #playHud{position:relative;z-index:5;margin:0 4px -60px;background:rgba(255,255,255,.92);backdrop-filter:blur(6px);box-shadow:0 10px 20px -12px rgba(15,23,42,.45)}
+  #playBoard{padding-top:44px!important;max-width:300px;margin-left:auto;margin-right:auto}
+  #playHud{position:relative;z-index:5;margin:0 4px -44px;background:none!important;box-shadow:none!important;border:0!important;padding:4px 8px;color:#1e1b4b}
 </style>
 </head>
 <body>
@@ -460,7 +460,7 @@ const PHONE_DOMAIN = "coinblast.app";
 const $ = id => document.getElementById(id);
 const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
 const toast = msg => { const t = $("toast"); t.textContent = msg; t.style.opacity = 1; clearTimeout(toast._t); toast._t = setTimeout(() => t.style.opacity = 0, 2600); };
-const istDay = (off = 0) => new Date(Date.now() + 5.5 * 3600e3 - off * 864e5).toISOString().slice(0, 10);
+const istDay = (off = 0) => new Date((Math.floor((Date.now() + 5.5 * 3600e3 - 7 * 3600e3) / 864e5) - off) * 864e5).toISOString().slice(0, 10); // day changes at 7 AM IST
 const istMonth = () => istDay().slice(0, 7);
 const istWeek = () => { const d = new Date(Date.now() + 5.5 * 3600e3); const t = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate())); const day = t.getUTCDay() || 7; t.setUTCDate(t.getUTCDate() + 4 - day); const y0 = new Date(Date.UTC(t.getUTCFullYear(), 0, 1)); return t.getUTCFullYear() + "-W" + Math.ceil(((t - y0) / 864e5 + 1) / 7); };
 const fmtErr = e => {
@@ -792,10 +792,10 @@ function renderHome() {
   $("offerList").innerHTML = OFFERS.slice(0, 3).map(offerCard).join("") || '<p class="text-xs text-slate-500">Abhi koi offer nahi.</p>';
 }
 function offerCard(t) {
-  const done = !!DONE[t.id];
+  const done = DONE[t.id] === istDay();
   return `<div class="card p-3 flex items-center gap-3"><span class="ico ${t.type === "telegram" ? "bg-sky-100 text-sky-600" : "bg-violet-100 text-violet-600"}"><i class="fa-brands ${t.type === "telegram" ? "fa-telegram" : "fa-link"}"></i></span>
     <div class="flex-1 min-w-0"><b class="block truncate text-sm">${esc(t.title)}</b><small class="text-slate-500 truncate block text-xs">${esc(t.subtitle || t.description || "")}</small><small class="font-bold text-amber-600 text-xs">+${t.reward || 0} coins</small></div>
-    <button data-offer="${esc(t.id)}" class="${done ? "bg-slate-200 text-slate-500" : "bg-violet-600 text-white"} px-3 py-1.5 rounded-lg text-xs font-bold" ${done ? "disabled" : ""}>${done ? "Done" : "Join"}</button></div>`;
+    <button data-offer="${esc(t.id)}" ${done ? 'data-reset="1"' : ""} class="${done ? "bg-slate-200 text-slate-500" : "bg-violet-600 text-white"} px-3 py-1.5 rounded-lg text-xs font-bold" ${done ? "disabled" : ""}>${done ? "Done" : "Join"}</button></div>`;
 }
 function renderOffers() { $("offerAll").innerHTML = OFFERS.map(offerCard).join("") || '<p class="text-sm text-slate-500">Abhi koi offer nahi.</p>'; }
 document.addEventListener("click", e => { const b = e.target.closest("[data-offer]"); if (b) { const t = OFFERS.find(x => x.id === b.dataset.offer); if (t) openOffer(t); } });
@@ -831,7 +831,7 @@ function proofPanel(t) {
   return "stay";
 }
 function openOffer(t) {
-  if (DONE[t.id]) return toast("Ye offer pehle se complete ho chuka hai.");
+  if (DONE[t.id] === istDay()) return toast("Ye offer aaj complete ho chuka hai. 7 AM par reset hoga.");
   if (t.link) window.open(t.link, "_blank");
   startTimedPlay(t.title, `<p class="text-center text-xs text-slate-600">${esc(t.description || "Join karo aur timer poora hone tak raho.")}</p>`, t.seconds || 20, async () => {
     if (t.proof) return proofPanel(t);
@@ -872,14 +872,14 @@ function startTimedPlay(title, body, seconds, onDone) {
 
 // ---------- puzzle: memory pairs (10 games a day, 8 coins a win) ----------
 function renderPuzzles() {
-  const per = SET.puzzleGamesPerDay || 10, left = Math.max(0, per - dayOf("puzzleGames"));
+  const per = gLimit(), left = Math.max(0, per - dayOf("puzzleGames"));
   $("puzList").innerHTML = `<p class="text-xs text-slate-600">Aaj baaki puzzles: <b>${left}</b> / ${per} (roz raat 12 baje reset)</p>` + SET.puzzle.map((p, i) => `<div class="card p-3 flex items-center gap-3"><span class="ico bg-amber-100 text-amber-600"><i class="fa-solid fa-puzzle-piece"></i></span>
     <div class="flex-1"><b class="text-sm">${esc(p.name)} Puzzle</b><p class="text-xs text-slate-500">${p.pairs} jodi · Earn ${SET.puzzleCoins || 8} coins</p></div>
     <button data-puz="${i}" data-cool="1" class="ghost px-3 py-1.5 rounded-lg text-xs" ${left <= 0 ? "disabled" : ""}>${left <= 0 ? "Kal" : "Play"}</button></div>`).join("");
 }
 document.addEventListener("click", e => { const b = e.target.closest("[data-puz]"); if (b) playPuzzle(+b.dataset.puz); });
 function playPuzzle(i) {
-  const p = SET.puzzle[i], per = SET.puzzleGamesPerDay || 10, coins = SET.puzzleCoins || 8;
+  const p = SET.puzzle[i], per = gLimit(), coins = SET.puzzleCoins || 8;
   if (dayOf("puzzleGames") >= per) return toast("Aaj ke " + per + " puzzle games khatam. Kal phir khelo.");
   clearTimers(); PLAY = { done: false };
   $("playTitle").textContent = `${p.name} Puzzle`;
@@ -935,7 +935,7 @@ $("playBack").onclick = () => { clearTimers(); go("home"); };
 
 // ---------- games (admin-managed, iframe, minutes then claim) ----------
 function renderGames() {
-  const gCard = (tile, name, desc, key, best, id) => { const left = Math.max(0, 10 - dayOf(key)); return `<div class="card p-3 flex items-center gap-3">${tile}<div class="flex-1 min-w-0"><b class="block text-sm">${name}</b><p class="text-xs text-slate-500">${desc}</p><p class="text-[11px] text-slate-500">Aaj baaki: <b>${left}</b>/10 · Best score: <b>${dayOf(best)}</b></p></div><button data-game="${id}" data-cool="1" class="ghost px-3 py-1.5 rounded-lg text-xs" ${left <= 0 ? "disabled" : ""}>${left <= 0 ? "Kal" : "Play"}</button></div>`; };
+  const gCard = (tile, name, desc, key, best, id) => { const left = Math.max(0, gLimit() - dayOf(key)); return `<div class="card p-3 flex items-center gap-3">${tile}<div class="flex-1 min-w-0"><b class="block text-sm">${name}</b><p class="text-xs text-slate-500">${desc}</p><p class="text-[11px] text-slate-500">Aaj baaki: <b>${left}</b>/10 · Best score: <b>${dayOf(best)}</b></p></div><button data-game="${id}" data-cool="1" class="ghost px-3 py-1.5 rounded-lg text-xs" ${left <= 0 ? "disabled" : ""}>${left <= 0 ? "Kal" : "Play"}</button></div>`; };
   const lvlCard = gCard(logoTile(LOGO_CANDY, "linear-gradient(135deg,#a78bfa,#4338ca)"), "Candy Crush", "20 moves mein score banao. Har game 10 coins.", "gCandy", "bestCandy", "__level");
   const jumboCard = gCard(logoTile(LOGO_BALL, "linear-gradient(135deg,#fbbf24,#e11d48)"), "Jumbo Ball · Hard", "Ball ko bounce karao, upar chadho. Spikes se bacho. Har game 10 coins.", "gJumbo", "bestJumbo", "__jumbo");
   const fruitCard = gCard(logoTile(LOGO_FRUIT, "linear-gradient(135deg,#fb7185,#f97316)"), "Fruit Slice · Hard", "Fruit kaato, bomb mat kaatna. 3 chances. Har game 10 coins.", "gFruit", "bestFruit", "__fruit");
@@ -1061,7 +1061,7 @@ function showResult(title, score, coinsIfPlayed, sub, dailyKey, retry) {
   SFX.play("over");
   const secs = (performance.now() - GAME_T0) / 1000;
   const coins = secs >= 40 ? coinsIfPlayed : 0;
-  const left = Math.max(0, 10 - dayOf(dailyKey));
+  const left = Math.max(0, gLimit() - dayOf(dailyKey));
   const claimBtn = coins > 0 ? `<button id="ovClaim" class="btn tap mt-5 w-full">Coins claim karo (ad dekho)</button>` : `<p class="text-xs text-rose-500 mt-4">40 second se pehle game khatam hua, isliye coins nahi mile. Dobara khelo aur 40 second tak khelo.</p>`;
   const retryBtn = left > 0 ? `<button id="ovRetry" class="ghost w-full py-2 mt-3">Dobara khelo (${left} bache)</button>` : `<p class="text-xs text-slate-500 mt-3">Aaj ke 10 games khatam. Kal phir khelo.</p>`;
   showOv(`<p class="text-[11px] font-black tracking-[0.25em] text-violet-600">${title}</p>
@@ -1172,7 +1172,7 @@ function cdEnd() {
   showResult("Candy Crush", s, 10, "Moves khatam. Har game 10 coins.", "gCandy", startLevelGame);
 }
 function startLevelGame() {
-  if (dayOf("gCandy") >= 10) return toast("Aaj ke 10 Candy games khatam. Kal phir khelo.");
+  if (dayOf("gCandy") >= gLimit()) return toast("Aaj ke 10 Candy games khatam. Kal phir khelo.");
   clearTimers(); PLAY = { done: false }; hideOv(); JB.on = false; FS.on = false;
   setDaily({ gCandy: dayOf("gCandy") + 1 }).catch(() => {});
   refCandyPlay();
@@ -1204,7 +1204,7 @@ function startLevelGame() {
 }
 
 // ---------- Jumbo Ball: bounce upward, score = height, 3 lives ----------
-const JB = { on: false, dead: false, lives: 3, W: 300, H: 420, x: 150, y: 0, vy: 0, vx: 0, camY: 0, hold: 0, plats: [], topY: 0, raf: 0, last: 0, wrap: null, ballEl: null, maxY: 0 };
+const JB = { on: false, dead: false, lives: 3, W: 300, H: 360, x: 150, y: 0, vy: 0, vx: 0, camY: 0, hold: 0, plats: [], topY: 0, raf: 0, last: 0, wrap: null, ballEl: null, maxY: 0 };
 const JB_G = 0.42, JB_BOUNCE = 11.2, JB_R = 13;
 const jbScore = () => Math.floor(JB.maxY / 10);
 function jbParams(h) { return { pw: Math.max(40, 92 - h / 30), gap: Math.min(120, 80 + h / 25), speed: Math.min(2, 0.8 + h / 1200), spike: Math.min(0.6, 0.15 + h / 3000) }; }
@@ -1284,7 +1284,7 @@ function jbFrame(now) {
   if (JB.on) { jbDraw(); JB.raf = requestAnimationFrame(jbFrame); }
 }
 function startJumbo() {
-  if (dayOf("gJumbo") >= 10) return toast("Aaj ke 10 Jumbo Ball games khatam. Kal phir khelo.");
+  if (dayOf("gJumbo") >= gLimit()) return toast("Aaj ke 10 Jumbo Ball games khatam. Kal phir khelo.");
   clearTimers(); PLAY = { done: false }; CD.on = false; FS.on = false; hideOv();
   setDaily({ gJumbo: dayOf("gJumbo") + 1 }).catch(() => {});
   $("playTitle").textContent = "Jumbo Ball"; GAME_T0 = performance.now();
@@ -1318,7 +1318,7 @@ function startJumbo() {
 }
 
 // ---------- Fruit Slice: swipe to slice, bombs end the run, 3 chances ----------
-const FS = { on: false, lives: 3, W: 300, H: 420, cv: null, ctx: null, dpr: 1, objs: [], parts: [], trail: [], down: false, lx: 0, ly: 0, sliced: 0, spawnT: 0, raf: 0, last: 0 };
+const FS = { on: false, lives: 3, W: 300, H: 360, cv: null, ctx: null, dpr: 1, objs: [], parts: [], trail: [], down: false, lx: 0, ly: 0, sliced: 0, spawnT: 0, raf: 0, last: 0 };
 const FS_G = 0.2;
 const FS_COL = [["#ef4444", "#fecaca"], ["#f59e0b", "#fef3c7"], ["#22c55e", "#dcfce7"], ["#a855f7", "#f3e8ff"], ["#f472b6", "#fce7f3"], ["#eab308", "#fef9c3"]];
 const fsInterval = () => Math.max(320, 900 - 15 * FS.sliced);
@@ -1424,7 +1424,7 @@ function fsEnd() {
   showResult("Fruit Slice", s, 10, `${FS.sliced} fruit kaate. Har game 10 coins.`, "gFruit", startFruit);
 }
 function startFruit() {
-  if (dayOf("gFruit") >= 10) return toast("Aaj ke 10 Fruit Slice games khatam. Kal phir khelo.");
+  if (dayOf("gFruit") >= gLimit()) return toast("Aaj ke 10 Fruit Slice games khatam. Kal phir khelo.");
   clearTimers(); PLAY = { done: false }; CD.on = false; JB.on = false; hideOv();
   setDaily({ gFruit: dayOf("gFruit") + 1 }).catch(() => {});
   $("playTitle").textContent = "Fruit Slice"; GAME_T0 = performance.now();
@@ -1432,10 +1432,10 @@ function startFruit() {
   const board = $("playBoard"); board.innerHTML = ""; show("play");
   mountBanner("slotPlayBanner", SET.banners.big, 300, 250); $("slotPlayBanner").classList.remove("hidden");
   const cv = document.createElement("canvas");
-  cv.style.cssText = "width:100%;height:420px;border-radius:20px;touch-action:none;display:block;cursor:crosshair";
+  cv.style.cssText = "width:100%;height:360px;border-radius:20px;touch-action:none;display:block;cursor:crosshair";
   board.appendChild(cv);
   FS.cv = cv; FS.ctx = cv.getContext("2d");
-  FS.dpr = Math.min(2, window.devicePixelRatio || 1); FS.W = cv.clientWidth || 300; FS.H = 420;
+  FS.dpr = Math.min(2, window.devicePixelRatio || 1); FS.W = cv.clientWidth || 300; FS.H = 360;
   cv.width = FS.W * FS.dpr; cv.height = FS.H * FS.dpr;
   cv.onpointerdown = e => { cv.setPointerCapture(e.pointerId); FS.down = true; const [x, y] = fsPos(e); FS.lx = x; FS.ly = y; FS.trail.push({ x, y, life: 0.35 }); };
   cv.onpointermove = e => { if (!FS.down) return; const [x, y] = fsPos(e); fsSlice(FS.lx, FS.ly, x, y); FS.trail.push({ x, y, life: 0.35 }); FS.lx = x; FS.ly = y; };
@@ -1490,7 +1490,7 @@ function arHud() { $("playHud").innerHTML = `<span>Score <b>${AR.score}</b></spa
 function arHintBtn() { const b = $("arHint"); if (!b) return; b.textContent = `💡 Hint (${AR.hintsLeft})`; b.disabled = AR.hintsLeft <= 0; }
 function arLayout() {
   const W = AR.cv.clientWidth || 300;
-  AR.W = W; AR.cell = Math.min(Math.floor((W - 24) / AR.C), Math.floor((420 - 20) / AR.R));
+  AR.W = W; AR.cell = Math.min(Math.floor((W - 24) / AR.C), Math.floor((360 - 20) / AR.R));
   AR.ox = (W - AR.cell * AR.C) / 2; AR.oy = 10; AR.H = AR.oy * 2 + AR.cell * AR.R;
   AR.dpr = Math.min(2, window.devicePixelRatio || 1);
   AR.cv.width = Math.round(W * AR.dpr); AR.cv.height = Math.round(AR.H * AR.dpr); AR.cv.style.height = AR.H + "px";
@@ -1613,7 +1613,7 @@ function arHint() {
   AR.hint = { id: pick.id, until: performance.now() + 2200 }; AR.hintsLeft--; arHintBtn(); SFX.play("tap");
 }
 function startArrows() {
-  if (dayOf("gArrows") >= 10) return toast("Aaj ke 10 games khatam. Kal phir khelo.");
+  if (dayOf("gArrows") >= gLimit()) return toast("Aaj ke 10 games khatam. Kal phir khelo.");
   clearTimers(); PLAY = { done: false }; CD.on = false; JB.on = false; FS.on = false; KN.on = false; hideOv();
   setDaily({ gArrows: dayOf("gArrows") + 1 }).catch(() => {});
   $("playTitle").textContent = "Tap Away Arrows";
@@ -1639,7 +1639,7 @@ function arEnd() {
 }
 
 // ---------- Knife Hit (canvas): throw knives into the spinning target; touching a stuck knife ends the run ----------
-const KN = { on: false, W: 300, H: 420, cv: null, ctx: null, dpr: 1, cx: 150, cy: 160, R: 84, ang: 0, dir: 1, spd: 0.025, stuck: [], apples: [], thrown: null, left: 5, stage: 1, score: 0, raf: 0, last: 0, pauseUntil: 0, parts: [] };
+const KN = { on: false, W: 300, H: 360, cv: null, ctx: null, dpr: 1, cx: 150, cy: 150, R: 80, ang: 0, dir: 1, spd: 0.025, stuck: [], apples: [], thrown: null, left: 5, stage: 1, score: 0, raf: 0, last: 0, pauseUntil: 0, parts: [] };
 const knWrap = a => { a = a % (2 * Math.PI); if (a > Math.PI) a -= 2 * Math.PI; if (a < -Math.PI) a += 2 * Math.PI; return a; };
 function knSetStage() {
   KN.left = 5 + KN.stage;
@@ -1717,7 +1717,7 @@ function knEnd() {
   setTimeout(() => showResult("Knife Hit", KN.score, 10, `Stage ${KN.stage} tak pahunche.`, "gKnife", startKnife), 700);
 }
 function startKnife() {
-  if (dayOf("gKnife") >= 10) return toast("Aaj ke 10 games khatam. Kal phir khelo.");
+  if (dayOf("gKnife") >= gLimit()) return toast("Aaj ke 10 games khatam. Kal phir khelo.");
   clearTimers(); PLAY = { done: false }; CD.on = false; JB.on = false; FS.on = false; AR.on = false; AR.running = false; hideOv();
   setDaily({ gKnife: dayOf("gKnife") + 1 }).catch(() => {});
   $("playTitle").textContent = "Knife Hit";
@@ -1725,11 +1725,11 @@ function startKnife() {
   const board = $("playBoard"); board.innerHTML = ""; show("play");
   mountBanner("slotPlayBanner", SET.banners.big, 300, 250); $("slotPlayBanner").classList.remove("hidden");
   const cv = document.createElement("canvas");
-  cv.style.cssText = "width:100%;height:420px;border-radius:22px;touch-action:none;display:block;cursor:pointer";
+  cv.style.cssText = "width:100%;height:360px;border-radius:22px;touch-action:none;display:block;cursor:pointer";
   board.appendChild(cv);
   KN.cv = cv; KN.ctx = cv.getContext("2d"); KN.dpr = Math.min(2, window.devicePixelRatio || 1);
-  KN.W = cv.clientWidth || 300; KN.H = 420; cv.width = KN.W * KN.dpr; cv.height = KN.H * KN.dpr;
-  KN.cx = KN.W / 2; KN.cy = 160; KN.R = 84;
+  KN.W = cv.clientWidth || 300; KN.H = 360; cv.width = KN.W * KN.dpr; cv.height = KN.H * KN.dpr;
+  KN.cx = KN.W / 2; KN.cy = 150; KN.R = 80;
   KN.stage = 1; KN.score = 0; KN.thrown = null; KN.ang = 0; KN.pauseUntil = 0; KN.parts = [];
   knSetStage();
   cv.onpointerdown = () => knThrow();
@@ -1922,6 +1922,15 @@ setInterval(() => {
     else if (b.dataset.cooling === "1") { b.dataset.cooling = ""; b.disabled = false; b.textContent = b.dataset.label; }
   });
 }, 250);
+// time left until the next 7 AM IST reset
+function resetLeft() {
+  const DAY = 864e5, sh = Date.now() + 5.5 * 3600e3 - 7 * 3600e3;
+  const s = Math.floor(((Math.floor(sh / DAY) + 1) * DAY - sh) / 1000);
+  return `${Math.floor(s / 3600)}h ${String(Math.floor((s % 3600) / 60)).padStart(2, "0")}m`;
+}
+setInterval(() => { document.querySelectorAll("[data-reset]").forEach(b => { b.textContent = "Reset 7AM · " + resetLeft(); b.disabled = true; }); }, 1000);
+// games per day: 10 by default, admin can raise it for one user (users/{uid}/gameLimit)
+function gLimit() { return (ME && ME.gameLimit) || 10; }
 function rdRate(m) { return m === "upi" ? 230 : 185; } // coins per Rs 1
 function renderRedeemList() {
   const bal = ME ? (ME.balance || 0) : 0;
