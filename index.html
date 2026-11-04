@@ -125,6 +125,9 @@
   .rdk-lock{background:#fff;border:1.5px solid #ddd6fe;color:#6d28d9;border-radius:14px;padding:10px 14px;font-size:14px;white-space:nowrap}
   /* v8: all game boards same compact size as Candy Crush */
   #playBoard{max-width:300px;margin-left:auto;margin-right:auto}
+  /* v9: game box size, HUD overlaid on the game */
+  #playBoard{min-height:420px!important;max-width:300px;margin-left:auto;margin-right:auto}
+  #playHud{position:relative;z-index:5;margin:0 4px -60px;background:rgba(255,255,255,.92);backdrop-filter:blur(6px);box-shadow:0 10px 20px -12px rgba(15,23,42,.45)}
 </style>
 </head>
 <body>
@@ -258,6 +261,7 @@
   <div class="px-4 -mt-3 space-y-2.5">
     <div id="adList" class="space-y-2.5"></div>
     <div class="grad rounded-[16px] p-4 text-white" style="background:linear-gradient(135deg,#7c3aed,#4f46e5)"><p class="font-bold text-sm">Daily Ad Limit</p><p class="text-xs opacity-90" id="adCount">0 / 20 Ads Watched</p><div class="bar mt-2" style="background:rgba(255,255,255,.3)"><i id="adBar" style="background:#fff"></i></div></div>
+    <div id="slotAdsBanner" class="flex justify-center"></div>
     <p class="text-xs text-slate-500 text-center">Coins tabhi milenge jab ad poora chale. Ad na aaye to coins nahi milenge.</p>
   </div>
 </section>
@@ -503,6 +507,7 @@ function show(name) {
   document.querySelectorAll(".screen").forEach(s => s.classList.toggle("on", s.id === "s-" + name));
   if (name !== "play") { const sb = $("slotPlayBanner"); if (sb) { sb.classList.add("hidden"); sb.innerHTML = ""; sb.dataset.key = ""; } const sn = $("slotPlayNative"); if (sn) { sn.classList.add("hidden"); sn.innerHTML = ""; sn.dataset.key = ""; } }
   if (name === "home") mountBanner("slotStrip", SET.banners.strip, 320, 50);
+  if (name === "ads") mountBanner("slotAdsBanner", SET.banners.big, 300, 250);
   $("nav").classList.toggle("hidden", !TAB_SCREENS.includes(name) && !["history", "redhist", "leader", "support", "referral", "puzzle", "games", "ads", "checkin", "text"].includes(name));
   document.querySelectorAll(".nav-btn").forEach(b => b.classList.toggle("on", b.dataset.go === name));
   window.scrollTo(0, 0);
@@ -681,11 +686,29 @@ function attachSession(uid) {
   if (SESS_UID === uid) return;
   detachSession(); SESS_UID = uid;
   if (localStorage.getItem("cb_pending")) { localStorage.removeItem("cb_pending"); set(R("sessions/" + uid), DEV).catch(() => {}); }
+  watchReferrals(uid);
   SESS_OFF = onValue(R("sessions/" + uid), snap => {
     const v = snap.val();
     if (v == null) { set(R("sessions/" + uid), DEV).catch(() => {}); return; }
     if (v !== DEV) { detachSession(); toast("Ye account doosre device par login ho gaya. Aap logout ho gaye."); signOut(auth); }
   }, () => {});
+}
+// referral reward: refStats/{referrer}/{friend} = { plays, rewarded }
+let REF_OFF = null;
+function watchReferrals(uid) {
+  if (REF_OFF) REF_OFF();
+  REF_OFF = onValue(R("refStats/" + uid), snap => {
+    const v = snap.val() || {};
+    for (const [fid, d] of Object.entries(v)) if (d && (d.plays || 0) >= (SET.refPlays || 10) && !d.rewarded) claimRef(uid, fid);
+  }, () => {});
+}
+async function claimRef(uid, fid) {
+  const r = await runTransaction(R(`refStats/${uid}/${fid}/rewarded`), v => (v ? undefined : true)).catch(() => null);
+  if (r && r.committed) await credit(SET.refReward || 20, "Friend ne Candy Crush 10 games khele");
+}
+function refCandyPlay() {
+  if (!UID || !ME || !ME.referredBy) return;
+  runTransaction(R(`refStats/${ME.referredBy}/${UID}/plays`), v => (v || 0) + 1).catch(() => {});
 }
 // Support contact: https://... or @telegram_username -> a clickable link (empty if neither)
 function contactHref(v) { v = String(v || "").trim(); if (!v) return ""; if (/^https:\/\//i.test(v)) return v; const m = v.match(/^@?([A-Za-z0-9_]{4,})$/); return m ? "https://t.me/" + m[1] : ""; }
@@ -738,7 +761,7 @@ async function processBonus() {
   } catch (_) {} finally { bonusBusy = false; }
 }
 async function credit(amount, reason) {
-  if (amount > 0) { window.CLAIM_READY = Date.now() + 5000; showCoinTimer(5); }
+  if (amount > 0) window.CLAIM_READY = Date.now() + 5000;
   await runTransaction(R(`users/${UID}/balance`), v => (v || 0) + amount);
   if (amount > 0) await runTransaction(R(`users/${UID}/totalEarned`), v => (v || 0) + amount);
   await push(R(`transactions/${UID}`), { type: amount >= 0 ? "credit" : "debit", coins: Math.abs(amount), reason, ts: Date.now() });
@@ -852,7 +875,7 @@ function renderPuzzles() {
   const per = SET.puzzleGamesPerDay || 10, left = Math.max(0, per - dayOf("puzzleGames"));
   $("puzList").innerHTML = `<p class="text-xs text-slate-600">Aaj baaki puzzles: <b>${left}</b> / ${per} (roz raat 12 baje reset)</p>` + SET.puzzle.map((p, i) => `<div class="card p-3 flex items-center gap-3"><span class="ico bg-amber-100 text-amber-600"><i class="fa-solid fa-puzzle-piece"></i></span>
     <div class="flex-1"><b class="text-sm">${esc(p.name)} Puzzle</b><p class="text-xs text-slate-500">${p.pairs} jodi · Earn ${SET.puzzleCoins || 8} coins</p></div>
-    <button data-puz="${i}" class="ghost px-3 py-1.5 rounded-lg text-xs" ${left <= 0 ? "disabled" : ""}>${left <= 0 ? "Kal" : "Play"}</button></div>`).join("");
+    <button data-puz="${i}" data-cool="1" class="ghost px-3 py-1.5 rounded-lg text-xs" ${left <= 0 ? "disabled" : ""}>${left <= 0 ? "Kal" : "Play"}</button></div>`).join("");
 }
 document.addEventListener("click", e => { const b = e.target.closest("[data-puz]"); if (b) playPuzzle(+b.dataset.puz); });
 function playPuzzle(i) {
@@ -912,7 +935,7 @@ $("playBack").onclick = () => { clearTimers(); go("home"); };
 
 // ---------- games (admin-managed, iframe, minutes then claim) ----------
 function renderGames() {
-  const gCard = (tile, name, desc, key, best, id) => { const left = Math.max(0, 10 - dayOf(key)); return `<div class="card p-3 flex items-center gap-3">${tile}<div class="flex-1 min-w-0"><b class="block text-sm">${name}</b><p class="text-xs text-slate-500">${desc}</p><p class="text-[11px] text-slate-500">Aaj baaki: <b>${left}</b>/10 · Best score: <b>${dayOf(best)}</b></p></div><button data-game="${id}" class="ghost px-3 py-1.5 rounded-lg text-xs" ${left <= 0 ? "disabled" : ""}>${left <= 0 ? "Kal" : "Play"}</button></div>`; };
+  const gCard = (tile, name, desc, key, best, id) => { const left = Math.max(0, 10 - dayOf(key)); return `<div class="card p-3 flex items-center gap-3">${tile}<div class="flex-1 min-w-0"><b class="block text-sm">${name}</b><p class="text-xs text-slate-500">${desc}</p><p class="text-[11px] text-slate-500">Aaj baaki: <b>${left}</b>/10 · Best score: <b>${dayOf(best)}</b></p></div><button data-game="${id}" data-cool="1" class="ghost px-3 py-1.5 rounded-lg text-xs" ${left <= 0 ? "disabled" : ""}>${left <= 0 ? "Kal" : "Play"}</button></div>`; };
   const lvlCard = gCard(logoTile(LOGO_CANDY, "linear-gradient(135deg,#a78bfa,#4338ca)"), "Candy Crush", "20 moves mein score banao. Har game 10 coins.", "gCandy", "bestCandy", "__level");
   const jumboCard = gCard(logoTile(LOGO_BALL, "linear-gradient(135deg,#fbbf24,#e11d48)"), "Jumbo Ball · Hard", "Ball ko bounce karao, upar chadho. Spikes se bacho. Har game 10 coins.", "gJumbo", "bestJumbo", "__jumbo");
   const fruitCard = gCard(logoTile(LOGO_FRUIT, "linear-gradient(135deg,#fb7185,#f97316)"), "Fruit Slice · Hard", "Fruit kaato, bomb mat kaatna. 3 chances. Har game 10 coins.", "gFruit", "bestFruit", "__fruit");
@@ -1152,6 +1175,7 @@ function startLevelGame() {
   if (dayOf("gCandy") >= 10) return toast("Aaj ke 10 Candy games khatam. Kal phir khelo.");
   clearTimers(); PLAY = { done: false }; hideOv(); JB.on = false; FS.on = false;
   setDaily({ gCandy: dayOf("gCandy") + 1 }).catch(() => {});
+  refCandyPlay();
   $("playTitle").textContent = "Candy Crush"; GAME_T0 = performance.now();
   $("playResult").classList.add("hidden"); $("playResult").innerHTML = "";
   $("playBoard").innerHTML = ""; show("play");
@@ -1180,7 +1204,7 @@ function startLevelGame() {
 }
 
 // ---------- Jumbo Ball: bounce upward, score = height, 3 lives ----------
-const JB = { on: false, dead: false, lives: 3, W: 300, H: 340, x: 150, y: 0, vy: 0, vx: 0, camY: 0, hold: 0, plats: [], topY: 0, raf: 0, last: 0, wrap: null, ballEl: null, maxY: 0 };
+const JB = { on: false, dead: false, lives: 3, W: 300, H: 420, x: 150, y: 0, vy: 0, vx: 0, camY: 0, hold: 0, plats: [], topY: 0, raf: 0, last: 0, wrap: null, ballEl: null, maxY: 0 };
 const JB_G = 0.42, JB_BOUNCE = 11.2, JB_R = 13;
 const jbScore = () => Math.floor(JB.maxY / 10);
 function jbParams(h) { return { pw: Math.max(40, 92 - h / 30), gap: Math.min(120, 80 + h / 25), speed: Math.min(2, 0.8 + h / 1200), spike: Math.min(0.6, 0.15 + h / 3000) }; }
@@ -1294,7 +1318,7 @@ function startJumbo() {
 }
 
 // ---------- Fruit Slice: swipe to slice, bombs end the run, 3 chances ----------
-const FS = { on: false, lives: 3, W: 300, H: 340, cv: null, ctx: null, dpr: 1, objs: [], parts: [], trail: [], down: false, lx: 0, ly: 0, sliced: 0, spawnT: 0, raf: 0, last: 0 };
+const FS = { on: false, lives: 3, W: 300, H: 420, cv: null, ctx: null, dpr: 1, objs: [], parts: [], trail: [], down: false, lx: 0, ly: 0, sliced: 0, spawnT: 0, raf: 0, last: 0 };
 const FS_G = 0.2;
 const FS_COL = [["#ef4444", "#fecaca"], ["#f59e0b", "#fef3c7"], ["#22c55e", "#dcfce7"], ["#a855f7", "#f3e8ff"], ["#f472b6", "#fce7f3"], ["#eab308", "#fef9c3"]];
 const fsInterval = () => Math.max(320, 900 - 15 * FS.sliced);
@@ -1408,10 +1432,10 @@ function startFruit() {
   const board = $("playBoard"); board.innerHTML = ""; show("play");
   mountBanner("slotPlayBanner", SET.banners.big, 300, 250); $("slotPlayBanner").classList.remove("hidden");
   const cv = document.createElement("canvas");
-  cv.style.cssText = "width:100%;height:340px;border-radius:20px;touch-action:none;display:block;cursor:crosshair";
+  cv.style.cssText = "width:100%;height:420px;border-radius:20px;touch-action:none;display:block;cursor:crosshair";
   board.appendChild(cv);
   FS.cv = cv; FS.ctx = cv.getContext("2d");
-  FS.dpr = Math.min(2, window.devicePixelRatio || 1); FS.W = cv.clientWidth || 300; FS.H = 340;
+  FS.dpr = Math.min(2, window.devicePixelRatio || 1); FS.W = cv.clientWidth || 300; FS.H = 420;
   cv.width = FS.W * FS.dpr; cv.height = FS.H * FS.dpr;
   cv.onpointerdown = e => { cv.setPointerCapture(e.pointerId); FS.down = true; const [x, y] = fsPos(e); FS.lx = x; FS.ly = y; FS.trail.push({ x, y, life: 0.35 }); };
   cv.onpointermove = e => { if (!FS.down) return; const [x, y] = fsPos(e); fsSlice(FS.lx, FS.ly, x, y); FS.trail.push({ x, y, life: 0.35 }); FS.lx = x; FS.ly = y; };
@@ -1466,7 +1490,7 @@ function arHud() { $("playHud").innerHTML = `<span>Score <b>${AR.score}</b></spa
 function arHintBtn() { const b = $("arHint"); if (!b) return; b.textContent = `💡 Hint (${AR.hintsLeft})`; b.disabled = AR.hintsLeft <= 0; }
 function arLayout() {
   const W = AR.cv.clientWidth || 300;
-  AR.W = W; AR.cell = Math.min(Math.floor((W - 24) / AR.C), Math.floor((330 - 20) / AR.R));
+  AR.W = W; AR.cell = Math.min(Math.floor((W - 24) / AR.C), Math.floor((420 - 20) / AR.R));
   AR.ox = (W - AR.cell * AR.C) / 2; AR.oy = 10; AR.H = AR.oy * 2 + AR.cell * AR.R;
   AR.dpr = Math.min(2, window.devicePixelRatio || 1);
   AR.cv.width = Math.round(W * AR.dpr); AR.cv.height = Math.round(AR.H * AR.dpr); AR.cv.style.height = AR.H + "px";
@@ -1615,7 +1639,7 @@ function arEnd() {
 }
 
 // ---------- Knife Hit (canvas): throw knives into the spinning target; touching a stuck knife ends the run ----------
-const KN = { on: false, W: 300, H: 340, cv: null, ctx: null, dpr: 1, cx: 150, cy: 130, R: 76, ang: 0, dir: 1, spd: 0.025, stuck: [], apples: [], thrown: null, left: 5, stage: 1, score: 0, raf: 0, last: 0, pauseUntil: 0, parts: [] };
+const KN = { on: false, W: 300, H: 420, cv: null, ctx: null, dpr: 1, cx: 150, cy: 160, R: 84, ang: 0, dir: 1, spd: 0.025, stuck: [], apples: [], thrown: null, left: 5, stage: 1, score: 0, raf: 0, last: 0, pauseUntil: 0, parts: [] };
 const knWrap = a => { a = a % (2 * Math.PI); if (a > Math.PI) a -= 2 * Math.PI; if (a < -Math.PI) a += 2 * Math.PI; return a; };
 function knSetStage() {
   KN.left = 5 + KN.stage;
@@ -1701,11 +1725,11 @@ function startKnife() {
   const board = $("playBoard"); board.innerHTML = ""; show("play");
   mountBanner("slotPlayBanner", SET.banners.big, 300, 250); $("slotPlayBanner").classList.remove("hidden");
   const cv = document.createElement("canvas");
-  cv.style.cssText = "width:100%;height:340px;border-radius:22px;touch-action:none;display:block;cursor:pointer";
+  cv.style.cssText = "width:100%;height:420px;border-radius:22px;touch-action:none;display:block;cursor:pointer";
   board.appendChild(cv);
   KN.cv = cv; KN.ctx = cv.getContext("2d"); KN.dpr = Math.min(2, window.devicePixelRatio || 1);
-  KN.W = cv.clientWidth || 300; KN.H = 340; cv.width = KN.W * KN.dpr; cv.height = KN.H * KN.dpr;
-  KN.cx = KN.W / 2; KN.cy = 130; KN.R = 76;
+  KN.W = cv.clientWidth || 300; KN.H = 420; cv.width = KN.W * KN.dpr; cv.height = KN.H * KN.dpr;
+  KN.cx = KN.W / 2; KN.cy = 160; KN.R = 84;
   KN.stage = 1; KN.score = 0; KN.thrown = null; KN.ang = 0; KN.pauseUntil = 0; KN.parts = [];
   knSetStage();
   cv.onpointerdown = () => knThrow();
@@ -1729,7 +1753,7 @@ function renderAds() {
   const used = dayOf("ads"), r = SET.adReward || DEF.adReward;
   $("adList").innerHTML = `<div class="card p-3 flex items-center gap-3"><span class="ico bg-amber-100 text-amber-600"><i class="fa-solid fa-bag-shopping"></i></span>
     <div class="flex-1"><b class="text-sm">Watch Ad (${r.sec} Sec)</b><p class="text-xs text-slate-500">Earn ${r.coins} coins</p></div>
-    <button data-ad="0" class="px-3 py-1.5 rounded-lg bg-violet-600 text-white text-xs font-bold" ${used >= SET.adDailyLimit || SET.ad.watchAd === false ? "disabled" : ""}>Watch</button></div>`;
+    <button data-ad="0" data-cool="1" class="px-3 py-1.5 rounded-lg bg-violet-600 text-white text-xs font-bold" ${used >= SET.adDailyLimit || SET.ad.watchAd === false ? "disabled" : ""}>Watch</button></div>`;
   $("adCount").textContent = `${used} / ${SET.adDailyLimit} Ads Watched`;
   $("adBar").style.width = Math.min(100, used / SET.adDailyLimit * 100) + "%";
 }
@@ -1889,6 +1913,15 @@ function showCoinTimer(sec) {
   clearInterval(CT_TIMER);
   CT_TIMER = setInterval(() => { s--; if (s <= 0) { clearInterval(CT_TIMER); el.style.display = "none"; } else el.textContent = `Agla claim ${s}s mein`; }, 1000);
 }
+// buttons marked data-cool are disabled with a countdown for 5 s after every coin claim
+setInterval(() => {
+  const left = (window.CLAIM_READY || 0) - Date.now();
+  document.querySelectorAll("[data-cool]").forEach(b => {
+    if (!b.dataset.label) b.dataset.label = b.textContent;
+    if (left > 0) { b.dataset.cooling = "1"; b.disabled = true; b.textContent = Math.ceil(left / 1000) + "s"; }
+    else if (b.dataset.cooling === "1") { b.dataset.cooling = ""; b.disabled = false; b.textContent = b.dataset.label; }
+  });
+}, 250);
 function rdRate(m) { return m === "upi" ? 230 : 185; } // coins per Rs 1
 function renderRedeemList() {
   const bal = ME ? (ME.balance || 0) : 0;
