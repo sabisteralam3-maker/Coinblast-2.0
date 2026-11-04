@@ -123,6 +123,8 @@
   .rdk-inst{display:inline-flex;align-items:center;gap:4px;background:#dcfce7;color:#15803d;font-size:11px;font-weight:700;border-radius:999px;padding:3px 9px}
   .rdk-btn{background:linear-gradient(180deg,#9b6cf7,#6d28d9);color:#fff;font-weight:900;border-radius:999px;padding:12px 18px;font-size:14px;white-space:nowrap;box-shadow:0 5px 0 #4c1d95}
   .rdk-lock{background:#fff;border:1.5px solid #ddd6fe;color:#6d28d9;border-radius:14px;padding:10px 14px;font-size:14px;white-space:nowrap}
+  /* v8: all game boards same compact size as Candy Crush */
+  #playBoard{max-width:300px;margin-left:auto;margin-right:auto}
 </style>
 </head>
 <body>
@@ -467,7 +469,7 @@ const fmtErr = e => {
   if (c.includes("network")) return "Internet check karein";
   return e.message || "Kuch gadbad hui, dobara try karein";
 };
-const DEF = { referralBot: "https://t.me/CoinBlastRewardsBot", coinsPerRupee: 150, minRedeemCoins: 1500, maxRedeemCoins: 30000, referralReferrer: 500, referralReferee: 200, adDailyLimit: 20,
+const DEF = { referralBot: "https://t.me/CoinBlastRewardsBot", coinsPerRupee: 185, minRedeemCoins: 1850, maxRedeemCoins: 37000, referralReferrer: 500, referralReferee: 200, adDailyLimit: 20,
   adReward: { sec: 15, coins: 7 }, banners: { big: "c6270abacc2ed228deca10f82f7babd4", strip: "c18a36997f2f204e63b53f019fb4f19c", native: "198d30c9fbecee26360432020aba1bb2" },
   checkin: [10, 15, 20, 40, 50],
   puzzle: [{ name: "Easy", pairs: 4, coins: 8 }, { name: "Medium", pairs: 6, coins: 8 }, { name: "Hard", pairs: 8, coins: 8 }, { name: "Expert", pairs: 10, coins: 8 }],
@@ -705,7 +707,7 @@ onAuthStateChanged(auth, async u => {
 onValue(R("settings/app"), snap => {
   const v = snap.exists() ? snap.val() : {};
   SET = { ...DEF, ...v, ad: { ...DEF.ad, ...(v.ad || {}) }, banners: { ...DEF.banners, ...(v.banners || {}) }, adReward: v.adReward || DEF.adReward, support: { ...DEF.support, ...(v.support || {}) }, texts: { ...DEF.texts, ...(v.texts || {}) }, checkin: v.checkin || DEF.checkin, puzzle: v.puzzle || DEF.puzzle };
-  SET.coinsPerRupee = 150; SET.minRedeemCoins = 1500; SET.maxRedeemCoins = 30000;
+  SET.coinsPerRupee = 185; SET.minRedeemCoins = 1850; SET.maxRedeemCoins = 37000;
   document.querySelectorAll(".minr").forEach(e => e.textContent = Math.round(SET.minRedeemCoins / SET.coinsPerRupee));
   refreshVisible();
 });
@@ -736,6 +738,7 @@ async function processBonus() {
   } catch (_) {} finally { bonusBusy = false; }
 }
 async function credit(amount, reason) {
+  if (amount > 0) { window.CLAIM_READY = Date.now() + 5000; showCoinTimer(5); }
   await runTransaction(R(`users/${UID}/balance`), v => (v || 0) + amount);
   if (amount > 0) await runTransaction(R(`users/${UID}/totalEarned`), v => (v || 0) + amount);
   await push(R(`transactions/${UID}`), { type: amount >= 0 ? "credit" : "debit", coins: Math.abs(amount), reason, ts: Date.now() });
@@ -766,7 +769,7 @@ function renderHome() {
   $("offerList").innerHTML = OFFERS.slice(0, 3).map(offerCard).join("") || '<p class="text-xs text-slate-500">Abhi koi offer nahi.</p>';
 }
 function offerCard(t) {
-  const done = DONE[t.id] === istDay();
+  const done = !!DONE[t.id];
   return `<div class="card p-3 flex items-center gap-3"><span class="ico ${t.type === "telegram" ? "bg-sky-100 text-sky-600" : "bg-violet-100 text-violet-600"}"><i class="fa-brands ${t.type === "telegram" ? "fa-telegram" : "fa-link"}"></i></span>
     <div class="flex-1 min-w-0"><b class="block truncate text-sm">${esc(t.title)}</b><small class="text-slate-500 truncate block text-xs">${esc(t.subtitle || t.description || "")}</small><small class="font-bold text-amber-600 text-xs">+${t.reward || 0} coins</small></div>
     <button data-offer="${esc(t.id)}" class="${done ? "bg-slate-200 text-slate-500" : "bg-violet-600 text-white"} px-3 py-1.5 rounded-lg text-xs font-bold" ${done ? "disabled" : ""}>${done ? "Done" : "Join"}</button></div>`;
@@ -805,7 +808,7 @@ function proofPanel(t) {
   return "stay";
 }
 function openOffer(t) {
-  if (DONE[t.id] === istDay()) return toast("Ye offer aaj complete ho chuka hai. Kal phir aana.");
+  if (DONE[t.id]) return toast("Ye offer pehle se complete ho chuka hai.");
   if (t.link) window.open(t.link, "_blank");
   startTimedPlay(t.title, `<p class="text-center text-xs text-slate-600">${esc(t.description || "Join karo aur timer poora hone tak raho.")}</p>`, t.seconds || 20, async () => {
     if (t.proof) return proofPanel(t);
@@ -969,7 +972,7 @@ function playGame(id) {
 // ---------- ad: 3s loader, then the rewarded ad. Coins only if the 15s ad was really watched (no tab switch, no early skip) ----------
 async function runLevelAd() {
   const ov = $("adLoadOv"); ov.classList.remove("hidden"); ov.classList.add("flex");
-  await new Promise(r => setTimeout(r, 3000));
+  await new Promise(r => setTimeout(r, Math.max(3000, (window.CLAIM_READY || 0) - Date.now())));
   ov.classList.add("hidden"); ov.classList.remove("flex");
   let left = false;
   const onV = () => { if (document.hidden) left = true; };
@@ -1469,19 +1472,39 @@ function arLayout() {
   AR.cv.width = Math.round(W * AR.dpr); AR.cv.height = Math.round(AR.H * AR.dpr); AR.cv.style.height = AR.H + "px";
 }
 // draws one arrow as a polyline through its cells, with the arrowhead at the head, pointing along A.d
-function drawPath(A, offX, offY, color, alpha, now, hint) {
+function drawPts(pts, d, color, alpha, now, hint) {
   const x = AR.ctx, cell = AR.cell;
-  const pts = A.cells.map(([r, c]) => [AR.ox + c * cell + cell / 2 + offX, AR.oy + r * cell + cell / 2 + offY]);
   x.globalAlpha = alpha; x.strokeStyle = color; x.fillStyle = color; x.lineCap = "round"; x.lineJoin = "round"; x.lineWidth = Math.max(4, cell * 0.14);
   if (hint) { const p = 0.5 + 0.5 * Math.sin(now / 140); x.save(); x.shadowColor = "rgba(37,99,235,0.6)"; x.shadowBlur = 8 + 8 * p; }
   x.beginPath(); x.moveTo(pts[0][0], pts[0][1]);
   for (let i = 1; i < pts.length; i++) x.lineTo(pts[i][0], pts[i][1]);
   x.stroke();
-  const [hx, hy] = pts[pts.length - 1], [dr, dc] = AR_DIR[A.d], ux = dc, uy = dr, nx = -uy, ny = ux;
+  const [hx, hy] = pts[pts.length - 1], [dr, dc] = AR_DIR[d], ux = dc, uy = dr, nx = -uy, ny = ux;
   const tipX = hx + ux * cell * 0.34, tipY = hy + uy * cell * 0.34, bx = hx + ux * cell * 0.04, by = hy + uy * cell * 0.04, bw = cell * 0.24;
   x.beginPath(); x.moveTo(tipX, tipY); x.lineTo(bx + nx * bw, by + ny * bw); x.lineTo(bx - nx * bw, by - ny * bw); x.closePath(); x.fill();
   if (hint) x.restore();
   x.globalAlpha = 1;
+}
+function drawPath(A, offX, offY, color, alpha, now, hint) {
+  const cell = AR.cell;
+  const pts = A.cells.map(([r, c]) => [AR.ox + c * cell + cell / 2 + offX, AR.oy + r * cell + cell / 2 + offY]);
+  drawPts(pts, A.d, color, alpha, now, hint);
+}
+// cleared arrow: 0-30% it straightens out along its line, 30-100% it slides off the board with easing and fades
+function drawAnim(f) {
+  const A = f.A, cell = AR.cell, t = f.t;
+  const p1 = Math.min(1, t / 0.3), p2 = Math.max(0, (t - 0.3) / 0.7);
+  const e1 = p1 * p1 * (3 - 2 * p1), e2 = p2 * p2 * p2;
+  const [dr, dc] = AR_DIR[A.d], ux = dc, uy = dr;
+  const n = A.cells.length, [hr, hc] = A.cells[n - 1];
+  const hx = AR.ox + hc * cell + cell / 2, hy = AR.oy + hr * cell + cell / 2;
+  const pts = A.cells.map(([r, c], i) => {
+    const x0 = AR.ox + c * cell + cell / 2, y0 = AR.oy + r * cell + cell / 2;
+    const back = n - 1 - i;
+    const sx = hx - ux * back * cell, sy = hy - uy * back * cell;
+    return [x0 + (sx - x0) * e1 + ux * e2 * cell * 18, y0 + (sy - y0) * e1 + uy * e2 * cell * 18];
+  });
+  drawPts(pts, A.d, "#1e2a44", Math.max(0, 1 - e2), 0, false);
 }
 function arDraw(now) {
   const x = AR.ctx, cell = AR.cell;
@@ -1502,12 +1525,12 @@ function arDraw(now) {
     const dx = AR.shake && AR.shake.id === id ? Math.sin(AR.shake.t * 30) * 5 * (1 - AR.shake.t) : 0;
     drawPath(A, dx, 0, hint ? "#2563eb" : "#1e2a44", 1, now, hint);
   });
-  for (const f of AR.anim) { const [dr, dc] = AR_DIR[f.A.d], k = f.t * cell * 12; drawPath(f.A, dc * k, dr * k, "#1e2a44", Math.max(0, 1 - f.t), now, false); }
+  for (const f of AR.anim) drawAnim(f);
 }
 function arFrame(now) {
   if (!AR.running) return;
   const dt = Math.min(0.05, Math.max(0.001, (now - AR.last) / 1000)); AR.last = now;
-  for (const f of AR.anim) f.t += dt * 2.2;
+  for (const f of AR.anim) f.t += dt * 1.5;
   AR.anim = AR.anim.filter(f => f.t < 1);
   if (AR.shake) { AR.shake.t += dt * 2.5; if (AR.shake.t >= 1) AR.shake = null; }
   if (AR.hint && now > AR.hint.until) AR.hint = null;
@@ -1789,7 +1812,7 @@ function renderRedeem() {
   $("redBal").textContent = `Balance: ${ME.balance || 0} coins · Min ${SET.minRedeemCoins} · Max ${SET.maxRedeemCoins || 24000}`;
   $("redBig").innerHTML = `${ME.balance || 0} <span class="text-sm font-bold opacity-80">coins</span>`;
   const c = Math.floor(Number($("redCoins").value) || 0);
-  $("redInfo").textContent = soon ? "Ye option abhi coming soon hai" : "= ₹" + (c / SET.coinsPerRupee).toFixed(2);
+  $("redInfo").textContent = soon ? "Ye option abhi coming soon hai" : "= ₹" + (c / rdRate(REDV)).toFixed(2);
 }
 $("redCoins").addEventListener("input", renderRedeem);
 document.addEventListener("click", e => { const b = e.target.closest("[data-qc]"); if (!b) return; $("redCoins").value = b.dataset.qc; renderRedeem(); });
@@ -1797,9 +1820,9 @@ $("redForm").onsubmit = async e => {
   e.preventDefault();
   if (!redOn(REDV)) return toast("Coming soon");
   const acc = $("redAcc").value.trim(), coins = Math.floor(Number($("redCoins").value));
-  const max = SET.maxRedeemCoins || 24000;
+  const max = 200 * rdRate(REDV);
   if (acc.length < 4) return toast("Account / ID daalo");
-  if (!Number.isFinite(coins) || coins < SET.minRedeemCoins) return toast("Minimum " + SET.minRedeemCoins + " coins chahiye (₹" + (SET.minRedeemCoins / SET.coinsPerRupee) + ")");
+  if (!Number.isFinite(coins) || coins < 10 * rdRate(REDV)) return toast("Minimum " + 10 * rdRate(REDV) + " coins chahiye (₹10)");
   if (coins > max) return toast("Maximum " + max + " coins tak redeem ho sakta hai");
   $("redBtn").disabled = true;
   try {
@@ -1808,7 +1831,7 @@ $("redForm").onsubmit = async e => {
     if (!ok) throw new Error("Balance kam hai");
     const wRef = push(R(`withdrawals/${UID}`));
     try {
-      await set(wRef, { uid: UID, name: ME.name, phone: ME.phone, method: REDV, account: acc, coins, inr: Number((coins / SET.coinsPerRupee).toFixed(2)), status: "pending", createdAt: Date.now() });
+      await set(wRef, { uid: UID, name: ME.name, phone: ME.phone, method: REDV, account: acc, coins, inr: Number((coins / rdRate(REDV)).toFixed(2)), status: "pending", createdAt: Date.now() });
       await push(R(`transactions/${UID}`), { type: "debit", coins, reason: "Redeem: " + RED_NAMES[REDV], ts: Date.now() });
     } catch (err) { await runTransaction(R(`users/${UID}/balance`), v => (v || 0) + coins); throw err; }
     $("redCoins").value = ""; $("redAcc").value = "";
@@ -1854,6 +1877,19 @@ const RD_BRAND = {
   upi: `<b style="font:900 15px/1 Arial,sans-serif;color:#1e3a8a;letter-spacing:-.5px">UPI</b>`,
   amazon: `<b style="font:900 30px/1 Georgia,serif;color:#111">a</b>`
 };
+let CT_TIMER = null;
+function showCoinTimer(sec) {
+  let el = document.getElementById("coinTimer");
+  if (!el) {
+    el = document.createElement("div"); el.id = "coinTimer";
+    el.style.cssText = "position:fixed;top:12px;left:50%;transform:translateX(-50%);z-index:85;background:#1e1b4b;color:#fff;font-weight:800;font-size:13px;padding:8px 14px;border-radius:999px;box-shadow:0 10px 20px -10px rgba(0,0,0,.5);pointer-events:none";
+    document.body.appendChild(el);
+  }
+  let s = sec; el.style.display = ""; el.textContent = `Agla claim ${s}s mein`;
+  clearInterval(CT_TIMER);
+  CT_TIMER = setInterval(() => { s--; if (s <= 0) { clearInterval(CT_TIMER); el.style.display = "none"; } else el.textContent = `Agla claim ${s}s mein`; }, 1000);
+}
+function rdRate(m) { return m === "upi" ? 230 : 185; } // coins per Rs 1
 function renderRedeemList() {
   const bal = ME ? (ME.balance || 0) : 0;
   $("rdBalTop").textContent = bal.toLocaleString("en-IN");
@@ -1866,13 +1902,13 @@ function renderVouchers() {
   $("vcLogo").innerHTML = RD_BRAND[m] || "";
   $("vcBal").textContent = bal.toLocaleString("en-IN");
   $("vcList").innerHTML = RD_AMOUNTS.map(inr => {
-    const cost = inr * SET.coinsPerRupee, ok = bal >= cost;
+    const cost = inr * rdRate(REDV), ok = bal >= cost;
     return `<div class="rdk-row"><div class="flex-1 min-w-0"><div class="flex items-center gap-2 flex-wrap"><b class="text-3xl font-black">₹${inr}</b><span class="rdk-inst"><i class="fa-solid fa-bolt"></i> Instant</span></div><small class="flex items-center gap-2 text-slate-400 mt-1"><span class="rdk-coin"></span>${cost.toLocaleString("en-IN")} coins</small></div><button data-rd="${inr}" class="${ok ? "rdk-btn" : "rdk-lock"}" ${ok ? "" : "disabled"}>${ok ? "Redeem" : '<i class="fa-solid fa-lock"></i> Locked'}</button></div>`;
   }).join("");
 }
 function redeemAmount(inr) {
   if (!redOn(REDV)) return toast("Coming soon");
-  const coins = inr * SET.coinsPerRupee;
+  const coins = inr * rdRate(REDV);
   if ((ME ? ME.balance || 0 : 0) < coins) return toast("Coins kam hain");
   showOv(`<p class="text-[11px] font-black tracking-[0.25em] text-violet-600">REDEEM ₹${inr}</p>
     <p class="text-sm text-slate-600 mt-3">${esc(RED_NAMES[REDV])} · ${coins.toLocaleString("en-IN")} coins</p>
@@ -1895,8 +1931,8 @@ document.addEventListener("click", e => {
   const rv = e.target.closest("[data-rv]"), rd = e.target.closest("[data-rd]");
   if (rv) { REDV = rv.dataset.rv; if (!redOn(REDV)) return toast("Coming soon"); return go("vouchers"); }
   if (rd) return redeemAmount(+rd.dataset.rd);
-  if (e.target.closest("#rdHow")) return infoOv("HOW IT WORKS", "1500 coins = ₹10. Coins se voucher chuno, amount chuno aur apna UPI ID ya email daalo. Admin 24 ghante mein approve karega. Approve hone par aapko popup aayega aur history mein gift code dikhega.");
-  if (e.target.closest("#rdFaq")) return infoOv("FAQ", "<b>Minimum?</b> 1500 coins (₹10).<br><b>Maximum?</b> ₹200 per redeem (30000 coins).<br><b>Kitna time?</b> Usually 24 ghante.<br><b>Galat ID?</b> Support se contact karo.");
+  if (e.target.closest("#rdHow")) return infoOv("HOW IT WORKS", "Google Play aur Amazon: 1850 coins = ₹10. UPI: 2300 coins = ₹10. Coins se voucher chuno, amount chuno aur apna UPI ID ya email daalo. Admin 24 ghante mein approve karega. Approve hone par aapko popup aayega aur history mein gift code dikhega.");
+  if (e.target.closest("#rdFaq")) return infoOv("FAQ", "<b>Minimum?</b> Google Play/Amazon 1850 coins (₹10), UPI 2300 coins (₹10).<br><b>Maximum?</b> ₹200 per redeem.<br><b>Kitna time?</b> Usually 24 ghante.<br><b>Galat ID?</b> Support se contact karo.");
   if (e.target.closest("#rdHelp")) {
     const href = contactHref(SET.support && SET.support.contact);
     return infoOv("WITHDRAWAL HELP", "Redeem ya payment ke baare mein support se baat karo.", href ? `<a href="${href}" target="_blank" class="btn tap mt-5 w-full inline-block text-center">Support se baat karo</a>` : "");
