@@ -129,47 +129,43 @@
   #playBoard{padding-top:44px!important;max-width:300px;margin-left:auto;margin-right:auto}
   #playHud{position:relative;z-index:5;margin:0 4px -44px;background:none!important;box-shadow:none!important;border:0!important;padding:4px 8px;color:#1e1b4b}
 
-  /* v10: dark neon liquid-glass theme (matches the reference UI) */
-  body{background:#05060d!important;color:#e5e7eb!important}
-  .screen{background:radial-gradient(120% 60% at 50% 0%,rgba(124,58,237,.25),rgba(5,6,13,0) 60%),#05060d!important}
-  .hero{background:radial-gradient(120% 100% at 100% 0%,rgba(236,72,153,.28),rgba(0,0,0,0) 45%),linear-gradient(135deg,#1e1b4b 0%,#312e81 45%,#0e7490 100%)!important;box-shadow:0 26px 50px -26px rgba(139,92,246,.8),0 0 0 1px rgba(255,255,255,.06) inset!important}
-  .card{background:rgba(15,18,34,.72)!important;border:1px solid rgba(168,85,247,.28)!important;box-shadow:0 0 0 1px rgba(255,255,255,.04) inset,0 18px 40px -22px rgba(124,58,237,.6)!important;backdrop-filter:blur(14px);color:#e5e7eb!important;border-radius:24px!important}
-  .bg-white{background-color:rgba(255,255,255,.06)!important}
-  .bg-slate-50,.bg-slate-100,.bg-slate-200{background-color:rgba(255,255,255,.07)!important}
-  .text-slate-900,.text-slate-800,.text-slate-700,.text-slate-600{color:#e2e8f0!important}
-  .text-slate-500,.text-slate-400{color:#94a3b8!important}
-  .text-violet-700,.text-violet-600{color:#c4b5fd!important}
-  .text-emerald-600,.text-green-600{color:#34d399!important}
-  .text-red-600,.text-rose-500{color:#fb7185!important}
-  .ghost{background:rgba(255,255,255,.05)!important;color:#e9d5ff!important;border:1px solid rgba(168,85,247,.45)!important;box-shadow:0 0 16px -6px rgba(168,85,247,.7)!important}
-  .btn{background:linear-gradient(135deg,#a855f7 0%,#6366f1 55%,#06b6d4 100%)!important;box-shadow:0 0 26px -6px rgba(168,85,247,.9),0 6px 0 #3b0764!important;color:#fff!important}
-  .field,.inp{background:rgba(255,255,255,.05)!important;border:1px solid rgba(148,163,184,.35)!important;color:#f1f5f9!important}
-  .field input,.inp{color:#f1f5f9!important}
-  #playHud{color:#e2e8f0!important}
-  nav{background:rgba(9,11,22,.88)!important;border-top:1px solid rgba(168,85,247,.35)!important;box-shadow:0 -10px 30px -12px rgba(124,58,237,.6)!important}
-  nav .nav-btn{color:#94a3b8!important}
-  nav .nav-btn.on,nav .nav-btn[aria-current="page"]{color:#e9d5ff!important;text-shadow:0 0 12px rgba(168,85,247,.9)}
-  .mrow{border-bottom:1px solid rgba(148,163,184,.14)!important}
-  .mrow:active{background:rgba(168,85,247,.12)!important}
-  .mrow i{color:#a78bfa!important}
-  .rdk{background:transparent!important;color:#e5e7eb!important}
-  .rdk h1,.rdk h2,.rdk .text-\[\#5eead4\]{color:#f8fafc!important}
-  .rdk-row,.rdk-tile,.rdk-card-big,.rdk-pill{background:rgba(15,18,34,.72)!important;border:1px solid rgba(168,85,247,.28)!important;color:#e5e7eb!important;box-shadow:0 18px 36px -22px rgba(124,58,237,.6)!important}
-  .rdk-tile b,.rdk-row b{color:#f8fafc!important}
-  .rdk-lock{background:rgba(255,255,255,.04)!important;color:#c4b5fd!important;border-color:rgba(168,85,247,.5)!important}
-  .rdk-btn{background:linear-gradient(135deg,#a855f7,#06b6d4)!important;color:#fff!important}
-  .redopt,.rd-tile{background:rgba(15,18,34,.72)!important;color:#e5e7eb!important}
-  /* home: four big square glass cards */
-  .qa4{position:relative;aspect-ratio:1/1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;border-radius:26px;background:rgba(15,18,34,.55);backdrop-filter:blur(16px);border:1.5px solid;transition:transform .15s cubic-bezier(.2,.8,.2,1),box-shadow .2s}
+  /* v11: light premium 3D liquid glass */
+  body{background:linear-gradient(180deg,#ffffff 0%,#f7f5ff 45%,#eef2ff 100%)!important;color:#1e1b4b!important}
+  .screen{background:radial-gradient(90% 35% at 50% 0%,rgba(167,139,250,.28),rgba(255,255,255,0) 70%),linear-gradient(180deg,#fbfaff,#f4f1ff)!important}
+  .hero{background:linear-gradient(135deg,#7c3aed 0%,#6d28d9 38%,#4f46e5 72%,#2563eb 100%)!important;color:#fff!important;box-shadow:0 24px 40px -22px rgba(79,70,229,.75),inset 0 1px 0 rgba(255,255,255,.4)!important;border-radius:0 0 34px 34px!important}
+  .hero h1,.hero p,.hero b,.hero small,.hero span{color:#fff}
+  .card{background:linear-gradient(180deg,rgba(255,255,255,.98),rgba(255,255,255,.8))!important;border:1px solid rgba(255,255,255,.95)!important;box-shadow:inset 0 1px 0 #fff,0 18px 34px -18px rgba(76,29,149,.38),0 2px 0 rgba(109,40,217,.05)!important;border-radius:24px!important;color:#1e1b4b!important;backdrop-filter:blur(12px)}
+  .btn{background:linear-gradient(180deg,#a78bfa 0%,#7c3aed 55%,#6d28d9 100%)!important;color:#fff!important;border:0!important;border-radius:20px!important;box-shadow:0 7px 0 #4c1d95,0 18px 26px -12px rgba(109,40,217,.8),inset 0 1px 0 rgba(255,255,255,.45)!important;font-weight:800!important}
+  .btn:active{transform:translateY(4px)!important;box-shadow:0 2px 0 #4c1d95!important}
+  .ghost{background:#fff!important;color:#6d28d9!important;border:1px solid #ddd6fe!important;border-radius:18px!important;box-shadow:0 6px 0 #ede9fe,0 10px 18px -12px rgba(109,40,217,.5)!important}
+  .field,.inp{background:#fff!important;border:1px solid #e9e5ff!important;color:#1e1b4b!important;border-radius:16px!important}
+  .chip{background:rgba(255,255,255,.85)!important;border:1px solid #ddd6fe!important;color:#6d28d9!important}
+  .chip.on{background:linear-gradient(135deg,#8b5cf6,#4f46e5)!important;color:#fff!important}
+  nav{background:rgba(255,255,255,.7)!important;backdrop-filter:blur(18px) saturate(1.7);border:1px solid rgba(255,255,255,.95)!important;border-radius:28px!important;margin:0 12px 12px!important;box-shadow:0 22px 40px -14px rgba(76,29,149,.42),inset 0 1px 0 #fff!important}
+  nav .nav-btn{color:#64748b!important}
+  nav .nav-btn.on{color:#6d28d9!important;font-weight:900!important;text-shadow:0 0 14px rgba(139,92,246,.45)}
+  .mrow{border-bottom:1px solid rgba(124,58,237,.08)!important}
+  .mrow:active{background:rgba(124,58,237,.06)!important}
+  .mrow i{color:#7c3aed!important}
+  .rdk-row,.rdk-tile,.rdk-card-big,.rdk-pill{background:linear-gradient(180deg,#fff,#faf8ff)!important;border:1px solid rgba(255,255,255,.95)!important;color:#1e1b4b!important;box-shadow:0 18px 34px -18px rgba(76,29,149,.38)!important}
+  .qa4{aspect-ratio:1/1;border:0;border-radius:28px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;position:relative;overflow:hidden;background:linear-gradient(160deg,#ffffff,#f3f0ff);box-shadow:inset 0 2px 0 #fff,0 22px 34px -18px rgba(76,29,149,.5);transition:transform .15s cubic-bezier(.2,.8,.2,1)}
+  .qa4:before{content:"";position:absolute;left:0;right:0;top:0;height:55%;background:linear-gradient(180deg,rgba(255,255,255,.85),rgba(255,255,255,0));border-radius:28px 28px 50% 50%;pointer-events:none}
   .qa4:active{transform:scale(.96)}
-  .qa4 span{font-size:58px;line-height:1;filter:drop-shadow(0 8px 14px rgba(0,0,0,.45))}
-  .qa4 b{color:#fff;font-weight:900;font-size:13px;letter-spacing:.08em}
-  .qa4 small{color:#cbd5e1;font-size:11px}
-  .qa4-puz{border-color:#a855f7;box-shadow:0 0 26px -8px #a855f7,inset 0 0 24px -12px #a855f7}
-  .qa4-ref{border-color:#ec4899;box-shadow:0 0 26px -8px #ec4899,inset 0 0 24px -12px #ec4899}
-  .qa4-ads{border-color:#22d3ee;box-shadow:0 0 26px -8px #22d3ee,inset 0 0 24px -12px #22d3ee}
-  .qa4-game{border-color:#34d399;box-shadow:0 0 26px -8px #34d399,inset 0 0 24px -12px #34d399}
-  .logo-tile{box-shadow:inset 0 2px 0 rgba(255,255,255,.5),0 0 22px -8px rgba(168,85,247,.8)!important}
+  .qa4 span{font-size:60px;line-height:1;filter:drop-shadow(0 12px 14px rgba(76,29,149,.35))}
+  .qa4 b{color:#1e1b4b;font-weight:900;font-size:13px;letter-spacing:.06em}
+  .qa4 small{color:#64748b;font-size:11px}
+  .qa4-puz{background:linear-gradient(160deg,#f5f3ff,#c4b5fd)}
+  .qa4-ref{background:linear-gradient(160deg,#fdf2f8,#f9a8d4)}
+  .qa4-ads{background:linear-gradient(160deg,#eff6ff,#93c5fd)}
+  .qa4-game{background:linear-gradient(160deg,#ecfdf5,#86efac)}
+  .ico{width:46px!important;height:46px!important;border-radius:16px!important;display:grid;place-items:center;color:#fff!important;box-shadow:inset 0 2px 0 rgba(255,255,255,.55),0 10px 18px -10px rgba(76,29,149,.6)!important}
+  .ico i{font-size:18px;color:#fff}
+  .ico.bg-amber-100{background:linear-gradient(135deg,#fde68a,#f59e0b)!important}
+  .ico.bg-blue-100{background:linear-gradient(135deg,#93c5fd,#2563eb)!important}
+  .ico.bg-violet-100{background:linear-gradient(135deg,#c4b5fd,#7c3aed)!important}
+  .ico.bg-green-100{background:linear-gradient(135deg,#86efac,#16a34a)!important}
+  .ico.bg-red-100,.ico.bg-rose-100{background:linear-gradient(135deg,#fda4af,#e11d48)!important}
+  .ico.bg-cyan-100{background:linear-gradient(135deg,#67e8f9,#0891b2)!important}
 </style>
 </head>
 <body>
@@ -1795,14 +1791,14 @@ function renderAds() {
   const used = dayOf("ads"), r = SET.adReward || DEF.adReward;
   $("adList").innerHTML = `<div class="card p-3 flex items-center gap-3"><span class="ico bg-amber-100 text-amber-600"><i class="fa-solid fa-bag-shopping"></i></span>
     <div class="flex-1"><b class="text-sm">Watch Ad (${r.sec} Sec)</b><p class="text-xs text-slate-500">Earn ${r.coins} coins</p></div>
-    <button data-ad="0" data-cool="1" class="px-3 py-1.5 rounded-lg bg-violet-600 text-white text-xs font-bold" ${used >= SET.adDailyLimit || SET.ad.watchAd === false ? "disabled" : ""}>Watch</button></div>`;
-  $("adCount").textContent = `${used} / ${SET.adDailyLimit} Ads Watched`;
-  $("adBar").style.width = Math.min(100, used / SET.adDailyLimit * 100) + "%";
+    <button data-ad="0" data-cool="1" class="px-3 py-1.5 rounded-lg bg-violet-600 text-white text-xs font-bold" ${used >= adLim() || SET.ad.watchAd === false ? "disabled" : ""}>Watch</button></div>`;
+  $("adCount").textContent = `${used} / ${adLim()} Ads Watched`;
+  $("adBar").style.width = Math.min(100, used / adLim() * 100) + "%";
 }
 document.addEventListener("click", async e => {
   const b = e.target.closest("[data-ad]"); if (!b) return;
   const a = SET.adReward || DEF.adReward;
-  if (dayOf("ads") >= SET.adDailyLimit) return toast("Aaj ki ad limit khatam");
+  if (dayOf("ads") >= adLim()) return toast("Aaj ki ad limit khatam");
   b.disabled = true;
   const ok = await runLevelAd();
   if (ok) { try { await credit(a.coins, "Watch Ad (" + a.sec + "s)"); await markDaily("ads", undefined, dayOf("ads") + 1); toast("+" + a.coins + " coins!"); } catch (err) { toast(err.message); } }
@@ -1972,6 +1968,7 @@ function resetLeft() {
 }
 // games per day: 10 by default, admin can raise it for one user (users/{uid}/gameLimit)
 function gLimit() { return (ME && ME.gameLimit) || 10; }
+function adLim() { return (ME && ME.adLimit) || (SET.adDailyLimit || 20); }
 function rdRate(m) { return m === "upi" ? 230 : 185; } // coins per Rs 1
 function renderRedeemList() {
   const bal = ME ? (ME.balance || 0) : 0;
