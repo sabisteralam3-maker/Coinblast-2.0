@@ -728,6 +728,7 @@ function attachSession(uid) {
   detachSession(); SESS_UID = uid;
   if (localStorage.getItem("cb_pending")) { localStorage.removeItem("cb_pending"); set(R("sessions/" + uid), DEV).catch(() => {}); }
   watchReferrals(uid);
+  recordDevice(uid);
   SESS_OFF = onValue(R("sessions/" + uid), snap => {
     const v = snap.val();
     if (v == null) { set(R("sessions/" + uid), DEV).catch(() => {}); return; }
@@ -741,12 +742,12 @@ function watchReferrals(uid) {
   REF_OFF = onValue(R("refStats/" + uid), snap => {
     const v = snap.val() || {};
     REFSTAT = v; renderRefProg();
-    for (const [fid, d] of Object.entries(v)) if (d && (d.plays || 0) >= (SET.refPlays || 10) && !d.rewarded) claimRef(uid, fid);
+    for (const [fid, d] of Object.entries(v)) if (d && d.redeemed && !d.rewarded) claimRef(uid, fid);
   }, () => {});
 }
 async function claimRef(uid, fid) {
   const r = await runTransaction(R(`refStats/${uid}/${fid}/rewarded`), v => (v ? undefined : true)).catch(() => null);
-  if (r && r.committed) await credit(SET.refReward || 20, "Friend ne Candy Crush 10 games khele");
+  if (r && r.committed) await credit(SET.refReward || 250, "Friend ne pehli redeem request ki");
 }
 function refCandyPlay() {
   if (!UID || !ME || !ME.referredBy) return;
@@ -1885,6 +1886,9 @@ document.addEventListener("click", e => { const b = e.target.closest("[data-qc]"
 $("redForm").onsubmit = async e => {
   e.preventDefault();
   if (!redOn(REDV)) return toast("Coming soon");
+  const miss = dailyTasks();
+  if (miss.length) return toast("Pehle aaj ke tasks poore karo: " + miss.slice(0, 2).join(", ") + (miss.length > 2 ? " aur bhi" : ""));
+  const firstRedeem = !Object.keys(WDS || {}).length;
   const acc = $("redAcc").value.trim(), coins = Math.floor(Number($("redCoins").value));
   const max = 200 * rdRate(REDV);
   if (acc.length < 4) return toast("Account / ID daalo");
@@ -1900,6 +1904,7 @@ $("redForm").onsubmit = async e => {
       await set(wRef, { uid: UID, name: ME.name, phone: ME.phone, method: REDV, account: acc, coins, inr: Number((coins / rdRate(REDV)).toFixed(2)), status: "pending", createdAt: Date.now() });
       await push(R(`transactions/${UID}`), { type: "debit", coins, reason: "Redeem: " + RED_NAMES[REDV], ts: Date.now() });
     } catch (err) { await runTransaction(R(`users/${UID}/balance`), v => (v || 0) + coins); throw err; }
+    if (firstRedeem && ME && ME.referredBy) set(R("refStats/" + ME.referredBy + "/" + UID + "/redeemed"), true).catch(() => {});
     $("redCoins").value = ""; $("redAcc").value = "";
     toast("Redeem request bhej di. 24 ghante mein."); go("wallet");
   } catch (err) { toast(err.message || fmtErr(err)); }
@@ -1980,9 +1985,9 @@ setInterval(() => {
 let REFSTAT = {};
 function renderRefProg() {
   const el = $("refProg"); if (!el) return;
-  const need = SET.refPlays || 10, list = Object.entries(REFSTAT || {});
-  el.innerHTML = `<div class="card p-4"><p class="font-extrabold text-sm">Dost ka progress (Candy Crush)</p><p class="text-xs text-slate-500">Dost ${need} baar Candy Crush khele, tabhi aapko ${SET.refReward || 20} coins milenge.</p>` +
-    (list.length ? list.map(([fid, d], i) => { const p = Math.min(d.plays || 0, need); return `<div class="mt-3"><div class="flex justify-between text-sm"><span>Dost ${i + 1}</span><b>${p}/${need}${d.rewarded ? " · reward mila" : ""}</b></div><div class="h-2 rounded-full bg-violet-100 mt-1 overflow-hidden"><div class="h-2 rounded-full bg-gradient-to-r from-violet-500 to-cyan-400" style="width:${p * 100 / need}%"></div></div></div>`; }).join("") : `<p class="text-sm text-slate-500 mt-2">Abhi koi dost nahi joda.</p>`) + `</div>`;
+  const list = Object.entries(REFSTAT || {});
+  el.innerHTML = `<div class="card p-4"><p class="font-extrabold text-sm">Dost ka progress</p><p class="text-xs text-slate-500">Dost ki pehli redeem request par aapko ${SET.refReward || 250} coins milenge.</p>` +
+    (list.length ? list.map(([fid, d], i) => `<div class="flex justify-between text-sm mt-2"><span>Dost ${i + 1}</span><b>${d.rewarded ? "Reward mil gaya" : d.redeemed ? "Redeem kiya, reward aa raha hai" : "Abhi redeem nahi kiya"}</b></div>`).join("") : `<p class="text-sm text-slate-500 mt-2">Abhi koi dost nahi joda.</p>`) + `</div>`;
 }
 $("giftBtn").onclick = () => {
   showOv(`<p class="text-5xl my-2">🎁</p><p class="text-[11px] font-black tracking-[0.25em] text-violet-600">PROMO CODE</p><div class="field mt-4"><i class="fa-solid fa-ticket"></i><input id="pcIn" placeholder="Code daalo" style="text-transform:uppercase"></div><button id="pcGo" class="btn tap mt-4 w-full">Apply</button><button id="ovClose" class="ghost w-full py-2 mt-3">Band karo</button>`);
@@ -2009,15 +2014,38 @@ async function applyPromo() {
   } catch (e) { toast(e.message || "Code apply nahi hua"); }
   finally { if ($("pcGo")) $("pcGo").disabled = false; }
 }
+function devName() {
+  const ua = navigator.userAgent, m = ua.match(/Android[^;]*;\s*([^;)]+?)\s*(Build|\))/);
+  if (m) return m[1];
+  if (/iPhone/.test(ua)) return "iPhone";
+  if (/iPad/.test(ua)) return "iPad";
+  if (/Windows/.test(ua)) return "Windows PC";
+  if (/Mac/.test(ua)) return "Mac";
+  return ua.slice(0, 40);
+}
+function recordDevice(uid) {
+  runTransaction(R("devices/" + DEV + "/accounts/" + uid), v => v || { at: Date.now(), name: devName() }).catch(() => {});
+  set(R("devices/" + DEV + "/info"), { name: devName(), seen: Date.now() }).catch(() => {});
+}
 // one device can open only one account per day (checked when the account is created)
 const DEV_MAX_DAY = 1;
 async function checkDevice(uid) {
-  const r = await runTransaction(R("devices/" + DEV + "/" + istDay()), v => ({ n: ((v && v.n) || 0) + 1 })).catch(() => null);
+  const r = await runTransaction(R("devices/" + DEV + "/daily/" + istDay()), v => ({ n: ((v && v.n) || 0) + 1 })).catch(() => null);
   const n = r && r.snapshot && r.snapshot.val() ? r.snapshot.val().n : 1;
   if (n > DEV_MAX_DAY) await set(R("users/" + uid + "/blocked"), true).catch(() => {});
 }
 function gLimit() { return (ME && ME.gameLimit) || 10; }
 function adLim() { return (ME && ME.adLimit) || (SET.adDailyLimit || 20); }
+// what is still left for today; redeem stays locked until this list is empty
+function dailyTasks() {
+  const todo = [];
+  if (!ckState().claimed) todo.push("Daily check-in");
+  if (dayOf("ads") < adLim()) todo.push("Watch ads");
+  if (dayOf("puzzleGames") < 1) todo.push("Puzzle");
+  [["gCandy", "Candy Crush"], ["gJumbo", "Jumbo Ball"], ["gFruit", "Fruit Slice"], ["gArrows", "Tap Away Arrows"], ["gKnife", "Knife Hit"]].forEach(([k, n]) => { if (dayOf(k) < 1) todo.push(n); });
+  OFFERS.filter(t => t.enabled !== false).forEach(t => { if (!DONE[t.id]) todo.push("Offer: " + (t.title || t.id)); });
+  return todo;
+}
 function rdRate(m) { return m === "upi" ? 230 : 185; } // coins per Rs 1
 function renderRedeemList() {
   const bal = ME ? (ME.balance || 0) : 0;
@@ -2030,13 +2058,15 @@ function renderVouchers() {
   $("vcTitle").textContent = RED_NAMES[m] || m;
   $("vcLogo").innerHTML = RD_BRAND[m] || "";
   $("vcBal").textContent = bal.toLocaleString("en-IN");
-  $("vcList").innerHTML = RD_AMOUNTS.map(inr => {
-    const cost = inr * rdRate(REDV), ok = bal >= cost;
+  const lockedNow = dailyTasks();
+  $("vcList").innerHTML = (lockedNow.length ? `<div class="card p-3 text-sm">Redeem unlock karne ke liye aaj ke sare tasks poore karo. Baaki: ${esc(lockedNow.slice(0, 4).join(", "))}${lockedNow.length > 4 ? " ..." : ""}</div>` : "") + RD_AMOUNTS.map(inr => {
+    const cost = inr * rdRate(REDV), ok = bal >= cost && !lockedNow.length;
     return `<div class="rdk-row"><div class="flex-1 min-w-0"><div class="flex items-center gap-2 flex-wrap"><b class="text-3xl font-black">₹${inr}</b><span class="rdk-inst"><i class="fa-solid fa-bolt"></i> Instant</span></div><small class="flex items-center gap-2 text-slate-400 mt-1"><span class="rdk-coin"></span>${cost.toLocaleString("en-IN")} coins</small></div><button data-rd="${inr}" class="${ok ? "rdk-btn" : "rdk-lock"}" ${ok ? "" : "disabled"}>${ok ? "Redeem" : '<i class="fa-solid fa-lock"></i> Locked'}</button></div>`;
   }).join("");
 }
 function redeemAmount(inr) {
   if (!redOn(REDV)) return toast("Coming soon");
+  if (dailyTasks().length) return toast("Pehle aaj ke sare tasks poore karo");
   const coins = inr * rdRate(REDV);
   if ((ME ? ME.balance || 0 : 0) < coins) return toast("Coins kam hain");
   showOv(`<p class="text-[11px] font-black tracking-[0.25em] text-violet-600">REDEEM ₹${inr}</p>
