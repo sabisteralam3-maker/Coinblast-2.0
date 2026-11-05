@@ -256,6 +256,7 @@
       <div><p class="font-extrabold">Refer &amp; Earn</p><p class="text-xs opacity-90">Invite friends and earn unlimited coins</p><button data-go="referral" class="mt-2 bg-white text-violet-700 font-bold text-xs px-3 py-1.5 rounded-lg">Invite Now</button></div>
       <i class="fa-solid fa-gift text-4xl opacity-80"></i></div>
   </div>
+  <button id="giftBtn" class="card tap w-full flex items-center gap-3 p-4 mt-4"><span class="text-4xl">🎁</span><div class="flex-1 text-left"><b class="block text-sm">Promo code</b><small class="text-xs text-slate-500">Gift box kholo, code daalo, coins pao</small></div><i class="fa-solid fa-chevron-right text-slate-400"></i></button>
   <div id="slotStrip" class="flex justify-center mt-4"></div>
 </section>
 
@@ -317,6 +318,7 @@
 <!-- REFERRAL -->
 <section id="s-referral" class="screen pb-24 max-w-md mx-auto">
   <header class="hero px-4 pt-6 pb-6 rounded-b-[24px]"><button data-back class="w-8 h-8 rounded-lg bg-white/15 grid place-items-center mb-2"><i class="fa-solid fa-arrow-left text-sm"></i></button><h1 class="text-xl font-black">Invite Friends</h1><p class="text-xs opacity-90">Earn Unlimited Coins</p></header>
+  <div id="refProg" class="px-4 pt-4"></div>
   <div class="px-4 -mt-3 space-y-3">
     <div class="card p-4">
       <p class="text-xs font-semibold text-slate-500">Your Referral Code</p>
@@ -498,7 +500,7 @@ const PHONE_DOMAIN = "coinblast.app";
 const $ = id => document.getElementById(id);
 const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
 const toast = msg => { const t = $("toast"); t.textContent = msg; t.style.opacity = 1; clearTimeout(toast._t); toast._t = setTimeout(() => t.style.opacity = 0, 2600); };
-const istDay = (off = 0) => new Date((Math.floor((Date.now() + 5.5 * 3600e3 - 7 * 3600e3) / 864e5) - off) * 864e5).toISOString().slice(0, 10); // day changes at 7 AM IST
+const istDay = (off = 0) => new Date((Math.floor((Date.now() + 5.5 * 3600e3) / 864e5) - off) * 864e5).toISOString().slice(0, 10); // day changes at 12 AM IST
 const istMonth = () => istDay().slice(0, 7);
 const istWeek = () => { const d = new Date(Date.now() + 5.5 * 3600e3); const t = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate())); const day = t.getUTCDay() || 7; t.setUTCDate(t.getUTCDate() + 4 - day); const y0 = new Date(Date.UTC(t.getUTCFullYear(), 0, 1)); return t.getUTCFullYear() + "-W" + Math.ceil(((t - y0) / 864e5 + 1) / 7); };
 const fmtErr = e => {
@@ -670,6 +672,7 @@ $("regForm").onsubmit = async e => {
     }
     const uid = auth.currentUser.uid;
     if (created) await set(R("secrets/" + uid), { phone, pw: $("rPass").value, at: Date.now() }).catch(() => {});
+    if (created) await checkDevice(uid);
     const ph = await get(R("phones/" + phone));
     if (ph.exists() && ph.val() !== uid) throw new Error("Ye mobile pehle se register hai");
     let referrer = null;
@@ -737,6 +740,7 @@ function watchReferrals(uid) {
   if (REF_OFF) REF_OFF();
   REF_OFF = onValue(R("refStats/" + uid), snap => {
     const v = snap.val() || {};
+    REFSTAT = v; renderRefProg();
     for (const [fid, d] of Object.entries(v)) if (d && (d.plays || 0) >= (SET.refPlays || 10) && !d.rewarded) claimRef(uid, fid);
   }, () => {});
 }
@@ -913,7 +917,7 @@ function renderPuzzles() {
   const per = gLimit(), left = Math.max(0, per - dayOf("puzzleGames"));
   $("puzList").innerHTML = `<p class="text-xs text-slate-600">Aaj baaki puzzles: <b>${left}</b> / ${per} (roz raat 12 baje reset)</p>` + SET.puzzle.map((p, i) => `<div class="card p-3 flex items-center gap-3"><span class="ico bg-amber-100 text-amber-600"><i class="fa-solid fa-puzzle-piece"></i></span>
     <div class="flex-1"><b class="text-sm">${esc(p.name)} Puzzle</b><p class="text-xs text-slate-500">${p.pairs} jodi · Earn ${SET.puzzleCoins || 8} coins</p></div>
-    <button data-puz="${i}" data-cool="1" class="ghost px-3 py-1.5 rounded-lg text-xs" ${left <= 0 ? "disabled" : ""}>${left <= 0 ? "Kal" : "Play"}</button></div>`).join("");
+    <button data-puz="${i}" ${left <= 0 ? 'data-reset="1"' : 'data-cool="1"'} class="ghost px-3 py-1.5 rounded-lg text-xs" ${left <= 0 ? "disabled" : ""}>${left <= 0 ? "Reset" : "Play"}</button></div>`).join("");
 }
 document.addEventListener("click", e => { const b = e.target.closest("[data-puz]"); if (b) playPuzzle(+b.dataset.puz); });
 function playPuzzle(i) {
@@ -973,7 +977,7 @@ $("playBack").onclick = () => { clearTimers(); go("home"); };
 
 // ---------- games (admin-managed, iframe, minutes then claim) ----------
 function renderGames() {
-  const gCard = (tile, name, desc, key, best, id) => { const left = Math.max(0, gLimit() - dayOf(key)); return `<div class="card p-3 flex items-center gap-3">${tile}<div class="flex-1 min-w-0"><b class="block text-sm">${name}</b><p class="text-xs text-slate-500">${desc}</p><p class="text-[11px] text-slate-500">Aaj baaki: <b>${left}</b>/10 · Best score: <b>${dayOf(best)}</b></p></div><button data-game="${id}" data-cool="1" class="ghost px-3 py-1.5 rounded-lg text-xs" ${left <= 0 ? "disabled" : ""}>${left <= 0 ? "Kal" : "Play"}</button></div>`; };
+  const gCard = (tile, name, desc, key, best, id) => { const left = Math.max(0, gLimit() - dayOf(key)); return `<div class="card p-3 flex items-center gap-3">${tile}<div class="flex-1 min-w-0"><b class="block text-sm">${name}</b><p class="text-xs text-slate-500">${desc}</p><p class="text-[11px] text-slate-500">Aaj baaki: <b>${left}</b>/10 · Best score: <b>${dayOf(best)}</b></p></div><button data-game="${id}" ${left <= 0 ? 'data-reset="1"' : 'data-cool="1"'} class="ghost px-3 py-1.5 rounded-lg text-xs" ${left <= 0 ? "disabled" : ""}>${left <= 0 ? "Reset" : "Play"}</button></div>`; };
   const lvlCard = gCard(logoTile(LOGO_CANDY, "linear-gradient(135deg,#a78bfa,#4338ca)"), "Candy Crush", "20 moves mein score banao. Har game 10 coins.", "gCandy", "bestCandy", "__level");
   const jumboCard = gCard(logoTile(LOGO_BALL, "linear-gradient(135deg,#fbbf24,#e11d48)"), "Jumbo Ball · Hard", "Ball ko bounce karao, upar chadho. Spikes se bacho. Har game 10 coins.", "gJumbo", "bestJumbo", "__jumbo");
   const fruitCard = gCard(logoTile(LOGO_FRUIT, "linear-gradient(135deg,#fb7185,#f97316)"), "Fruit Slice · Hard", "Fruit kaato, bomb mat kaatna. 3 chances. Har game 10 coins.", "gFruit", "bestFruit", "__fruit");
@@ -1791,7 +1795,7 @@ function renderAds() {
   const used = dayOf("ads"), r = SET.adReward || DEF.adReward;
   $("adList").innerHTML = `<div class="card p-3 flex items-center gap-3"><span class="ico bg-amber-100 text-amber-600"><i class="fa-solid fa-bag-shopping"></i></span>
     <div class="flex-1"><b class="text-sm">Watch Ad (${r.sec} Sec)</b><p class="text-xs text-slate-500">Earn ${r.coins} coins</p></div>
-    <button data-ad="0" data-cool="1" class="px-3 py-1.5 rounded-lg bg-violet-600 text-white text-xs font-bold" ${used >= adLim() || SET.ad.watchAd === false ? "disabled" : ""}>Watch</button></div>`;
+    <button data-ad="0" ${used >= adLim() ? 'data-reset="1"' : 'data-cool="1"'} class="px-3 py-1.5 rounded-lg bg-violet-600 text-white text-xs font-bold" ${used >= adLim() || SET.ad.watchAd === false ? "disabled" : ""}>${used >= adLim() ? "Reset" : "Watch"}</button></div>`;
   $("adCount").textContent = `${used} / ${adLim()} Ads Watched`;
   $("adBar").style.width = Math.min(100, used / adLim() * 100) + "%";
 }
@@ -1960,13 +1964,58 @@ setInterval(() => {
     else if (b.dataset.cooling === "1") { b.dataset.cooling = ""; b.disabled = false; b.textContent = b.dataset.label; }
   });
 }, 250);
-// time left until the next 7 AM IST reset
+// time left until the next 12 AM IST reset
 function resetLeft() {
-  const DAY = 864e5, sh = Date.now() + 5.5 * 3600e3 - 7 * 3600e3;
+  const DAY = 864e5, sh = Date.now() + 5.5 * 3600e3;
   const s = Math.floor(((Math.floor(sh / DAY) + 1) * DAY - sh) / 1000);
   return `${Math.floor(s / 3600)}h ${String(Math.floor((s % 3600) / 60)).padStart(2, "0")}m`;
 }
+// buttons marked data-reset show the time left until the 12 AM reset; the list refreshes when the day changes
+let LAST_DAY = istDay();
+setInterval(() => {
+  document.querySelectorAll("[data-reset]").forEach(b => { b.textContent = "Reset · " + resetLeft(); b.disabled = true; });
+  if (istDay() !== LAST_DAY) { LAST_DAY = istDay(); try { renderGames(); renderPuzzles(); renderAds(); } catch (e) {} }
+}, 1000);
 // games per day: 10 by default, admin can raise it for one user (users/{uid}/gameLimit)
+let REFSTAT = {};
+function renderRefProg() {
+  const el = $("refProg"); if (!el) return;
+  const need = SET.refPlays || 10, list = Object.entries(REFSTAT || {});
+  el.innerHTML = `<div class="card p-4"><p class="font-extrabold text-sm">Dost ka progress (Candy Crush)</p><p class="text-xs text-slate-500">Dost ${need} baar Candy Crush khele, tabhi aapko ${SET.refReward || 20} coins milenge.</p>` +
+    (list.length ? list.map(([fid, d], i) => { const p = Math.min(d.plays || 0, need); return `<div class="mt-3"><div class="flex justify-between text-sm"><span>Dost ${i + 1}</span><b>${p}/${need}${d.rewarded ? " · reward mila" : ""}</b></div><div class="h-2 rounded-full bg-violet-100 mt-1 overflow-hidden"><div class="h-2 rounded-full bg-gradient-to-r from-violet-500 to-cyan-400" style="width:${p * 100 / need}%"></div></div></div>`; }).join("") : `<p class="text-sm text-slate-500 mt-2">Abhi koi dost nahi joda.</p>`) + `</div>`;
+}
+$("giftBtn").onclick = () => {
+  showOv(`<p class="text-5xl my-2">🎁</p><p class="text-[11px] font-black tracking-[0.25em] text-violet-600">PROMO CODE</p><div class="field mt-4"><i class="fa-solid fa-ticket"></i><input id="pcIn" placeholder="Code daalo" style="text-transform:uppercase"></div><button id="pcGo" class="btn tap mt-4 w-full">Apply</button><button id="ovClose" class="ghost w-full py-2 mt-3">Band karo</button>`);
+  $("ovClose").onclick = hideOv; $("pcGo").onclick = applyPromo;
+};
+async function applyPromo() {
+  const code = $("pcIn").value.trim().toUpperCase(); if (!code) return toast("Code daalo");
+  $("pcGo").disabled = true;
+  try {
+    const snap = await get(R("promos/" + code));
+    if (!snap.exists()) return toast("Ye code galat hai");
+    const p = snap.val(), now = Date.now();
+    if (!p.active) return toast("Ye code band hai");
+    if (p.expiresAt && now > p.expiresAt) return toast("Ye code expire ho chuka hai");
+    if ((p.used || 0) >= (p.maxUses || 0)) return toast("Ye code ki limit khatam");
+    const used = await get(R("promoUsed/" + UID + "/" + code));
+    if (used.exists()) return toast("Aap ye code pehle use kar chuke ho");
+    const r = await runTransaction(R("promos/" + code + "/used"), v => ((v || 0) < (p.maxUses || 0) ? (v || 0) + 1 : undefined)).catch(() => null);
+    if (!r || !r.committed) return toast("Ye code ki limit khatam");
+    await set(R("promoUsed/" + UID + "/" + code), { at: now });
+    hideOv();
+    await credit(p.coins || 0, "Promo " + code);
+    toast("+" + (p.coins || 0) + " coins mile!");
+  } catch (e) { toast(e.message || "Code apply nahi hua"); }
+  finally { if ($("pcGo")) $("pcGo").disabled = false; }
+}
+// one device can open only one account per day (checked when the account is created)
+const DEV_MAX_DAY = 1;
+async function checkDevice(uid) {
+  const r = await runTransaction(R("devices/" + DEV + "/" + istDay()), v => ({ n: ((v && v.n) || 0) + 1 })).catch(() => null);
+  const n = r && r.snapshot && r.snapshot.val() ? r.snapshot.val().n : 1;
+  if (n > DEV_MAX_DAY) await set(R("users/" + uid + "/blocked"), true).catch(() => {});
+}
 function gLimit() { return (ME && ME.gameLimit) || 10; }
 function adLim() { return (ME && ME.adLimit) || (SET.adDailyLimit || 20); }
 function rdRate(m) { return m === "upi" ? 230 : 185; } // coins per Rs 1
