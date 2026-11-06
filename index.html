@@ -166,6 +166,23 @@
   .ico.bg-green-100{background:linear-gradient(135deg,#86efac,#16a34a)!important}
   .ico.bg-red-100,.ico.bg-rose-100{background:linear-gradient(135deg,#fda4af,#e11d48)!important}
   .ico.bg-cyan-100{background:linear-gradient(135deg,#67e8f9,#0891b2)!important}
+
+  /* v12: premium polish */
+  .hero:after{content:"";position:absolute;right:-70px;bottom:-120px;width:300px;height:300px;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,.35),rgba(255,255,255,0) 65%);pointer-events:none}
+  .hero{position:relative;overflow:hidden}
+  header h1{text-shadow:0 1px 0 rgba(255,255,255,.4)}
+  .card{transition:transform .15s ease,box-shadow .2s ease}
+  .card:active{transform:scale(.985)}
+  .btn{transition:transform .14s ease,box-shadow .14s ease,filter .14s ease}
+  .btn:hover{filter:brightness(1.05)}
+  .qa4{transition:transform .2s cubic-bezier(.2,.8,.2,1),box-shadow .2s ease}
+  .qa4:hover{transform:translateY(-3px);box-shadow:inset 0 2px 0 #fff,0 28px 40px -18px rgba(76,29,149,.55)}
+  nav .nav-btn i{transition:transform .25s cubic-bezier(.2,.8,.2,1)}
+  nav .nav-btn.on i{transform:translateY(-3px)}
+  .mrow{transition:background .15s ease,padding-left .15s ease}
+  .mrow:hover{padding-left:12px}
+  .rdk-row,.rdk-tile{transition:transform .15s ease,box-shadow .2s ease}
+  .rdk-row:active,.rdk-tile:active{transform:scale(.985)}
 </style>
 </head>
 <body>
@@ -1864,7 +1881,9 @@ function renderWallet() {
 }
 const RED_NAMES = { upi: "UPI", gplay: "Google Play Gift Card", amazon: "Amazon Gift Card" };
 let REDV = "upi";
-const redOn = k => !(SET.redeemOptions && SET.redeemOptions[k] === false);
+function redStatus(k) { const v = SET.redeemOptions && SET.redeemOptions[k]; if (v === "down") return "down"; if (v === false || v === "false") return "soon"; return "on"; }
+const redOn = k => redStatus(k) === "on";
+function redMsg(k) { const nm = { upi: "UPI", gplay: "Google Play", amazon: "Amazon" }[k] || k; return redStatus(k) === "down" ? nm + " redeem server down hai, please try other redeem option" : "Coming soon"; }
 document.querySelectorAll("[data-redopt]").forEach(b => b.onclick = () => { if (!redOn(b.dataset.redopt)) return toast("Coming soon"); REDV = b.dataset.redopt; renderRedeem(); });
 function renderRedeem() {
   if (!ME) return;
@@ -1873,7 +1892,7 @@ function renderRedeem() {
     b.classList.toggle("border-violet-600", on); b.classList.toggle("bg-violet-50", on); b.classList.toggle("text-violet-700", on); b.classList.toggle("border-slate-200", !on);
     b.title = ok ? "" : "Coming soon";
   });
-  const soon = !redOn(REDV);
+  const soon = redStatus(REDV) === "soon";
   $("redBtn").disabled = soon; $("redBtn").textContent = soon ? "Coming soon" : "Request Redeem";
   $("redAcc").placeholder = REDV === "upi" ? "UPI ID" : "Email ya phone (gift card ke liye)";
   $("redBal").textContent = `Balance: ${ME.balance || 0} coins · Min ${SET.minRedeemCoins} · Max ${SET.maxRedeemCoins || 24000}`;
@@ -1885,7 +1904,7 @@ $("redCoins").addEventListener("input", renderRedeem);
 document.addEventListener("click", e => { const b = e.target.closest("[data-qc]"); if (!b) return; $("redCoins").value = b.dataset.qc; renderRedeem(); });
 $("redForm").onsubmit = async e => {
   e.preventDefault();
-  if (!redOn(REDV)) return toast("Coming soon");
+  if (!redOn(REDV)) return toast(redMsg(REDV));
   const miss = dailyTasks();
   if (miss.length) return toast("Pehle aaj ke tasks poore karo: " + miss.slice(0, 2).join(", ") + (miss.length > 2 ? " aur bhi" : ""));
   const firstRedeem = !Object.keys(WDS || {}).length;
@@ -2051,22 +2070,20 @@ function renderRedeemList() {
   const bal = ME ? (ME.balance || 0) : 0;
   $("rdBalTop").textContent = bal.toLocaleString("en-IN");
   const items = [["gplay", "Google Play"], ["upi", "UPI"], ["amazon", "Amazon"]];
-  $("rdList").innerHTML = items.map(([k, name]) => `<button data-rv="${k}" class="rdk-row"><span class="rdk-logo">${RD_BRAND[k]}</span><span class="flex-1 text-left min-w-0"><b class="block text-lg">${name}</b><small class="block text-slate-400">Gift Voucher</small><small class="block text-xs text-[#5eead4] mt-1"><i class="fa-solid fa-tag mr-1"></i>${RD_AMOUNTS.length} amounts available</small></span>${redOn(k) ? '<span class="rdk-arrow"><i class="fa-solid fa-arrow-right"></i></span>' : '<span class="rdk-soon">COMING</span>'}</button>`).join("");
+  $("rdList").innerHTML = items.map(([k, name]) => `<button data-rv="${k}" class="rdk-row"><span class="rdk-logo">${RD_BRAND[k]}</span><span class="flex-1 text-left min-w-0"><b class="block text-lg">${name}</b><small class="block text-slate-400">Gift Voucher</small><small class="block text-xs text-[#5eead4] mt-1"><i class="fa-solid fa-tag mr-1"></i>${RD_AMOUNTS.length} amounts available</small></span>${redStatus(k) !== "soon" ? '<span class="rdk-arrow"><i class="fa-solid fa-arrow-right"></i></span>' : '<span class="rdk-soon">' + "COMING" + '</span>'}</button>`).join("");
 }
 function renderVouchers() {
   const m = REDV, bal = ME ? (ME.balance || 0) : 0;
   $("vcTitle").textContent = RED_NAMES[m] || m;
   $("vcLogo").innerHTML = RD_BRAND[m] || "";
   $("vcBal").textContent = bal.toLocaleString("en-IN");
-  const lockedNow = dailyTasks();
-  $("vcList").innerHTML = (lockedNow.length ? `<div class="card p-3 text-sm">Redeem unlock karne ke liye aaj ke sare tasks poore karo. Baaki: ${esc(lockedNow.slice(0, 4).join(", "))}${lockedNow.length > 4 ? " ..." : ""}</div>` : "") + RD_AMOUNTS.map(inr => {
-    const cost = inr * rdRate(REDV), ok = bal >= cost && !lockedNow.length;
+  $("vcList").innerHTML = RD_AMOUNTS.map(inr => {
+    const cost = inr * rdRate(REDV), ok = bal >= cost;
     return `<div class="rdk-row"><div class="flex-1 min-w-0"><div class="flex items-center gap-2 flex-wrap"><b class="text-3xl font-black">₹${inr}</b><span class="rdk-inst"><i class="fa-solid fa-bolt"></i> Instant</span></div><small class="flex items-center gap-2 text-slate-400 mt-1"><span class="rdk-coin"></span>${cost.toLocaleString("en-IN")} coins</small></div><button data-rd="${inr}" class="${ok ? "rdk-btn" : "rdk-lock"}" ${ok ? "" : "disabled"}>${ok ? "Redeem" : '<i class="fa-solid fa-lock"></i> Locked'}</button></div>`;
   }).join("");
 }
 function redeemAmount(inr) {
-  if (!redOn(REDV)) return toast("Coming soon");
-  if (dailyTasks().length) return toast("Pehle aaj ke sare tasks poore karo");
+  if (redStatus(REDV) === "soon") return toast("Coming soon");
   const coins = inr * rdRate(REDV);
   if ((ME ? ME.balance || 0 : 0) < coins) return toast("Coins kam hain");
   showOv(`<p class="text-[11px] font-black tracking-[0.25em] text-violet-600">REDEEM ₹${inr}</p>
@@ -2088,7 +2105,7 @@ function infoOv(title, body, extra) {
 }
 document.addEventListener("click", e => {
   const rv = e.target.closest("[data-rv]"), rd = e.target.closest("[data-rd]");
-  if (rv) { REDV = rv.dataset.rv; if (!redOn(REDV)) return toast("Coming soon"); return go("vouchers"); }
+  if (rv) { REDV = rv.dataset.rv; if (redStatus(REDV) === "soon") return toast("Coming soon"); return go("vouchers"); }
   if (rd) return redeemAmount(+rd.dataset.rd);
   if (e.target.closest("#rdHow")) return infoOv("HOW IT WORKS", "Google Play aur Amazon: 1850 coins = ₹10. UPI: 2300 coins = ₹10. Coins se voucher chuno, amount chuno aur apna UPI ID ya email daalo. Admin 24 ghante mein approve karega. Approve hone par aapko popup aayega aur history mein gift code dikhega.");
   if (e.target.closest("#rdFaq")) return infoOv("FAQ", "<b>Minimum?</b> Google Play/Amazon 1850 coins (₹10), UPI 2300 coins (₹10).<br><b>Maximum?</b> ₹200 per redeem.<br><b>Kitna time?</b> Usually 24 ghante.<br><b>Galat ID?</b> Support se contact karo.");
