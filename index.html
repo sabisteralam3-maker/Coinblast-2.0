@@ -183,6 +183,19 @@
   .mrow:hover{padding-left:12px}
   .rdk-row,.rdk-tile{transition:transform .15s ease,box-shadow .2s ease}
   .rdk-row:active,.rdk-tile:active{transform:scale(.985)}
+
+  /* v13: premium popups and polish */
+  .pop-ico{width:88px;height:88px;border-radius:30px;margin:0 auto;display:grid;place-items:center;font-size:42px;color:#fff;box-shadow:inset 0 2px 0 rgba(255,255,255,.5),0 22px 34px -16px rgba(76,29,149,.65)}
+  #lvlOvBox{border-radius:32px!important;padding:30px 24px!important;max-width:340px!important;text-align:center}
+  #lvlOv{backdrop-filter:blur(8px)!important}
+  h1{letter-spacing:-.02em}
+  h2{letter-spacing:-.01em}
+  .card{border-radius:24px!important}
+  .btn{min-height:52px;font-size:16px!important;letter-spacing:.01em}
+  .ghost{min-height:44px}
+  .mrow{padding-top:16px!important;padding-bottom:16px!important}
+  .field{min-height:50px}
+  nav{height:72px}
 </style>
 </head>
 <body>
@@ -918,7 +931,7 @@ function startTimedPlay(title, body, seconds, onDone) {
     if (PLAY.done) return;
     if (document.visibilityState === "visible" && $("s-play").classList.contains("on")) spent++;
     $("pHud").textContent = Math.min(spent, seconds) + " / " + seconds + "s";
-    if (spent >= seconds) { btn.disabled = false; btn.textContent = "Claim coins"; }
+    if (spent >= seconds) { btn.disabled = false; btn.textContent = "Claim coins"; if (!PLAY.popped && !PLAY.done) { PLAY.popped = true; claimPopup(title, null, async () => { PLAY.done = true; clearTimers(); return await onDone(); }); } }
     else btn.textContent = `Claim in ${seconds - spent}s`;
   }, 1000);
   btn.onclick = async () => {
@@ -927,6 +940,35 @@ function startTimedPlay(title, body, seconds, onDone) {
     // the amount is added inside onDone so it runs only after the ad
     if (!ok) { btn.disabled = false; return; }
     PLAY.done = true; clearTimers(); const r = await onDone(); if (r !== "stay") go("home");
+  };
+}
+
+// ---------- popups: success / warning / claim, all in the same overlay style ----------
+function popCard({ tone = "info", icon = "✨", title, text, btn, onBtn }) {
+  const grad = tone === "ok" ? "from-emerald-400 to-teal-500" : tone === "warn" ? "from-rose-400 to-orange-500" : tone === "gold" ? "from-amber-300 to-orange-500" : "from-violet-500 to-indigo-600";
+  showOv(`<div class="pop-ico bg-gradient-to-br ${grad}">${icon}</div>
+    <p class="text-xl font-black mt-5">${title}</p>
+    <p class="text-sm text-slate-600 mt-2 leading-relaxed">${text}</p>
+    ${btn ? `<button id="popAct" class="btn tap mt-6 w-full">${btn}</button>` : ""}
+    <button id="popClose" class="ghost w-full py-2.5 mt-3">Close</button>`);
+  $("popClose").onclick = hideOv;
+  if (btn) $("popAct").onclick = () => { hideOv(); if (onBtn) onBtn(); };
+}
+// claim popup: runs the ad first, then onClaim; onClaim may return "stay" to keep the screen as it is
+function claimPopup(title, coins, onClaim) {
+  showOv(`<div class="pop-ico bg-gradient-to-br from-amber-300 to-orange-500">🪙</div>
+    <p class="text-xl font-black mt-5">Coins claim karo</p>
+    <p class="text-sm text-slate-600 mt-2">${esc(title)}${coins ? `: <b>+${coins} coins</b>` : ""}</p>
+    <button id="clmGo" class="btn tap mt-6 w-full">Claim coins</button>
+    <button id="popClose" class="ghost w-full py-2.5 mt-3">Baad mein</button>`);
+  $("popClose").onclick = hideOv;
+  $("clmGo").onclick = async () => {
+    $("clmGo").disabled = true;
+    const ok = await gateAd().catch(() => false);
+    if (!ok) { $("clmGo").disabled = false; return; }
+    const r = await onClaim();
+    if (r === "stay") return hideOv();
+    popCard({ tone: "ok", icon: "✅", title: "Coins mil gaye!", text: coins ? `<b>+${coins} coins</b> aapke wallet mein add ho gaye.` : "Coins aapke wallet mein add ho gaye.", btn: "Home", onBtn: () => go("home") });
   };
 }
 
@@ -969,7 +1011,7 @@ function memory(pairs, onWin) {
         if (open[0].dataset.e === open[1].dataset.e) {
           open.forEach(x => x.dataset.ok = "1"); SFX.play("match"); found++; open = []; lock = false;
           $("playHud").innerHTML = `<span>Moves: ${moves}</span><span>Jodi: ${found}/${pairs}</span>`;
-          if (found === pairs) finishWin(onWin);
+          if (found === pairs) finishWin(onWin, SET.puzzleCoins || 8);
         } else {
           $("playHud").innerHTML = `<span>Moves: ${moves}</span><span>Jodi: ${found}/${pairs}</span>`;
           setTimeout(() => { open.forEach(x => { x.textContent = "?"; x.className = back; }); open = []; lock = false; }, 650);
@@ -980,16 +1022,9 @@ function memory(pairs, onWin) {
   });
   $("playHud").innerHTML = `<span>Moves: 0</span><span>Jodi: 0/${pairs}</span>`;
 }
-function finishWin(onWin) {
-  const res = $("playResult"); res.classList.remove("hidden");
-  SFX.play("win"); $("playMsg").textContent = "Sabhi jodi mil gayi!";
-  res.innerHTML = `<button id="claimW" class="btn tap">Claim coins</button>`;
-  $("claimW").onclick = async () => {
-    $("claimW").disabled = true;
-    const ok = await gateAd().catch(() => false);
-    if (!ok) { $("claimW").disabled = false; return; }
-    await onWin(); go("home");
-  };
+function finishWin(onWin, coins) {
+  SFX.play("win");
+  claimPopup("Puzzle jeet gaye", coins, async () => { await onWin(); return "done"; });
 }
 $("playBack").onclick = () => { clearTimers(); go("home"); };
 
@@ -1132,7 +1167,7 @@ function showResult(title, score, coinsIfPlayed, sub, dailyKey, retry) {
     $("ovClaim").disabled = true;
     const ok = await runLevelAd();
     if (!ok) { $("ovClaim").disabled = false; return; }
-    await credit(coins, title + " score " + score); SFX.play("coin"); toast("+" + coins + " coins!");
+    await credit(coins, title + " score " + score); SFX.play("coin"); popCard({ tone: "ok", icon: "✅", title: "Coins mil gaye!", text: `<b>+${coins} coins</b> aapke wallet mein add ho gaye.`, btn: "Home", onBtn: () => go("home") });
     const c = $("ovClaim"); if (c) c.remove();
   };
   if (left > 0) $("ovRetry").onclick = () => { hideOv(); retry(); };
@@ -1823,7 +1858,7 @@ document.addEventListener("click", async e => {
   if (dayOf("ads") >= adLim()) return toast("Aaj ki ad limit khatam");
   b.disabled = true;
   const ok = await runLevelAd();
-  if (ok) { try { await credit(a.coins, "Watch Ad (" + a.sec + "s)"); await markDaily("ads", undefined, dayOf("ads") + 1); toast("+" + a.coins + " coins!"); } catch (err) { toast(err.message); } }
+  if (ok) { try { await credit(a.coins, "Watch Ad (" + a.sec + "s)"); await markDaily("ads", undefined, dayOf("ads") + 1); popCard({ tone: "ok", icon: "✅", title: "Coins mil gaye!", text: `<b>+${a.coins} coins</b> aapke wallet mein add ho gaye.` }); } catch (err) { toast(err.message); } }
   renderAds();
 });
 
@@ -1904,9 +1939,9 @@ $("redCoins").addEventListener("input", renderRedeem);
 document.addEventListener("click", e => { const b = e.target.closest("[data-qc]"); if (!b) return; $("redCoins").value = b.dataset.qc; renderRedeem(); });
 $("redForm").onsubmit = async e => {
   e.preventDefault();
-  if (!redOn(REDV)) return toast(redMsg(REDV));
+  if (!redOn(REDV)) return popCard({ tone: "warn", icon: "⚠️", title: redStatus(REDV) === "down" ? "Server down" : "Coming soon", text: redMsg(REDV) });
   const miss = dailyTasks();
-  if (miss.length) return toast("Pehle aaj ke tasks poore karo: " + miss.slice(0, 2).join(", ") + (miss.length > 2 ? " aur bhi" : ""));
+  if (miss.length) return popCard({ tone: "warn", icon: "📋", title: "Tasks baaki hain", text: "Redeem se pehle ye aaj ke tasks poore karo: <b>" + esc(miss.slice(0, 4).join(", ")) + (miss.length > 4 ? " aur bhi" : "") + "</b>", btn: "Tasks dekho", onBtn: () => go("home") });
   const firstRedeem = !Object.keys(WDS || {}).length;
   const acc = $("redAcc").value.trim(), coins = Math.floor(Number($("redCoins").value));
   const max = 200 * rdRate(REDV);
@@ -1925,7 +1960,7 @@ $("redForm").onsubmit = async e => {
     } catch (err) { await runTransaction(R(`users/${UID}/balance`), v => (v || 0) + coins); throw err; }
     if (firstRedeem && ME && ME.referredBy) set(R("refStats/" + ME.referredBy + "/" + UID + "/redeemed"), true).catch(() => {});
     $("redCoins").value = ""; $("redAcc").value = "";
-    toast("Redeem request bhej di. 24 ghante mein."); go("wallet");
+    popCard({ tone: "ok", icon: "🎉", title: "Redeem successful", text: "Aapki request bhej di gayi hai. Admin 24 ghante mein approve karega.", btn: "History dekho", onBtn: () => go("redhist") });
   } catch (err) { toast(err.message || fmtErr(err)); }
   finally { renderRedeem(); }
 };
@@ -2029,7 +2064,7 @@ async function applyPromo() {
     await set(R("promoUsed/" + UID + "/" + code), { at: now });
     hideOv();
     await credit(p.coins || 0, "Promo " + code);
-    toast("+" + (p.coins || 0) + " coins mile!");
+    popCard({ tone: "ok", icon: "🎁", title: "Promo code applied!", text: `<b>+${p.coins || 0} coins</b> aapke wallet mein add ho gaye.` });
   } catch (e) { toast(e.message || "Code apply nahi hua"); }
   finally { if ($("pcGo")) $("pcGo").disabled = false; }
 }
