@@ -286,6 +286,7 @@
       <div><p class="font-extrabold">Refer &amp; Earn</p><p class="text-xs opacity-90">Invite friends and earn unlimited coins</p><button data-go="referral" class="mt-2 bg-white text-violet-700 font-bold text-xs px-3 py-1.5 rounded-lg">Invite Now</button></div>
       <i class="fa-solid fa-gift text-4xl opacity-80"></i></div>
   </div>
+  <button data-go="readearn" class="card tap w-full flex items-center gap-3 p-4 mt-4"><span class="text-4xl">📖</span><div class="flex-1 text-left"><b class="block text-sm">Read &amp; Earn</b><small class="text-xs text-slate-500">Link kholo, code dhoondo, coins pao</small></div><i class="fa-solid fa-chevron-right text-slate-400"></i></button>
   <button id="giftBtn" class="card tap w-full flex items-center gap-3 p-4 mt-4"><span class="text-4xl">🎁</span><div class="flex-1 text-left"><b class="block text-sm">Promo code</b><small class="text-xs text-slate-500">Gift box kholo, code daalo, coins pao</small></div><i class="fa-solid fa-chevron-right text-slate-400"></i></button>
   <div id="slotStrip" class="flex justify-center mt-4"></div>
 </section>
@@ -374,6 +375,29 @@
       <div class="space-y-2 text-xs"><div class="flex justify-between"><span>Total Earned</span><b id="wEarned">0</b></div><div class="flex justify-between"><span>Total Redeemed</span><b id="wRedeemed">0</b></div><div class="flex justify-between"><span>Pending</span><b id="wPending">0</b></div></div></div>
     <button data-go="redeem" class="btn tap">Redeem Coins</button>
     <p class="text-center text-xs text-slate-500" id="rateNote">100 Coins = ₹1</p>
+  </div>
+</section>
+
+<!-- READ & EARN -->
+<section id="s-readearn" class="screen pb-28 max-w-md mx-auto">
+  <header class="hero px-5 pt-7 pb-16 rounded-b-[30px]">
+    <button data-back class="w-9 h-9 rounded-full bg-white/20 grid place-items-center"><i class="fa-solid fa-arrow-left text-sm"></i></button>
+    <p class="text-[11px] uppercase tracking-[0.25em] opacity-80 mt-5">Task</p>
+    <h1 id="reTitle" class="text-2xl font-black leading-tight">Read &amp; Earn</h1>
+  </header>
+  <div class="px-4 -mt-10 space-y-4 relative">
+    <div class="card p-5 space-y-3">
+      <p id="reDesc" class="text-sm text-slate-600"></p>
+      <div class="flex items-center gap-2"><span class="text-2xl">🪙</span><b id="reRange" class="text-lg"></b></div>
+      <div id="reWait" class="rounded-xl bg-violet-50 p-3 text-sm text-slate-700"></div>
+      <button id="reOpen" class="btn tap w-full">Link kholo</button>
+      <p class="text-xs text-slate-500">Link par jao, steps poore karo, secret code dhoondo aur wapas aakar paste karo.</p>
+    </div>
+    <div class="card p-5 space-y-3">
+      <p class="font-extrabold">Secret code</p>
+      <div class="field"><i class="fa-solid fa-key"></i><input id="reCode" placeholder="Code yahan paste karo" autocomplete="off"></div>
+      <button id="reGo" class="btn tap w-full" disabled>Proceed</button>
+    </div>
   </div>
 </section>
 
@@ -578,6 +602,7 @@ function show(name) {
   if (name !== "play") { const sb = $("slotPlayBanner"); if (sb) { sb.classList.add("hidden"); sb.innerHTML = ""; sb.dataset.key = ""; } const sn = $("slotPlayNative"); if (sn) { sn.classList.add("hidden"); sn.innerHTML = ""; sn.dataset.key = ""; } }
   if (name === "home") mountBanner("slotStrip", SET.banners.strip, 320, 50);
   if (name === "ads") mountBanner("slotAdsBanner", SET.banners.big, 300, 250);
+  if (name === "readearn") renderReadEarn();
   $("nav").classList.toggle("hidden", !TAB_SCREENS.includes(name) && !["history", "redhist", "leader", "support", "referral", "puzzle", "games", "ads", "checkin", "text"].includes(name));
   document.querySelectorAll(".nav-btn").forEach(b => b.classList.toggle("on", b.dataset.go === name));
   window.scrollTo(0, 0);
@@ -590,6 +615,7 @@ function go(p) {
   if (p === "wallet") { renderWallet(); return show("wallet"); }
   if (p === "redeem") { renderRedeem(); renderRedeemList(); return show("redeem"); }
   if (p === "vouchers") { renderVouchers(); return show("vouchers"); }
+  if (p === "readearn") { renderReadEarn(); return show("readearn"); }
   if (p === "profile") { renderProfile(); return show("profile"); }
   if (p === "puzzle") { renderPuzzles(); return show("puzzle"); }
   if (p === "games") { renderGames(); return show("games"); }
@@ -942,6 +968,55 @@ function startTimedPlay(title, body, seconds, onDone) {
     PLAY.done = true; clearTimers(); const r = await onDone(); if (r !== "stay") go("home");
   };
 }
+
+// ---------- Read & Earn: open the link, wait, paste the secret code (stored as a SHA-256 hash) ----------
+let RE_OPENED = 0;
+async function sha256(s) {
+  const d = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(String(s).trim().toLowerCase()));
+  return [...new Uint8Array(d)].map(x => x.toString(16).padStart(2, "0")).join("");
+}
+function reCfg() {
+  const r = SET.readEarn || {};
+  return { on: r.enabled !== false, title: r.title || "Read & Earn", desc: r.desc || "", link: r.link || "", hash: r.hash || "", wait: Math.max(10, r.wait || 120), min: Math.max(1, r.min || 5), max: Math.max(1, r.max || 15) };
+}
+function renderReadEarn() {
+  const c = reCfg();
+  $("reTitle").textContent = c.title; $("reDesc").textContent = c.desc;
+  $("reRange").textContent = c.min + " – " + c.max + " coins (random)";
+  $("reWait").textContent = "Link par " + c.wait + " second ruko, phir wapas aakar code paste karo.";
+  const done = dayOf("readEarn") >= 1 || !c.on;
+  $("reOpen").disabled = done; $("reCode").disabled = done;
+  if (!c.on) $("reWait").textContent = "Ye task abhi band hai.";
+  else if (dayOf("readEarn") >= 1) $("reWait").textContent = "Aaj ka Read & Earn complete ho gaya. Kal phir aana.";
+  reTick();
+}
+function reTick() {
+  const c = reCfg(), go = $("reGo"); if (!go) return;
+  const left = RE_OPENED ? c.wait * 1000 - (Date.now() - RE_OPENED) : c.wait * 1000;
+  const ready = RE_OPENED && left <= 0 && $("reCode").value.trim() && !$("reCode").disabled;
+  go.disabled = !ready;
+  go.textContent = !RE_OPENED ? "Pehle link kholo" : left > 0 ? "Proceed (" + Math.ceil(left / 1000) + "s)" : "Proceed";
+}
+setInterval(reTick, 1000);
+$("reOpen").onclick = () => {
+  const c = reCfg();
+  if (!c.link) return popCard({ tone: "warn", icon: "⚠️", title: "Link nahi hai", text: "Admin ne is task ka link abhi set nahi kiya." });
+  RE_OPENED = Date.now(); window.open(c.link, "_blank", "noopener"); reTick();
+};
+$("reCode").oninput = reTick;
+$("reGo").onclick = async () => {
+  const c = reCfg(), typed = $("reCode").value.trim();
+  if (!typed || !RE_OPENED) return;
+  if (dayOf("readEarn") >= 1) return;
+  const ok = c.hash && (await sha256(typed)) === c.hash;
+  if (!ok) return popCard({ tone: "warn", icon: "🔁", title: "Galat code", text: "Ye code sahi nahi hai. Link dobara kholo aur sahi code dhoondo.", btn: "Try again", onBtn: () => { RE_OPENED = 0; $("reCode").value = ""; renderReadEarn(); } });
+  const coins = c.min + Math.floor(Math.random() * (c.max - c.min + 1));
+  RE_OPENED = 0; $("reCode").value = "";
+  await setDaily({ readEarn: 1 });
+  await credit(coins, "Read & Earn");
+  popCard({ tone: "ok", icon: "✅", title: "Coins mil gaye!", text: "<b>+" + coins + " coins</b> aapke wallet mein add ho gaye.", btn: "Home", onBtn: () => go("home") });
+};
+async function sha(s) { return sha256(s); }
 
 // ---------- popups: success / warning / claim, all in the same overlay style ----------
 function popCard({ tone = "info", icon = "✨", title, text, btn, onBtn }) {
